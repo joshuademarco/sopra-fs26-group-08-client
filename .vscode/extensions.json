@@ -1,0 +1,25 @@
+{
+    "recommendations": [
+        "vscjava.vscode-java-debug",
+        "dsznajder.es7-react-js-snippets",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-gradle",
+        "ms-vscode.hexeditor",
+        "redhat.java",
+        "davidanson.vscode-markdownlint",
+        "vscjava.vscode-maven",
+        "esbenp.prettier-vscode",
+        "yoavbls.pretty-ts-errors",
+        "vscjava.vscode-java-dependency",
+        "mechatroner.rainbow-csv",
+        "richie5um2.vscode-sort-json",
+        "jock.svg",
+        "bradlc.vscode-tailwindcss",
+        "meganrogge.template-string-converter",
+        "vscjava.vscode-java-test",
+        "gruntfuggly.todo-tree",
+        "redhat.vscode-xml",
+        "dotjoshjohnson.xml",
+        "redhat.vscode-yaml"
+    ]
+}
