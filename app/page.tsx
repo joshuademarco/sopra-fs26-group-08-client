@@ -1,30 +1,28 @@
-"use client";
+import Link from 'next/link'
 
- // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
+import { Button } from '@/components/ui/button'
+import { Hero } from '@/components/hero'
+import { Footer } from '@/components/footer'
 
 export default function Home() {
   return (
-    <main className="center" style={{ 
-      minHeight: "100svh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "24px",
-    }}>
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "36px",
-        alignItems: "center"
-      }}>
-      <h1 style={{
-        fontSize: "clamp(3rem, 10vw, 8rem)",
-        lineHeight: 1,
-        letterSpacing: "0.04em",
-        textAlign: "center",
-      }}>Group 08</h1>
-      <h3>We are ready!</h3>
-      </div>
+    <main className='flex flex-col items-center w-full'>
+      <Hero />
+      <section className='w-full max-w-3xl md:p-12 py-12'>
+        <p className='mt-4 text-base text-muted-foreground md:text-lg'>
+          Start your journey by creating an account or jump back in.
+        </p>
+
+        <div className='mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center'>
+          <Button asChild className='h-14 min-w-44 px-8 text-xl'>
+            <Link href='#'>Sign Up</Link>
+          </Button>
+          <Button asChild variant='secondary' className='h-14 min-w-44 px-8 text-xl'>
+            <Link href='#'>Login</Link>
+          </Button>
+        </div>
+      </section>
+      <Footer />
     </main>
-  );
+  )
 }
