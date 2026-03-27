@@ -11,8 +11,18 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar
 } from '@/components/ui/sidebar'
-import { Home, PersonStanding, SendIcon } from 'lucide-react'
+import { Award, BadgeCheck, FileUser, Home, LogOut, PersonStanding, SendIcon, Settings, ShieldHalf, StickyNote, Sword, UserRoundPlus, VenetianMask } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from './ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { NavUser } from './nav-user'
+
+const user = {
+  name: 'billy',
+  email: 'billy@billy.ch',
+  avatar: <FileUser />
+}
 
 const data = {
   user: {
@@ -26,8 +36,38 @@ const data = {
       url: '#',
       icon: <Home />,
     },
+    {
+      title: 'Habits/Todos',
+      url: '#',
+      icon: <StickyNote />
+    },
+    {
+      title: 'Character',
+      url: '#',
+      icon: <PersonStanding />
+    },
+    {
+      title: 'Groups',
+      url: '#',
+      icon: <ShieldHalf />
+    },
+    {
+      title: 'Boss Raid',
+      url: '#',
+      icon: <Sword />
+    },
+    {
+      title: 'Leaderboard',
+      url: '#',
+      icon: <Award />
+    }
   ],
   navSecondary: [
+    {
+      title: 'Settings',
+      url: '#',
+      icon: <Settings />
+    },
     {
       title: 'Feedback',
       url: '#',
@@ -58,6 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className='mt-auto' />
+        <NavUser user={data.user}  />
       </SidebarContent>
     </Sidebar>
   )
