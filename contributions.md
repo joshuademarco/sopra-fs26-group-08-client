@@ -30,7 +30,7 @@ reason).
 
 ---
 
-## Contributions Week 1 - [Begin Date] to [End Date]
+## Contributions Week 1 - [23.03.2026] to [29.03.2026]
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
@@ -40,8 +40,8 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[alemicap]** | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/4dbde4816469282c85f87d639cc40c56fb35c88f] | [implementation of character stats (strength, intelligence and resilience)] | [stats of character which get leveled up] |
+|                    | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/2f995b8de42fb4e264838c24fe87990d0a1bb3b3] | [implementation of sidebar on application page] | [important for navigation to different tabs] |
 
 ---
 
