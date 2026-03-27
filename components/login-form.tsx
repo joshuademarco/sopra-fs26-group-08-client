@@ -16,26 +16,22 @@ import {
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 
-export function SignupForm({
+export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create your account</CardTitle>
+        <CardHeader>
+          <CardTitle>Login to your account</CardTitle>
           <CardDescription>
-            Enter your email below to create your account
+            Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form>
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="name">Username</FieldLabel>
-                <Input id="name" type="text" placeholder="Wim Hof" required />
-              </Field>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
@@ -46,26 +42,21 @@ export function SignupForm({
                 />
               </Field>
               <Field>
-                <Field className="grid grid-cols-2 gap-4">
-                  <Field>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input id="password" type="password" required />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="confirm-password">
-                      Confirm Password
-                    </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
-                  </Field>
-                </Field>
-                <FieldDescription>
-                  Must be at least 8 characters long.
-                </FieldDescription>
+                <div className="flex items-center">
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <a
+                    href="#"
+                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                  >
+                    Forgot your password?
+                  </a>
+                </div>
+                <Input id="password" type="password" required />
               </Field>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit">Login</Button>
                 <FieldDescription className="text-center">
-                  Already have an account? <Link href="/login">Login</Link>
+                  Don&apos;t have an account? <Link href="/register">Sign up</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
