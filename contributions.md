@@ -34,8 +34,9 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@joshuademarco]** | [23.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/590a7e7] | [Set up the initial Shadcn UI stack, prettier config, and frontend tooling baseline.] | [This established the reusable component and formatting foundation for later frontend work.] |
+|                    | [25.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/8265597] | [Reorganized the project structure to match Next.js conventions.] | [This made the frontend structure cleaner and reduced friction for continued page development.] |
+|                    | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/9e3751f] | [Implemented the default application page with sidebar and navigation components.] | [This created the main in-app layout that users need to move through the application.] |
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@michaelCHer]** | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/89cfbd4de10ce194c0c33774a0e74e4268530808] | [Implemented register UI] | [A potential user expects a nice register UI] |
