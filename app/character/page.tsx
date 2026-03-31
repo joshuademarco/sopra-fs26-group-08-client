@@ -48,19 +48,21 @@ export default function ApplicationPage() {
               <div className="flex items-center gap-4">
                 <Heart/>
                 <CharacterStats 
+                label="Health"
                 value={85} 
                 maxValue={100}
                 color="bg-green-600"
-                height = "h-4"
+                height="h-4"
                 />
               </div>
               <div className="flex items-center gap-4">
                 <Star/>
                 <CharacterStats 
+                label="Experience"
                 value={15}
                 maxValue={100}
                 color="bg-yellow-500"
-                height = "h-4"
+                height="h-4"
                 />
               </div>
             </div>
@@ -72,7 +74,8 @@ export default function ApplicationPage() {
             label="Strength" 
             value={45} 
             maxValue={100}
-            color="bg-rose-500" 
+            color="bg-rose-500"
+            height="h-2" 
             />
 
             <CharacterStats
@@ -80,13 +83,15 @@ export default function ApplicationPage() {
             value={90} 
             maxValue={100}
             color="bg-sky-500" 
+            height="h-2"
             />
   
             <CharacterStats
             label="Resilience" 
             value={15} 
             maxValue={100}
-            color="bg-emerald-500" 
+            color="bg-emerald-500"
+            height="h-" 
             />
             
           </div>

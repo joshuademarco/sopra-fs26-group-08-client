@@ -9,7 +9,7 @@ interface CharacterStatProperties {
     value: number
     maxValue: number
     color: string
-    height: number
+    height: string
 }
 
 

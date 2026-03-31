@@ -56,7 +56,7 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[alemicap]** | [31.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/925001b2ed028fe1f1ceb77662a6e21d6c467bf5] | [implementation of characters UI page + adaptation of character stats bars to be more flexible in using them] | [A potential user expects a nice character page] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
