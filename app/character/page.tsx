@@ -6,6 +6,27 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { CharacterStats } from "@/components/stats"
 import { Axe, Book, Flame, HatGlasses, Heart, Shirt, Star, Sword, User } from 'lucide-react'
 
+interface CharacterData {
+  level: number;
+  health: number;
+  // maxHealth: number;
+  strength: number;
+  intelligence: number;
+  resilience: number;
+}
+
+async function getCharacterData(): Promise<CharacterData> {
+  const response = await fetch('http://localhost:8080/users/1', {
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch character data');
+  }
+
+  return response.json();
+}
+
 export default function ApplicationPage() {
   return (
     <SidebarProvider>
