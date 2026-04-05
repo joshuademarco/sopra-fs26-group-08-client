@@ -1,5 +1,8 @@
 'use client'
 
+import { useRouter } from "next/navigation"; // use NextJS router for navigation
+import { useApi } from "@/hooks/useApi";
+
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
@@ -34,6 +37,9 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
   const { register: registerUser } = useAuth()
   const [formError, setFormError] = React.useState<string | null>(null)
 
+  const router = useRouter();
+  const apiService = useApi();
+
   //set up zod form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,22 +51,47 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
     },
   })
 
-  //submit handler
-  async function onSubmit(data: z.infer<typeof formSchema>) {
-    //all zod validations passed if this is reached
-    setFormError(null)
 
+  //async -> use await for fetch
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
+      //send data to backend -> POST /users
       await registerUser({
         username: data.username,
         email: data.email,
         password: data.password,
       })
+
+      console.log("User successfully created", response);
       router.replace('/app')
-    } catch (error) {
-      setFormError(error instanceof Error ? error.message : 'Registration failed')
+
+      //check for backedn errors
+    } catch (error: any) {
+      //extract error message from backend response
+      const errorMessage = error.response?.data?.message || error.message || "";
+
+      //use form.setError to check for duplicates
+      if (errorMessage.toLowerCase().includes("username")) {
+        form.setError("username", { 
+          type: "server", 
+          message: "This username is already taken." 
+        });
+      }
+      
+      if (errorMessage.toLowerCase().includes("email")) {
+        form.setError("email", { 
+          type: "server", 
+          message: "This email is already registered." 
+        });
+      }
+
+      //catch all other errors and display error message
+      if (!errorMessage.toLowerCase().includes("username") && !errorMessage.toLowerCase().includes("email")) {
+        alert("Registration failed: " + errorMessage);
+      }
     }
   }
+  
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
