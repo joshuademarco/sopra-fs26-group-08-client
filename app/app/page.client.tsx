@@ -12,8 +12,8 @@ import { useRouter } from 'next/navigation'
 
 export default function ClientApplicationPage() {
   const router = useRouter()
-  const { user, token, isLoading } = useAuth()
-  const { users, isConnected, lastUpdated } = useLiveOnlineUsers(token)
+  const { user, isLoading } = useAuth()
+  const { users, isConnected, lastUpdated } = useLiveOnlineUsers()
 
   useEffect(() => {
     if (!isLoading && !user) {
