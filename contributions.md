@@ -56,8 +56,8 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[alemicap]** | [31.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/925001b2ed028fe1f1ceb77662a6e21d6c467bf5 https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/6974ebfc1302916d33151a70418e9c6d62b54628] | [implementation of characters UI page + adaptation of character stats bars to be more flexible in using them] | [A potential user expects a nice character page] |
+|                    | [01.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/f58a4e2c1b1de87920a0e3abb43eb5be91016583 https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/403c7e56e9a82b340f698b1adeffd67acb6ad8da] | [character stats added to db and backend endpoint] | [important so that stats and other chracter properties get updated by for example ticking off habits] |
 
 ---
 
