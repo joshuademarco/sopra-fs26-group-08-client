@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation'
 export default function ClientApplicationPage() {
   const router = useRouter()
   const { user, token, isLoading } = useAuth()
-  const { users, isConnected, lastUpdated, error } = useLiveOnlineUsers(token)
+  const { users, isConnected, lastUpdated } = useLiveOnlineUsers(token)
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -40,7 +40,7 @@ export default function ClientApplicationPage() {
         </header>
         <div className='flex flex-1 flex-col gap-6 p-4 pt-0'>
           <div className='grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.75fr)]'>
-            <LiveOnlineMap users={users} isConnected={isConnected} lastUpdated={lastUpdated} error={error} compact />
+            <LiveOnlineMap users={users} isConnected={isConnected} lastUpdated={lastUpdated} />
           </div>
         </div>
       </SidebarInset>

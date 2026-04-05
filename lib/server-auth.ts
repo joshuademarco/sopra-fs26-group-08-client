@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { AUTH_TOKEN_COOKIE } from '@/lib/auth-constants'
+
 import { getApiDomain } from '@/utils/domain'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -16,6 +16,8 @@ export type ServerAuthUser = {
   intelligence?: number | null
   resilience?: number | null
 }
+
+const AUTH_TOKEN_COOKIE = 'auth_token'
 
 function getAuthMeUrl(): string {
   return new URL('/auth/me', getApiDomain()).toString()
