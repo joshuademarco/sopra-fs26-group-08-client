@@ -11,3 +11,12 @@ export function getApiDomain(): string {
   const devUrl = "http://localhost:8080";
   return isProduction() ? prodUrl : devUrl;
 }
+
+/**
+ * Returns the websocket base URL derived from the API base URL.
+ */
+export function getWebSocketDomain(): string {
+  const apiUrl = new URL(getApiDomain());
+  apiUrl.protocol = apiUrl.protocol === "https:" ? "wss:" : "ws:";
+  return apiUrl.toString();
+}

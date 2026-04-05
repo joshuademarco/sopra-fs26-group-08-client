@@ -8,7 +8,7 @@ export default function NotFoundScreen() {
 	const router = useRouter()
 
 	return (
-		<div className='flex min-h-screen items-center justify-center bg-white px-6'>
+		<div className='flex min-h-screen items-center justify-center px-10'>
 			<Card className='w-full max-w-sm'>
 				<CardHeader>
 					<CardTitle className='text-center text-3xl'>404 - Not Found</CardTitle>
