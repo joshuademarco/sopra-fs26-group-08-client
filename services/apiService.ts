@@ -1,4 +1,3 @@
-import { getApiDomain } from "@/utils/domain";
 import { ApplicationError } from "@/types/error";
 
 export class ApiService {
@@ -6,7 +5,7 @@ export class ApiService {
   private defaultHeaders: HeadersInit;
 
   constructor() {
-    this.baseURL = getApiDomain();
+    this.baseURL = "/api";
     this.defaultHeaders = {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",

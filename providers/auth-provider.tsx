@@ -39,7 +39,6 @@ type AuthContextValue = {
 const AUTH_TOKEN_KEY = 'auth_token'
 const AUTH_USER_KEY = 'auth_user'
 const AUTH_API_BASE_URL = getApiDomain()
-
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 function readReason(payload: unknown): string | null {
@@ -64,7 +63,7 @@ async function parseError(res: Response, fallback: string): Promise<never> {
 }
 
 function buildAuthUrl(path: string): string {
-  return new URL(path, AUTH_API_BASE_URL).toString()
+  return `/api${path}`
 }
 
 function readAuthorizationHeader(headers: Headers): string | null {

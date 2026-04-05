@@ -28,8 +28,7 @@ async function verifySessionServerSide(token: string): Promise<ServerAuthUser | 
     const response = await fetch(getAuthMeUrl(), {
       method: 'GET',
       headers: {
-        token,
-        Authorization: `Bearer ${token}`,
+        Cookie: `${AUTH_TOKEN_COOKIE}=${encodeURIComponent(token)}`,
       },
       cache: 'no-store',
     })
