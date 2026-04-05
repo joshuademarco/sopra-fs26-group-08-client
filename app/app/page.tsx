@@ -1,17 +1,17 @@
-// TODO: check auth for everything underneath /app
+'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { useAuth } from '@/hooks/useAuth'
-import { unauthorized } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export default function ApplicationPage() {
-
+  const router = useRouter()
   const { user } = useAuth()
-  
-  if(!user) {
-    unauthorized()
+
+  if (!user) {
+    return router.push('/')
   }
 
   return (

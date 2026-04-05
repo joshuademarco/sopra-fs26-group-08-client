@@ -1,12 +1,18 @@
-"use client"
+'use client'
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { getApiDomain } from '@/utils/domain'
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
 type AuthUser = {
   id: string | number
   email: string
   username: string
   status?: string | null
+  level?: number | null
+  health?: number | null
+  strength?: number | null
+  intelligence?: number | null
+  resilience?: number | null
 }
 
 type LoginInput = {
@@ -30,15 +36,16 @@ type AuthContextValue = {
   logout: () => Promise<void>
 }
 
-const AUTH_TOKEN_KEY = "auth_token"
-const AUTH_USER_KEY = "auth_user"
+const AUTH_TOKEN_KEY = 'auth_token'
+const AUTH_USER_KEY = 'auth_user'
+const AUTH_API_BASE_URL = getApiDomain()
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 function readReason(payload: unknown): string | null {
-  if (payload && typeof payload === "object" && "reason" in payload) {
+  if (payload && typeof payload === 'object' && 'reason' in payload) {
     const reason = (payload as { reason?: unknown }).reason
-    if (typeof reason === "string" && reason.length > 0) {
+    if (typeof reason === 'string' && reason.length > 0) {
       return reason
     }
   }
@@ -54,6 +61,19 @@ async function parseError(res: Response, fallback: string): Promise<never> {
   } catch {
     throw new Error(fallback)
   }
+}
+
+function buildAuthUrl(path: string): string {
+  return new URL(path, AUTH_API_BASE_URL).toString()
+}
+
+function readAuthorizationHeader(headers: Headers): string | null {
+  return (
+    headers.get('set-authorization') ??
+    headers.get('Set-Authorization') ??
+    headers.get('authorization') ??
+    headers.get('Authorization')
+  )
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -95,51 +115,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     globalThis.localStorage.removeItem(AUTH_USER_KEY)
   }, [])
 
-  const login = useCallback(async (input: LoginInput) => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(input),
-    })
+  const login = useCallback(
+    async (input: LoginInput) => {
+      const res = await fetch(buildAuthUrl('/auth/login'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      })
 
-    if (!res.ok) {
-      await parseError(res, "Login failed")
-    }
+      if (!res.ok) {
+        await parseError(res, 'Login failed')
+      }
 
-    const payload = (await res.json()) as AuthUser
-    const nextToken = res.headers.get("set-authorization")
-    if (!nextToken) {
-      throw new Error("Missing authorization token in login response")
-    }
+      const payload = (await res.json()) as AuthUser
+      const nextToken = readAuthorizationHeader(res.headers)
+      if (!nextToken) {
+        throw new Error('Missing authorization token in login response')
+      }
 
-    persistSession(nextToken, payload)
-    return payload
-  }, [persistSession])
+      persistSession(nextToken, payload)
+      return payload
+    },
+    [persistSession],
+  )
 
-  const register = useCallback(async (input: RegisterInput) => {
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(input),
-    })
+  const register = useCallback(
+    async (input: RegisterInput) => {
+      const res = await fetch(buildAuthUrl('/auth/register'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      })
 
-    if (!res.ok) {
-      await parseError(res, "Registration failed")
-    }
+      if (!res.ok) {
+        await parseError(res, 'Registration failed')
+      }
 
-    const payload = (await res.json()) as AuthUser
-    const nextToken = res.headers.get("set-authorization")
-    if (!nextToken) {
-      throw new Error("Missing authorization token in register response")
-    }
+      const payload = (await res.json()) as AuthUser
+      const nextToken = readAuthorizationHeader(res.headers)
+      if (!nextToken) {
+        throw new Error('Missing authorization token in register response')
+      }
 
-    persistSession(nextToken, payload)
-    return payload
-  }, [persistSession])
+      persistSession(nextToken, payload)
+      return payload
+    },
+    [persistSession],
+  )
 
   const logout = useCallback(async () => {
     const activeToken = token
@@ -149,8 +175,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    await fetch("/api/auth/logout", {
-      method: "POST",
+    await fetch(buildAuthUrl('/auth/logout'), {
+      method: 'POST',
       headers: {
         token: activeToken,
         Authorization: `Bearer ${activeToken}`,
@@ -176,7 +202,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuthContext() {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error("useAuthContext must be used within AuthProvider")
+    throw new Error('useAuthContext must be used within AuthProvider')
   }
 
   return context

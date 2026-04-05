@@ -15,10 +15,10 @@ export default function Home() {
 
         <div className='mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center'>
           <Button asChild className='h-14 min-w-44 px-8 text-xl'>
-            <Link href='#'>Sign Up</Link>
+            <Link href='/register'>Sign Up</Link>
           </Button>
           <Button asChild variant='secondary' className='h-14 min-w-44 px-8 text-xl'>
-            <Link href='#'>Login</Link>
+            <Link href='/login'>Login</Link>
           </Button>
         </div>
       </section>

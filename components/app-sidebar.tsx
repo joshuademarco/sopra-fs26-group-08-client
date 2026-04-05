@@ -11,17 +11,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar
 } from '@/components/ui/sidebar'
-import { Award, BadgeCheck, FileUser, Home, LogOut, PersonStanding, SendIcon, Settings, ShieldHalf, StickyNote, Sword, UserRoundPlus, VenetianMask } from 'lucide-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from './ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { useAuth } from '@/hooks/useAuth'
+import { Award, FileUser, Home, PersonStanding, SendIcon, Settings, ShieldHalf, StickyNote, Sword } from 'lucide-react'
 import { NavUser } from './nav-user'
 
 const user = {
   name: 'billy',
   email: 'billy@billy.ch',
-  avatar: <FileUser />
+  avatar: <FileUser />,
 }
 
 const data = {
@@ -39,34 +37,34 @@ const data = {
     {
       title: 'Habits/Todos',
       url: '#',
-      icon: <StickyNote />
+      icon: <StickyNote />,
     },
     {
       title: 'Character',
       url: '#',
-      icon: <PersonStanding />
+      icon: <PersonStanding />,
     },
     {
       title: 'Groups',
       url: '#',
-      icon: <ShieldHalf />
+      icon: <ShieldHalf />,
     },
     {
       title: 'Boss Raid',
       url: '#',
-      icon: <Sword />
+      icon: <Sword />,
     },
     {
       title: 'Leaderboard',
       url: '#',
-      icon: <Award />
-    }
+      icon: <Award />,
+    },
   ],
   navSecondary: [
     {
       title: 'Settings',
       url: '#',
-      icon: <Settings />
+      icon: <Settings />,
     },
     {
       title: 'Feedback',
@@ -77,6 +75,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user: authUser } = useAuth()
+  const displayedUser = authUser
+    ? {
+        name: authUser.username,
+        email: authUser.email,
+        avatar: null,
+      }
+    : data.user
+
   return (
     <Sidebar variant='inset' {...props}>
       <SidebarHeader>
@@ -98,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className='mt-auto' />
-        <NavUser user={data.user}  />
+        <NavUser user={displayedUser} />
       </SidebarContent>
     </Sidebar>
   )
