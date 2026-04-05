@@ -36,7 +36,6 @@ type AuthContextValue = {
 }
 
 const AUTH_API_BASE_URL = getApiDomain()
-
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 function readReason(payload: unknown): string | null {
@@ -61,7 +60,7 @@ async function parseError(res: Response, fallback: string): Promise<never> {
 }
 
 function buildAuthUrl(path: string): string {
-  return new URL(path, AUTH_API_BASE_URL).toString()
+  return `/api${path}`
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
