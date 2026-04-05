@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import * as React from 'react'
 
 import { NavMain } from '@/components/nav-main'
@@ -11,18 +12,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar
 } from '@/components/ui/sidebar'
-import { Award, BadgeCheck, FileUser, Home, LogOut, PersonStanding, SendIcon, Settings, ShieldHalf, StickyNote, Sword, UserRoundPlus, VenetianMask } from 'lucide-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from './ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { useAuth } from '@/hooks/useAuth'
+import { Award, Home, PersonStanding, SendIcon, Settings, ShieldHalf, StickyNote, Sword } from 'lucide-react'
 import { NavUser } from './nav-user'
-
-const user = {
-  name: 'billy',
-  email: 'billy@billy.ch',
-  avatar: <FileUser />
-}
 
 const data = {
   user: {
@@ -33,40 +26,40 @@ const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '#',
+      url: '/app',
       icon: <Home />,
     },
     {
       title: 'Habits/Todos',
       url: '#',
-      icon: <StickyNote />
+      icon: <StickyNote />,
     },
     {
       title: 'Character',
       url: '#',
-      icon: <PersonStanding />
+      icon: <PersonStanding />,
     },
     {
       title: 'Groups',
       url: '#',
-      icon: <ShieldHalf />
+      icon: <ShieldHalf />,
     },
     {
       title: 'Boss Raid',
       url: '#',
-      icon: <Sword />
+      icon: <Sword />,
     },
     {
       title: 'Leaderboard',
       url: '#',
-      icon: <Award />
-    }
+      icon: <Award />,
+    },
   ],
   navSecondary: [
     {
       title: 'Settings',
       url: '#',
-      icon: <Settings />
+      icon: <Settings />,
     },
     {
       title: 'Feedback',
@@ -77,20 +70,29 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user: authUser } = useAuth()
+  const displayedUser = authUser
+    ? {
+        name: authUser.username,
+        email: authUser.email,
+        avatar: null,
+      }
+    : data.user
+
   return (
     <Sidebar variant='inset' {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <a href='#'>
+              <Link href='/app'>
                 <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
                   <PersonStanding className='h-4 w-4' />
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
                   <span className='truncate font-medium'>BetterTogether</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -98,7 +100,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className='mt-auto' />
-        <NavUser user={data.user}  />
+        <NavUser user={displayedUser} />
       </SidebarContent>
     </Sidebar>
   )
