@@ -3,8 +3,17 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { useAuth } from '@/hooks/useAuth'
+import { unauthorized } from 'next/navigation'
 
 export default function ApplicationPage() {
+
+  const { user } = useAuth()
+  
+  if(!user) {
+    unauthorized()
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
