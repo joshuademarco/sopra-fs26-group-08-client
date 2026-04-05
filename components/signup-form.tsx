@@ -1,7 +1,6 @@
 'use client'
 
-import { useRouter } from "next/navigation"; // use NextJS router for navigation
-import { useApi } from "@/hooks/useApi";
+import { useRouter } from "next/navigation";
 
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/hooks/useAuth'
-import { useRouter } from 'next/navigation'
+
 
 //zod form schema
 const formSchema = z
@@ -37,17 +36,15 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
   const { register: registerUser } = useAuth()
   const [formError, setFormError] = React.useState<string | null>(null)
 
-  const router = useRouter();
-  const apiService = useApi();
 
   //set up zod form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      username: process.env.NEXT_PUBLIC_DEFAULT_USERNAME || '',
+      email: process.env.NEXT_PUBLIC_DEFAULT_EMAIL || '',
+      password: process.env.NEXT_PUBLIC_DEFAULT_PASSWORD || '',
+      confirmPassword: process.env.NEXT_PUBLIC_DEFAULT_PASSWORD || '',
     },
   })
 
@@ -56,13 +53,13 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       //send data to backend -> POST /users
-      await registerUser({
+      const user = await registerUser({
         username: data.username,
         email: data.email,
         password: data.password,
       })
 
-      console.log("User successfully created", response);
+      console.log("User successfully created", user);
       router.replace('/app')
 
       //check for backedn errors
@@ -87,7 +84,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
 
       //catch all other errors and display error message
       if (!errorMessage.toLowerCase().includes("username") && !errorMessage.toLowerCase().includes("email")) {
-        alert("Registration failed: " + errorMessage);
+        setFormError(errorMessage || 'Registration failed')
       }
     }
   }
