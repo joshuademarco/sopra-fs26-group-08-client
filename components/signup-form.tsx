@@ -1,4 +1,11 @@
+"use client"
+
+import * as React from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Controller, useForm } from "react-hook-form"
+import * as z from "zod"
 import { cn } from "@/lib/utils"
+
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -10,15 +17,53 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import Link from "next/link"
+
+//zod form schema
+const formSchema = z.object({
+  username: z
+    .string()
+    .min(2, "Username must be at least 2 characters."),
+  email: z
+  .string()
+  .email("Please enter a valid email address."),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters.")
+    .regex(/[0-9]/, "Password must contain at least 1 number."),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match.",
+  path: ["confirmPassword"], 
+})
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+
+  //set up zod form
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  })
+
+  //submit handler
+  function onSubmit(data: z.infer<typeof formSchema>) {
+    //all zod validations passed if this is reached
+    console.log("form data ready to send to backend:", data)
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -29,42 +74,95 @@ export function SignupForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          {/* connect form submission to react hook form */}
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="name">Username</FieldLabel>
-                <Input id="name" type="text" placeholder="Wim Hof" required />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
+              <Controller
+                name="username"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="username">Username</FieldLabel>
+                    <Input
+                      {...field}
+                      id="username"
+                      type="text"
+                      placeholder="Wim Hof"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="email"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <Input
+                      {...field}
+                      id="email"
+                      type="email"
+                      placeholder="m@example.com"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Field className="grid grid-cols-2 gap-4">
+                <Controller
+                  name="password"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <Input
+                        {...field}
+                        id="password"
+                        type="password"
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name="confirmPassword"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="confirmPassword">
+                        Confirm Password
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id="confirmPassword"
+                        type="password"
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
                 />
               </Field>
+              <FieldDescription>
+                Password must be at least 8 characters and contain 1 number.
+              </FieldDescription>
+
               <Field>
-                <Field className="grid grid-cols-2 gap-4">
-                  <Field>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input id="password" type="password" required />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="confirm-password">
-                      Confirm Password
-                    </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
-                  </Field>
-                </Field>
-                <FieldDescription>
-                  Must be at least 8 characters long.
-                </FieldDescription>
-              </Field>
-              <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit" className="w-full">Create Account</Button>
                 <FieldDescription className="text-center">
-                  Already have an account? <a href="#">Login</a>
+                  Already have an account? <a href="/login" className="underline">Login</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
