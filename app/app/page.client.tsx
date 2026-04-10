@@ -1,25 +1,33 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { AppSidebar } from '@/components/app-sidebar'
 import { LiveOnlineMap } from '@/components/live-online-map'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { WeatherIcon } from '@/components/weather-icon'
 import { useAuth } from '@/hooks/useAuth'
 import { useLiveOnlineUsers } from '@/hooks/useLiveOnlineUsers'
 import { useRouter } from 'next/navigation'
+import { useApi } from '@/hooks/useApi'
 
 export default function ClientApplicationPage() {
   const router = useRouter()
   const { user, token, isLoading } = useAuth()
   const { users, isConnected, lastUpdated } = useLiveOnlineUsers(token)
+  const [weatherCode, setWeatherCode] = useState<number | null>(null)
+  const api = useApi()
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.replace('/')
     }
   }, [isLoading, router, user])
+
+  useEffect(() => {
+    api.get<number>("/weather").then(setWeatherCode)
+  }, [api])
 
   if (!user) {
     return null
