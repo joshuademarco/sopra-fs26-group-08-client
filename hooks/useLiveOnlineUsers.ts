@@ -19,20 +19,14 @@ function parseSnapshot(raw: string): LiveUser[] {
   return Array.isArray(payload) ? payload : payload.users ?? []
 }
 
-export function useLiveOnlineUsers(token: string | null = null) {
+export function useLiveOnlineUsers() {
   const api = useApi()
   const [users, setUsers] = useState<LiveUser[]>([])
   const [isConnected, setIsConnected] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
-  const socketUrl = useMemo(() => {
-    const url = new URL('/ws/presence', getWebSocketDomain())
-    if (token) {
-      url.searchParams.set('token', token)
-    }
-    return url.toString()
-  }, [token])
+  const socketUrl = useMemo(() => new URL('/ws/presence', getWebSocketDomain()).toString(), [])
 
   useEffect(() => {
     let ignore = false
