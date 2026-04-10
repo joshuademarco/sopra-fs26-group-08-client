@@ -14,8 +14,8 @@ import { useApi } from '@/hooks/useApi'
 
 export default function ClientApplicationPage() {
   const router = useRouter()
-  const { user, token, isLoading } = useAuth()
-  const { users, isConnected, lastUpdated } = useLiveOnlineUsers(token)
+  const { user, isLoading } = useAuth()
+  const { users, isConnected, lastUpdated } = useLiveOnlineUsers()
   const [weatherCode, setWeatherCode] = useState<number | null>(null)
   const api = useApi()
 

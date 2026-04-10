@@ -8,7 +8,6 @@ export class ApiService {
     this.baseURL = "/api";
     this.defaultHeaders = {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
     };
   }
 
@@ -64,6 +63,7 @@ export class ApiService {
     const res = await fetch(url, {
       method: "GET",
       headers: this.defaultHeaders,
+      credentials: "include",
     });
     return this.processResponse<T>(
       res,
@@ -82,6 +82,7 @@ export class ApiService {
     const res = await fetch(url, {
       method: "POST",
       headers: this.defaultHeaders,
+      credentials: "include",
       body: JSON.stringify(data),
     });
     return this.processResponse<T>(
@@ -101,6 +102,7 @@ export class ApiService {
     const res = await fetch(url, {
       method: "PUT",
       headers: this.defaultHeaders,
+      credentials: "include",
       body: JSON.stringify(data),
     });
     return this.processResponse<T>(
@@ -119,6 +121,7 @@ export class ApiService {
     const res = await fetch(url, {
       method: "DELETE",
       headers: this.defaultHeaders,
+      credentials: "include",
     });
     return this.processResponse<T>(
       res,

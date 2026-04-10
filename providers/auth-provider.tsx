@@ -28,7 +28,6 @@ type RegisterInput = {
 
 type AuthContextValue = {
   user: AuthUser | null
-  token: string | null
   isAuthenticated: boolean
   isLoading: boolean
   login: (input: LoginInput) => Promise<AuthUser>
@@ -36,8 +35,6 @@ type AuthContextValue = {
   logout: () => Promise<void>
 }
 
-const AUTH_TOKEN_KEY = 'auth_token'
-const AUTH_USER_KEY = 'auth_user'
 const AUTH_API_BASE_URL = getApiDomain()
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
@@ -66,52 +63,55 @@ function buildAuthUrl(path: string): string {
   return `/api${path}`
 }
 
-function readAuthorizationHeader(headers: Headers): string | null {
-  return (
-    headers.get('set-authorization') ??
-    headers.get('Set-Authorization') ??
-    headers.get('authorization') ??
-    headers.get('Authorization')
-  )
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    try {
-      const storedToken = globalThis.localStorage.getItem(AUTH_TOKEN_KEY)
-      const storedUser = globalThis.localStorage.getItem(AUTH_USER_KEY)
+    let ignore = false
 
-      if (storedToken) {
-        setToken(storedToken)
-      }
+    const loadCurrentUser = async () => {
+      try {
+        const response = await fetch(buildAuthUrl('/auth/me'), {
+          method: 'GET',
+          credentials: 'include',
+        })
 
-      if (storedUser) {
-        setUser(JSON.parse(storedUser) as AuthUser)
+        if (!response.ok) {
+          if (!ignore) {
+            setUser(null)
+          }
+          return
+        }
+
+        const nextUser = (await response.json()) as AuthUser
+        if (!ignore) {
+          setUser(nextUser)
+        }
+      } catch {
+        if (!ignore) {
+          setUser(null)
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoading(false)
+        }
       }
-    } catch {
-      setToken(null)
-      setUser(null)
-    } finally {
-      setIsLoading(false)
+    }
+
+    void loadCurrentUser()
+
+    return () => {
+      ignore = true
     }
   }, [])
 
-  const persistSession = useCallback((nextToken: string, nextUser: AuthUser) => {
-    setToken(nextToken)
+  const persistSession = useCallback((nextUser: AuthUser) => {
     setUser(nextUser)
-    globalThis.localStorage.setItem(AUTH_TOKEN_KEY, nextToken)
-    globalThis.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(nextUser))
   }, [])
 
   const clearSession = useCallback(() => {
-    setToken(null)
     setUser(null)
-    globalThis.localStorage.removeItem(AUTH_TOKEN_KEY)
-    globalThis.localStorage.removeItem(AUTH_USER_KEY)
   }, [])
 
   const login = useCallback(
@@ -121,6 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(input),
       })
 
@@ -129,12 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const payload = (await res.json()) as AuthUser
-      const nextToken = readAuthorizationHeader(res.headers)
-      if (!nextToken) {
-        throw new Error('Missing authorization token in login response')
-      }
-
-      persistSession(nextToken, payload)
+      persistSession(payload)
       return payload
     },
     [persistSession],
@@ -147,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(input),
       })
 
@@ -155,45 +152,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const payload = (await res.json()) as AuthUser
-      const nextToken = readAuthorizationHeader(res.headers)
-      if (!nextToken) {
-        throw new Error('Missing authorization token in register response')
-      }
-
-      persistSession(nextToken, payload)
+      persistSession(payload)
       return payload
     },
     [persistSession],
   )
 
   const logout = useCallback(async () => {
-    const activeToken = token
-    clearSession()
-
-    if (!activeToken) {
-      return
+    try {
+      await fetch(buildAuthUrl('/auth/logout'), {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } finally {
+      clearSession()
     }
-
-    await fetch(buildAuthUrl('/auth/logout'), {
-      method: 'POST',
-      headers: {
-        token: activeToken,
-        Authorization: `Bearer ${activeToken}`,
-      },
-    })
-  }, [clearSession, token])
+  }, [clearSession])
 
   const value = useMemo<AuthContextValue>(() => {
     return {
       user,
-      token,
-      isAuthenticated: Boolean(token),
+      isAuthenticated: Boolean(user),
       isLoading,
       login,
       register,
       logout,
     }
-  }, [isLoading, login, logout, register, token, user])
+  }, [isLoading, login, logout, register, user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
