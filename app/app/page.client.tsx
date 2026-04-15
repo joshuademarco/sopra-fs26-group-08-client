@@ -1,37 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 import { AppSidebar } from '@/components/app-sidebar'
 import { LiveOnlineMap } from '@/components/live-online-map'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { WeatherIcon } from '@/components/weather-icon'
-import { useAuth } from '@/hooks/useAuth'
 import { useLiveOnlineUsers } from '@/hooks/useLiveOnlineUsers'
-import { useRouter } from 'next/navigation'
-import { useApi } from '@/hooks/useApi'
 
-export default function ClientApplicationPage() {
-  const router = useRouter()
-  const { user, isLoading } = useAuth()
+export default function ClientApplicationPage({ weatherCode }: { weatherCode: number | null }) {
   const { users, isConnected, lastUpdated } = useLiveOnlineUsers()
-  const [weatherCode, setWeatherCode] = useState<number | null>(null)
-  const api = useApi()
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.replace('/')
-    }
-  }, [isLoading, router, user])
-
-  useEffect(() => {
-    api.get<number>("/weather").then(setWeatherCode)
-  }, [api])
-
-  if (!user) {
-    return null
-  }
 
   return (
     <SidebarProvider>
@@ -48,7 +25,8 @@ export default function ClientApplicationPage() {
         </header>
         <div className='flex flex-1 flex-col gap-6 p-4 pt-0'>
           <div className='grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.75fr)]'>
-            <LiveOnlineMap users={users} isConnected={isConnected} lastUpdated={lastUpdated} /><WeatherIcon weatherCode={weatherCode} />
+            <LiveOnlineMap users={users} isConnected={isConnected} lastUpdated={lastUpdated} />
+            <WeatherIcon weatherCode={weatherCode} />
           </div>
         </div>
       </SidebarInset>
