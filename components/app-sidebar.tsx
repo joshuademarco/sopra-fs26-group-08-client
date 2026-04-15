@@ -16,6 +16,7 @@ import {
 import { useAuth } from '@/hooks/useAuth'
 import { Award, Home, PersonStanding, SendIcon, Settings, ShieldHalf, StickyNote, Sword } from 'lucide-react'
 import { NavUser } from './nav-user'
+import { usePathname } from 'next/navigation'
 
 const data = {
   user: {
@@ -31,39 +32,39 @@ const data = {
     },
     {
       title: 'Habits/Todos',
-      url: '#',
+      url: '/habits',
       icon: <StickyNote />,
     },
     {
       title: 'Character',
-      url: '#',
+      url: '/character',
       icon: <PersonStanding />,
     },
     {
       title: 'Groups',
-      url: '#',
+      url: '/groups',
       icon: <ShieldHalf />,
     },
     {
       title: 'Boss Raid',
-      url: '#',
+      url: '/boss-raid',
       icon: <Sword />,
     },
     {
       title: 'Leaderboard',
-      url: '#',
+      url: '/leaderboard',
       icon: <Award />,
     },
   ],
   navSecondary: [
     {
       title: 'Settings',
-      url: '#',
+      url: '/settings',
       icon: <Settings />,
     },
     {
       title: 'Feedback',
-      url: '#',
+      url: '/feedback',
       icon: <SendIcon />,
     },
   ],
@@ -71,6 +72,13 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user: authUser } = useAuth()
+  const pathname = usePathname()
+
+  const hiddenPaths = ['/', '/app', '/login', '/register' ]
+  if (hiddenPaths.includes(pathname)) {
+    return null
+  }
+
   const displayedUser = authUser
     ? {
         name: authUser.username,

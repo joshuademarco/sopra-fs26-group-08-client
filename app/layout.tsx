@@ -4,6 +4,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 
 import { Providers } from '@/providers'
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { AppSidebar } from '@/components/app-sidebar'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -21,9 +23,24 @@ export default function RootLayout({
     <html lang='en' className={cn('font-inter', inter.variable)} suppressHydrationWarning>
       <body className='bg-background min-h-screen antialiased'>
         <Providers>
-          <div className='flex min-h-screen flex-col'>
-            <main className='grow'>{children}</main>
-          </div>
+          
+          <SidebarProvider>
+            
+            <AppSidebar />
+            
+            <div className='flex min-h-screen flex-col w-full'>
+              
+              <header className='sticky top-0 z-10 flex h-14 shrink-0 items-center px-4'>
+
+                <SidebarTrigger className='-ml-1' />
+
+              </header> 
+              
+              <main className='grow p-4'>{children}</main>
+            </div>
+            
+          </SidebarProvider>
+          
         </Providers>
       </body>
     </html>
