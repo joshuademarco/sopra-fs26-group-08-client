@@ -75,8 +75,8 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@michaelCHer]** | [15.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/e103e547d2241276ae01c9fa1f33c69d65693dbb] | [Implemented the current weahter display of our API] | [The current weather has an influence on the XP multiplier so it is important that the user knows which conditions are applied now] |
+|                    | [17.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/80d7b98a234c75af3bff8036fb59bd3d4c09407c] | [Implemented RaidBoss UI ] | [The RaidBoss feature is on of our key features so it is improtant that it has an UI] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
