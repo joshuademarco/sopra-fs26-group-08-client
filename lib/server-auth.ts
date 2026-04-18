@@ -1,15 +1,14 @@
 import 'server-only'
 
-
-import { cookies } from 'next/headers'
-import { getApiDomain } from '@/utils/domain'
-import { redirect } from 'next/navigation'
 import type { AuthUser } from '@/types/auth'
+import { getApiDomain } from '@/utils/domain'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 const AUTH_TOKEN_COOKIE = 'token'
 
 function getAuthMeUrl(): string {
-  return new URL('/auth/me', getApiDomain()).toString()
+  return new URL('/api/auth/me', getApiDomain()).toString()
 }
 
 async function verifySessionServerSide(token: string): Promise<AuthUser | null> {
