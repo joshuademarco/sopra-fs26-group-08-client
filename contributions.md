@@ -67,18 +67,21 @@ reason).
 
 ---
 
-## Contributions Week 3 - [Begin Date] to [End Date]
+## Contributions Week 3 - [13.04.2026] to [19.04.2026]
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@joshuademarco]** | [18.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/d70746b] | [Implemented dashboard page navigation (#52).] | [in-app navigation pattern using callbacks in render.] |
+|                    | [19.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/ab47750] | [Implemented Google Calendar integration on the backend.] | [Enables scheduling habits and tasks around the user's calendar.] |
+|                    | [19.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/4dadaf6 https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/0bfce16 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/875c484] | [Reviewed and merged feature PRs (#57, #58, #101).] | [Keeps the main branches stable and unblocks teammates.] |
+|                    | [17.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/8761dd8] | [Removed the broken `dockerize.yml` workflow.] | [Cleans up CI noise.] |
+|                    | [19.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/176f19a https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/233d258 https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/15d2ee2 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/f35db63] | [Resolved merge conflicts and fixed integration issues across feature branches.] | [Prevents broken merges from reaching main.] |
+| **[@yappayappay]** | [14.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/368311b38184c406583045d18cb6b2601eaff67b] | [backend implementation of task, habit with create, complete and delete] | [core functionality that allows a user to e.g. create a new habit, assign to a category, define frequency etc. - important as it is one of the key features of our web app] |
+|                    | [17.04.2002]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/036770c3e37880a6f7f157f0aeeaf985ef65deff] | [added character and HabitCompletionEvent classes, corresponding repos and DTOS. had to adjust some task logic] | [now it assigns a habit to the character not to the user, ensures clear structure and allows for habit progress tracking] |
 | **[@michaelCHer]** | [15.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/e103e547d2241276ae01c9fa1f33c69d65693dbb] | [Implemented the current weahter display of our API] | [The current weather has an influence on the XP multiplier so it is important that the user knows which conditions are applied now] |
 |                    | [17.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/80d7b98a234c75af3bff8036fb59bd3d4c09407c] | [Implemented RaidBoss UI ] | [The RaidBoss feature is on of our key features so it is improtant that it has an UI] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@alemicap]** | [17.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/99/changes/67fcbfd9cabff759a67f1850647e69c5d5d8a6b6] | [Implemented Character Class] | [important so that stats and other chracter properties get updated by for example ticking off habits] |
+|                    | [19.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/6a17212e056fb763ed2841a75377e232edcfd726 https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/ac84adc392b1206595b98fb7888e83e8397ff7c9 https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/b48ad8a64d2fd02e557f7a30acc8d40cf06ef897] | [Implemented Group Class + resolved merge conflicts] | [important so that users can create and join groups and use all the group features] |
 
 ---
 
@@ -123,4 +126,4 @@ reason).
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is
