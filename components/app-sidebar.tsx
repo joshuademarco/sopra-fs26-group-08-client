@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { useAuth } from '@/hooks/useAuth'
-import { Award, Home, PersonStanding, SendIcon, Settings, ShieldHalf, StickyNote, Sword } from 'lucide-react'
+import { Award, Home, PersonStanding, Settings, ShieldHalf, StickyNote, Sword } from 'lucide-react'
 import { NavUser } from './nav-user'
 import { usePathname } from 'next/navigation'
 
@@ -27,50 +27,48 @@ const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '/app',
+      key: 'dashboard',
       icon: <Home />,
     },
     {
       title: 'Habits/Todos',
-      url: '/habits',
+      key: 'habits',
       icon: <StickyNote />,
     },
     {
       title: 'Character',
-      url: '/character',
+      key: 'character',
       icon: <PersonStanding />,
     },
     {
       title: 'Groups',
-      url: '/groups',
+      key: 'groups',
       icon: <ShieldHalf />,
     },
     {
       title: 'Boss Raid',
-      url: '/boss-raid',
+      key: 'boss-raids',
       icon: <Sword />,
     },
     {
       title: 'Leaderboard',
-      url: '/leaderboard',
+      key: 'leaderboard',
       icon: <Award />,
     },
   ],
   navSecondary: [
     {
       title: 'Settings',
-      url: '/settings',
+      key: 'settings',
       icon: <Settings />,
-    },
-    {
-      title: 'Feedback',
-      url: '/feedback',
-      icon: <SendIcon />,
     },
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  setCurrentPage,
+  ...props
+}: { setCurrentPage: React.Dispatch<React.SetStateAction<string>> } & React.ComponentProps<typeof Sidebar>) {
   const { user: authUser } = useAuth()
   const pathname = usePathname()
 
@@ -106,8 +104,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className='mt-auto' />
+        <NavMain callback={setCurrentPage} items={data.navMain} />
+        <NavSecondary callback={setCurrentPage} items={data.navSecondary} className='mt-auto' />
         <NavUser user={displayedUser} />
       </SidebarContent>
     </Sidebar>

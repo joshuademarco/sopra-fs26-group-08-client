@@ -1,6 +1,5 @@
 'use client'
 
-import { getApiDomain } from '@/utils/domain'
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
 type AuthUser = {
@@ -35,7 +34,6 @@ type AuthContextValue = {
   logout: () => Promise<void>
 }
 
-const AUTH_API_BASE_URL = getApiDomain()
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 function readReason(payload: unknown): string | null {

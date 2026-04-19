@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/sidebar"
 
 export function NavSecondary({
+  callback,
   items,
   ...props
 }: {
+  callback: React.Dispatch<React.SetStateAction<string>>
   items: {
     title: string
-    url: string
+    key: string
     icon: React.ReactNode
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
@@ -27,11 +29,11 @@ export function NavSecondary({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild size="sm">
-                <Link href={item.url}>
+              <SidebarMenuButton onClick={() => callback(item.key)} asChild size="sm">
+                <div key={item.title}>
                   {item.icon}
                   <span>{item.title}</span>
-                </Link>
+                </ div>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
