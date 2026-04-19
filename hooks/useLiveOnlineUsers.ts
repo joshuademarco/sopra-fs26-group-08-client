@@ -16,7 +16,7 @@ function toOnlineUsers(users: LiveUser[]) {
 
 function parseSnapshot(raw: string): LiveUser[] {
   const payload = JSON.parse(raw) as PresenceSnapshot
-  return Array.isArray(payload) ? payload : payload.users ?? []
+  return Array.isArray(payload) ? payload : (payload.users ?? [])
 }
 
 export function useLiveOnlineUsers() {
@@ -26,14 +26,14 @@ export function useLiveOnlineUsers() {
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
-  const socketUrl = useMemo(() => new URL('/ws/presence', getWebSocketDomain()).toString(), [])
+  const socketUrl = useMemo(() => new URL('/api/ws/presence', getWebSocketDomain()).toString(), [])
 
   useEffect(() => {
     let ignore = false
 
     const loadInitialUsers = async () => {
       try {
-        const allUsers = await api.get<LiveUser[]>("/users")
+        const allUsers = await api.get<LiveUser[]>('/users')
         if (ignore) {
           return
         }
@@ -45,7 +45,7 @@ export function useLiveOnlineUsers() {
           return
         }
 
-        setError(fetchError instanceof Error ? fetchError.message : "Unable to load online users")
+        setError(fetchError instanceof Error ? fetchError.message : 'Unable to load online users')
       }
     }
 
