@@ -16,7 +16,6 @@ import {
 import { useAuth } from '@/hooks/useAuth'
 import { Award, Home, PersonStanding, Settings, ShieldHalf, StickyNote, Sword } from 'lucide-react'
 import { NavUser } from './nav-user'
-import { usePathname } from 'next/navigation'
 
 const data = {
   user: {
@@ -70,13 +69,6 @@ export function AppSidebar({
   ...props
 }: { setCurrentPage: React.Dispatch<React.SetStateAction<string>> } & React.ComponentProps<typeof Sidebar>) {
   const { user: authUser } = useAuth()
-  const pathname = usePathname()
-
-  const hiddenPaths = ['/', '/app', '/login', '/register' ]
-  if (hiddenPaths.includes(pathname)) {
-    return null
-  }
-
   const displayedUser = authUser
     ? {
         name: authUser.username,
