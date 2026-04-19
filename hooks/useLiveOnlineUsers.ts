@@ -26,7 +26,7 @@ export function useLiveOnlineUsers() {
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
-  const socketUrl = useMemo(() => new URL('/ws/presence', getWebSocketDomain()).toString(), [])
+  const socketUrl = useMemo(() => new URL('/api/ws/presence', getWebSocketDomain()).toString(), [])
 
   useEffect(() => {
     let ignore = false

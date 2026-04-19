@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: getApiDomain() + '/:path*',
+        destination: getApiDomain() + '/api/:path*',
       },
     ]
   },
