@@ -78,7 +78,7 @@ reason).
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@alemicap]** | [17.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/99/changes/67fcbfd9cabff759a67f1850647e69c5d5d8a6b6] | [Implemented Character Class] | [important so that stats and other chracter properties get updated by for example ticking off habits] |
-|                    | [19.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102] | [Implemented Group Class + resolved merge conflicts] | [important so that users can create and join groups and use all the group features] |
+|                    | [19.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/6a17212e056fb763ed2841a75377e232edcfd726 https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/ac84adc392b1206595b98fb7888e83e8397ff7c9 https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/b48ad8a64d2fd02e557f7a30acc8d40cf06ef897] | [Implemented Group Class + resolved merge conflicts] | [important so that users can create and join groups and use all the group features] |
 
 ---
 
