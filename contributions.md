@@ -67,12 +67,15 @@ reason).
 
 ---
 
-## Contributions Week 3 - [Begin Date] to [End Date]
+## Contributions Week 3 - [13.04.2026] to [19.04.2026]
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@joshuademarco]** | [18.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/d70746b] | [Implemented dashboard page navigation (#52).] | [in-app navigation pattern using callbacks in render.] |
+|                    | [19.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/ab47750] | [Implemented Google Calendar integration on the backend.] | [Enables scheduling habits and tasks around the user's calendar.] |
+|                    | [19.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/4dadaf6 https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/0bfce16 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/875c484] | [Reviewed and merged feature PRs (#57, #58, #101).] | [Keeps the main branches stable and unblocks teammates.] |
+|                    | [17.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/8761dd8] | [Removed the broken `dockerize.yml` workflow.] | [Cleans up CI noise.] |
+|                    | [19.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/176f19a https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/233d258 https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/15d2ee2 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/f35db63] | [Resolved merge conflicts and fixed integration issues across feature branches.] | [Prevents broken merges from reaching main.] |
 | **[@yappayappay]** | [14.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/368311b38184c406583045d18cb6b2601eaff67b] | [backend implementation of task, habit with create, complete and delete] | [core functionality that allows a user to e.g. create a new habit, assign to a category, define frequency etc. - important as it is one of the key features of our web app] |
 |                    | [17.04.2002]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/036770c3e37880a6f7f157f0aeeaf985ef65deff] | [added character and HabitCompletionEvent classes, corresponding repos and DTOS. had to adjust some task logic] | [now it assigns a habit to the character not to the user, ensures clear structure and allows for habit progress tracking] |
 | **[@michaelCHer]** | [15.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/e103e547d2241276ae01c9fa1f33c69d65693dbb] | [Implemented the current weahter display of our API] | [The current weather has an influence on the XP multiplier so it is important that the user knows which conditions are applied now] |
@@ -123,4 +126,4 @@ reason).
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is
