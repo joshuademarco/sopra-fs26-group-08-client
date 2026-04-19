@@ -73,8 +73,8 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@yappayappay]** | [14.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/368311b38184c406583045d18cb6b2601eaff67b] | [backend implementation of task, habit with create, complete and delete] | [core functionality that allows a user to e.g. create a new habit, assign to a category, define frequency etc. - important as it is one of the key features of our web app] |
+|                    | [17.04.2002]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/036770c3e37880a6f7f157f0aeeaf985ef65deff] | [added character and HabitCompletionEvent classes, corresponding repos and DTOS. had to adjust some task logic] | [now it assigns a habit to the character not to the user, ensures clear structure and allows for habit progress tracking] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@alemicap]** | [17.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/99/changes/67fcbfd9cabff759a67f1850647e69c5d5d8a6b6] | [Implemented Character Class] | [important so that stats and other chracter properties get updated by for example ticking off habits] |
