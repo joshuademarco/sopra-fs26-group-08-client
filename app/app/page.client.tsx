@@ -4,7 +4,11 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { useState } from 'react'
+import BossRaidPage from './boss-raid'
+import CharacterPage from './character'
 import Dashboard from './dashboard'
+import GroupsPage from './groups'
+import LeaderboardPage from './leaderboard'
 
 export default function ClientApplicationPage({ weatherCode }: { weatherCode: number | null }) {
   const [currentPage, setCurrentPage] = useState('dashboard')
@@ -23,11 +27,16 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           </div>
         </header>
         <div className='flex flex-1 flex-col gap-6 p-4 pt-0'>
-          {currentPage === 'dashboard' && (
-            <Dashboard weatherCode={weatherCode} />
-          )}
+          {currentPage === 'dashboard' && <Dashboard weatherCode={weatherCode} />}
 
-          {currentPage === 'character' && <div>Character Page</div>}
+          {currentPage === 'character' && <CharacterPage />}
+
+          {currentPage === 'groups' && <GroupsPage />}
+
+          {currentPage === 'boss-raids' && <BossRaidPage />}
+
+          {currentPage === 'leaderboard' && <LeaderboardPage />}
+          
         </div>
       </SidebarInset>
     </SidebarProvider>
