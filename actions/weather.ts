@@ -4,14 +4,16 @@ import { getApiDomain } from '@/utils/domain'
 import { unstable_cache } from 'next/cache'
 
 export const getWeather = unstable_cache(
-  async () => {
-    const res = await fetch(`${getApiDomain()}/api/weather`)
-
-    if (!res.ok) throw new Error('Failed to fetch weather')
-
-    const weatherCode = await res.json()
-    console.log(weatherCode)
-    return parseInt(weatherCode.weatherCode)
+  async (): Promise<number | null> => {
+    try {
+      const res = await fetch(`${getApiDomain()}/api/weather`)
+      if (!res.ok) return null
+      const weatherCode = await res.json()
+      console.log(weatherCode)
+      return weatherCode as number
+    } catch {
+      return null
+    }
   },
   ['weather'],
   { revalidate: 3600 },

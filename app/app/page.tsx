@@ -5,8 +5,7 @@ import ClientApplicationPage from './page.client'
 export default async function DashboardPage() {
   await requireServerAuth('/')
   
-  const weatherCode = await getWeather()
-  console.log(weatherCode)
+  const weatherCode = await getWeather().catch(() => null)
 
   return <ClientApplicationPage weatherCode={weatherCode} />
 }
