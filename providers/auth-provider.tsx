@@ -12,6 +12,7 @@ type AuthUser = {
   strength?: number | null
   intelligence?: number | null
   resilience?: number | null
+  token?: string
 }
 
 type LoginInput = {
@@ -106,10 +107,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const persistSession = useCallback((nextUser: AuthUser) => {
     setUser(nextUser)
+    if (nextUser.token) {
+      localStorage.setItem('token', nextUser.token)
+    }
   }, [])
 
   const clearSession = useCallback(() => {
     setUser(null)
+    localStorage.removeItem('token')
   }, [])
 
   const login = useCallback(
