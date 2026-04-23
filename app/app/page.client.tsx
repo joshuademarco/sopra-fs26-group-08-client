@@ -8,6 +8,7 @@ import BossRaidPage from './boss-raid'
 import CharacterPage from './character'
 import Dashboard from './dashboard'
 import GroupsPage from './groups'
+import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
 
 export default function ClientApplicationPage({ weatherCode }: { weatherCode: number | null }) {
@@ -28,6 +29,8 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
         </header>
         <div className='flex flex-1 flex-col gap-6 p-4 pt-0'>
           {currentPage === 'dashboard' && <Dashboard weatherCode={weatherCode} />}
+
+          {currentPage === 'habits' && <HabitsPage />}
 
           {currentPage === 'character' && <CharacterPage />}
 
