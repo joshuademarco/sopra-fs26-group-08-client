@@ -44,7 +44,7 @@ export default function LeaderboardPage() {
   if (loading) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold text-primary">Leaderboard</h1>
+        <h1 className="text-2xl font-bold text-white">Leaderboard</h1>
         <p className="text-primary">Loading...</p>
       </div>
     );
@@ -53,7 +53,7 @@ export default function LeaderboardPage() {
   if (error) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold text-primary">Leaderboard</h1>
+        <h1 className="text-2xl font-bold text-white">Leaderboard</h1>
         <p className="text-red-500">Error: {error}</p>
       </div>
     );
@@ -61,7 +61,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4 text-primary">Leaderboard</h1>
+      <h2 className="font-bold mb-4 text-white">Leaderboard</h2>
       <div className="space-y-2">
         {displayLeaderboard.map((entry, index) => {
           const actualRank = fullLeaderboard.findIndex(e => e.username === entry.username) + 1;
