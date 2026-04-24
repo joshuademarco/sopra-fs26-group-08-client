@@ -42,7 +42,7 @@ reason).
 | **[@michaelCHer]** | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/89cfbd4de10ce194c0c33774a0e74e4268530808] | [Implemented register UI] | [A potential user expects a nice register UI] |
 |                    | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/24fb65c824408ece4572f3bdba24206bf1174841] | [Implemented Login UI and link between Login and Register Pages] | [A potential user expects a nice login UI] |
 | **[@alemicap]** | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/4dbde4816469282c85f87d639cc40c56fb35c88f] | [implementation of character stats (strength, intelligence and resilience)] | [stats of character which get leveled up] |
-|                    | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/2f995b8de42fb4e264838c24fe87990d0a1bb3b3] | [implementation of sidebar on application page] | [important for navigation to different tabs] |
+|                    | [27.03.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/2f995b8de42fb4e264838c24fe87990d0a1bb3b3] | [implementation of sidebar on application page #52] | [important for navigation to different tabs] |
 
 ---
 
@@ -80,12 +80,12 @@ reason).
 |                    | [17.04.2002]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/036770c3e37880a6f7f157f0aeeaf985ef65deff] | [added character and HabitCompletionEvent classes, corresponding repos and DTOS. had to adjust some task logic] | [now it assigns a habit to the character not to the user, ensures clear structure and allows for habit progress tracking] |
 | **[@michaelCHer]** | [15.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/e103e547d2241276ae01c9fa1f33c69d65693dbb] | [Implemented the current weahter display of our API] | [The current weather has an influence on the XP multiplier so it is important that the user knows which conditions are applied now] |
 |                    | [17.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/80d7b98a234c75af3bff8036fb59bd3d4c09407c] | [Implemented RaidBoss UI ] | [The RaidBoss feature is on of our key features so it is improtant that it has an UI] |
-| **[@alemicap]** | [17.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/99/changes/67fcbfd9cabff759a67f1850647e69c5d5d8a6b6] | [Implemented Character Class] | [important so that stats and other chracter properties get updated by for example ticking off habits] |
-|                    | [19.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/6a17212e056fb763ed2841a75377e232edcfd726 https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/ac84adc392b1206595b98fb7888e83e8397ff7c9 https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/b48ad8a64d2fd02e557f7a30acc8d40cf06ef897] | [Implemented Group Class + resolved merge conflicts] | [important so that users can create and join groups and use all the group features] |
+| **[@alemicap]** | [17.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/99/changes/67fcbfd9cabff759a67f1850647e69c5d5d8a6b6] | [Implemented Character Class ] | [important so that stats and other chracter properties get updated by for example ticking off habits] |
+|                    | [19.04]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/6a17212e056fb763ed2841a75377e232edcfd726 https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/ac84adc392b1206595b98fb7888e83e8397ff7c9 https://github.com/joshuademarco/sopra-fs26-group-08-server/pull/102/changes/b48ad8a64d2fd02e557f7a30acc8d40cf06ef897] | [Implemented Group Class + resolved merge conflicts # 100] | [important so that users can create and join groups and use all the group features] |
 
 ---
 
-## Contributions Week 4 - [Begin Date] to [End Date]
+## Contributions Week 4 - [20.04.2026] to [26.04.2026]
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
@@ -95,8 +95,8 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@alemicap]** | [22/23/24.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/a29aef294af979a4e34b0bdf63482d630e2a08d9 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/5c09f0a6e61080eeac2ccb5545473f4c97c70447 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/f74da594ff003707685b2a22747377601ac4b633 ] | [frontend and backend groups implementation as well as many fixes regarding previous group implementation #39 #60 # 110] | [important for users to create and join groups to participate together in boss raids] |
+|                    | [23.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/d455ef784b19d57f3de6cc10f902785eca150d27 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/81965cd8990fe9eee556b043264fc77958c27c88] | [front and backend leaderboard implementation #22 and #4] | [logged-in users want to see a global leaderboard sorted by the total xp gained per user to compare themselves with others to get motivation] |
 
 ---
 
@@ -126,4 +126,4 @@ reason).
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
