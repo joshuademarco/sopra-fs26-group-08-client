@@ -153,6 +153,8 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
       description: `A fearsome boss with ${raid.maxHealth} HP appeared. Only with teamwork you can defeat the boss!`,
       hpPercent,
       imageUrl: MONSTER_IMAGE,
+      hp: raid.health,
+      maxHp: raid.maxHealth,
     },
   }
 }

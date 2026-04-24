@@ -3,7 +3,9 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { motion, useAnimate } from 'framer-motion'
 import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
 import { Badge } from './ui/badge'
 
 export type RaidState = 'lobby' | 'active' | 'defeat' | 'victory'
@@ -28,6 +30,8 @@ export interface Monster {
   description: string
   hpPercent: number
   imageUrl: string
+  hp?: number
+  maxHp?: number
 }
 
 export interface BossRaid {
@@ -51,16 +55,54 @@ const STATUS_STYLES: Record<MemberStatus, string> = {
 }
 
 function MonsterPanel({ monster }: { monster: Monster }) {
+  const [scope, animate] = useAnimate()
+  const prevHpRef = useRef<number | undefined>(undefined)
+  const [damage, setDamage] = useState<number | null>(null)
+  const [hitKey, setHitKey] = useState(0)
+
+  useEffect(() => {
+    if (monster.hp === undefined) return
+
+    const prevHp = prevHpRef.current
+    prevHpRef.current = monster.hp
+
+    if (prevHp === undefined || monster.hp >= prevHp) return
+
+    setDamage(prevHp - monster.hp)
+    setHitKey((k) => k + 1)
+
+    animate(scope.current, { x: [-10, 10, -7, 7, -4, 4, 0] }, { duration: 0.45 })
+    animate('.hit-overlay', { opacity: [0.75, 0] }, { duration: 0.4 })
+  }, [monster.hp])
+
   return (
-    <div className='flex flex-col items-center gap-3 rounded-lg'>
+    <div ref={scope} className='flex flex-col items-center gap-3 rounded-lg'>
       <div className='flex w-full items-center justify-between gap-2'>
         <span className='font-semibold text-sm'>{monster.name}</span>
         <Badge variant={'destructive'}>LVL {monster.level}</Badge>
       </div>
       <p className='w-full text-xs text-muted-foreground'>{monster.description}</p>
-      <div className='flex h-24 w-24 items-center justify-center rounded bg-muted text-4xl select-none'>
-        <Image src={monster.imageUrl} alt={monster.name} width={96} height={96} />
+
+      <div className='relative'>
+        <div className='relative flex h-36 w-36 items-center justify-center overflow-hidden rounded bg-muted text-4xl select-none'>
+          <Image src={monster.imageUrl} alt={monster.name} width={144} height={144} />
+          <div className='hit-overlay pointer-events-none absolute inset-0 rounded bg-red-500 opacity-0' />
+        </div>
+
+        {damage !== null && (
+          <motion.div
+            key={hitKey}
+            className='pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 select-none whitespace-nowrap text-xl font-bold text-red-500'
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 0, y: -40 }}
+            transition={{ duration: 0.75, ease: 'easeOut' }}
+            onAnimationComplete={() => setDamage(null)}
+          >
+            -{damage}
+          </motion.div>
+        )}
       </div>
+
       <Progress value={monster.hpPercent} className='h-2 w-full' innerClassName='bg-green-500' />
     </div>
   )
@@ -173,8 +215,8 @@ function DefeatCard({ raid }: { raid: BossRaid }) {
 
           <div className='flex flex-col items-center gap-3 rounded-lg bg-muted/40 p-4 min-w-45'>
             <div className='text-2xl font-bold text-muted-foreground italic'>Bwahahaha</div>
-            <div className='flex h-24 w-24 items-center justify-center rounded bg-muted text-4xl select-none'>
-              <Image src={raid.monster.imageUrl} alt={raid.monster.name} width={96} height={96} />
+            <div className='flex h-36 w-36 items-center justify-center rounded bg-muted text-4xl select-none'>
+              <Image src={raid.monster.imageUrl} alt={raid.monster.name} width={144} height={144} />
             </div>
             <Progress value={raid.monster.hpPercent} className='h-2 w-full' innerClassName='bg-green-500' />
           </div>
@@ -221,8 +263,8 @@ function VictoryCard({ raid }: { raid: BossRaid }) {
 
           <div className='flex flex-col items-center gap-3 rounded-lg bg-muted/40 p-4 min-w-45'>
             <div className='text-2xl font-bold text-muted-foreground italic'>Argh!</div>
-            <div className='flex h-24 w-24 items-center justify-center rounded bg-muted text-4xl select-none opacity-50'>
-              <Image src='/characters/bosses/innereschweinehund.png' alt={'Innere Scheinehund'} width={96} height={96} />
+            <div className='flex h-36 w-36 items-center justify-center rounded bg-muted text-4xl select-none opacity-50'>
+              <Image src='/characters/bosses/innereschweinehund.png' alt={'Innere Scheinehund'} width={144} height={144} />
             </div>
             <Progress value={raid.monster.hpPercent} className='h-2 w-full' innerClassName='bg-green-500' />
           </div>
