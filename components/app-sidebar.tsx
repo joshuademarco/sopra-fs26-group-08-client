@@ -67,7 +67,7 @@ const data = {
 export function AppSidebar({
   setCurrentPage,
   ...props
-}: { setCurrentPage: React.Dispatch<React.SetStateAction<string>> } & React.ComponentProps<typeof Sidebar>) {
+}: { setCurrentPage: (page: string) => void } & React.ComponentProps<typeof Sidebar>) {
   const { user: authUser } = useAuth()
   const displayedUser = authUser
     ? {
