@@ -1,0 +1,30 @@
+{
+  "character": {
+    "id": "f6f195a7-0860-4bdd-94b1-eea7940bed74",
+    "name": "A 25 years old guy with black hair, black sunglasses, green addidas jacket and white tshirt. long black wide pants",
+    "prompt": "A 25 years old guy with black hair, black sunglasses, green addidas jacket and white tshirt. long black wide pants",
+    "size": {
+      "width": 68,
+      "height": 68
+    },
+    "template_id": "mannequin",
+    "directions": 8,
+    "view": "side",
+    "created_at": "2026-04-24T10:45:22.217013+00:00"
+  },
+  "frames": {
+    "rotations": {
+      "south": "rotations/south.png",
+      "south-east": "rotations/south-east.png",
+      "east": "rotations/east.png",
+      "north-east": "rotations/north-east.png",
+      "north": "rotations/north.png",
+      "north-west": "rotations/north-west.png",
+      "west": "rotations/west.png",
+      "south-west": "rotations/south-west.png"
+    },
+    "animations": {}
+  },
+  "export_version": "2.0",
+  "export_date": "2026-04-24T11:18:20.111410"
+}
