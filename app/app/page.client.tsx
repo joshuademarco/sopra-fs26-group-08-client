@@ -3,6 +3,7 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { WeatherIcon } from '@/components/weather-icon'
 import { useState } from 'react'
 import BossRaidPage from './boss-raid'
 import CharacterPage from './character'
@@ -27,7 +28,13 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
             </div>
           </div>
         </header>
-        <div className='flex flex-1 flex-col gap-6 p-4 pt-0'>
+        <div className='flex w-full flex-col'>
+          <div className='flex p-4 pb-0'>
+            <div className='ml-auto'>
+              {weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}
+            </div>
+          </div>
+          <div className='flex flex-1 flex-col gap-6 p-4 pt-0'>
           {currentPage === 'dashboard' && <Dashboard weatherCode={weatherCode} />}
 
           {currentPage === 'habits' && <HabitsPage />}
@@ -39,7 +46,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           {currentPage === 'boss-raids' && <BossRaidPage />}
 
           {currentPage === 'leaderboard' && <LeaderboardPage />}
-          
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
