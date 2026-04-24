@@ -6,6 +6,37 @@ import type { LiveUser } from '@/types/liveUser'
 import { MapPinned, Users } from 'lucide-react'
 import Image from 'next/image'
 import { useMemo } from 'react'
+import { Badge } from './ui/badge'
+
+function UserMarker({ user }: { user: LiveUser }) {
+  if (user.characterType) {
+    return (
+      <div className='relative flex flex-col items-center gap-1'>
+        <Image
+          src={`/characters/${user.characterType}/rotations/south.png`}
+          alt={user.username}
+          width={80}
+          height={80}
+          className='[image-rendering:pixelated]'
+        />
+        <Badge variant='secondary' className='px-1 py-0 text-[10px] font-medium'>
+          {user.username}
+        </Badge>
+      </div>
+    )
+  }
+
+  return (
+    <div className='relative flex flex-col items-center gap-1.5'>
+      <Avatar className='size-9'>
+        <AvatarFallback className='bg-foreground text-background'>
+          {user.username.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      <span className='text-[10px] font-medium text-foreground'>{user.username}</span>
+    </div>
+  )
+}
 
 type LiveOnlineMapProps = {
   users: LiveUser[]
@@ -22,15 +53,6 @@ function getRandomPosition() {
   }
 }
 
-function getInitials(username: string) {
-  return username
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-}
 
 function formatUpdatedAt(lastUpdated: Date | null) {
   if (!lastUpdated) {
@@ -78,12 +100,7 @@ export function LiveOnlineMap({ users, isConnected: _isConnected, lastUpdated }:
                 style={{ left: position.left, top: position.top }}
                 title={`${user.username} is online`}
               >
-                <div className='relative flex flex-col items-center gap-1.5'>
-                  <Avatar className='size-9'>
-                    <AvatarFallback className='bg-foreground text-background'>{getInitials(user.username)}</AvatarFallback>
-                  </Avatar>
-                  <span className='text-[10px] font-medium text-foreground'>{user.username}</span>
-                </div>
+                <UserMarker user={user} />
               </div>
             )
           })}
