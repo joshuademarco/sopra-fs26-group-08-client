@@ -58,6 +58,7 @@ export default function BossRaidPage() {
   const [, setTick] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const currentRaidRef = useRef<RaidData | null>(null)
+  const wsConnectedRef = useRef(false)
 
   const socketUrl = useMemo(() => new URL('/api/ws/presence', getWebSocketDomain()).toString(), [])
 
@@ -103,6 +104,10 @@ export default function BossRaidPage() {
       if (ignore) return
       socket = new WebSocket(socketUrl)
 
+      socket.onopen = () => {
+        wsConnectedRef.current = true
+      }
+
       socket.onmessage = (event) => {
         try {
           const payload: unknown = JSON.parse(event.data as string)
@@ -117,38 +122,47 @@ export default function BossRaidPage() {
       }
 
       socket.onclose = () => {
+        wsConnectedRef.current = false
         if (!ignore) {
           reconnectTimer = setTimeout(connect, RECONNECT_DELAY_MS)
         }
+      }
+
+      socket.onerror = () => {
+        wsConnectedRef.current = false
       }
     }
 
     connect()
     return () => {
       ignore = true
+      wsConnectedRef.current = false
       clearTimeout(reconnectTimer)
       socket?.close(1000, 'unmounted')
     }
   }, [socketUrl])
 
-  // 1-second ticker for active countdown; triggers a refresh
+  // 1-second ticker for active countdown; falls back to polling when WebSocket is unavailable
   useEffect(() => {
+    let pollTick = 0
     const id = setInterval(() => {
       setTick((t) => t + 1)
+      pollTick++
 
       const raid = currentRaidRef.current
+
+      if (!wsConnectedRef.current && pollTick % 3 === 0) {
+        if (raid) void refreshRaids(raid.groupId)
+        else void fetchAllRaids()
+      }
+
       if (!raid) return
 
       if (raid.status === 'ACTIVE' && raid.startedAt) {
         const elapsed = Math.floor((Date.now() - new Date(raid.startedAt).getTime()) / 1000)
-
-        if (elapsed >= raid.durationSeconds) {
-          refreshRaids(raid.groupId)
-        }
+        if (elapsed >= raid.durationSeconds) refreshRaids(raid.groupId)
       } else if (raid.status === 'SCHEDULED' && raid.scheduledTime) {
-        if (Date.now() >= new Date(raid.scheduledTime).getTime()) {
-          refreshRaids(raid.groupId)
-        }
+        if (Date.now() >= new Date(raid.scheduledTime).getTime()) void refreshRaids(raid.groupId)
       }
     }, 1000)
     return () => clearInterval(id)
@@ -235,20 +249,33 @@ export default function BossRaidPage() {
           <p className='text-sm text-muted-foreground'>Fight together, defeat the boss</p>
         </div>
 
-        {groupsData.length > 1 && (
-          <Select value={selectedGroupId?.toString()} onValueChange={(value) => setSelectedGroupId(Number(value))}>
-            <SelectTrigger aria-label='Select group' className='h-9 min-w-44 rounded-md text-sm'>
-              <SelectValue placeholder='Select group' />
-            </SelectTrigger>
-            <SelectContent>
-              {groupsData.map((group) => (
-                <SelectItem key={group.groupId} value={group.groupId.toString()}>
-                  {group.groupName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+        <div className='flex items-center gap-2'>
+          {selectedGroupId && (
+            <Button
+              size='sm'
+              variant='outline'
+              disabled={currentRaid?.status === 'ACTIVE'}
+              onClick={() => handleQuickStart(selectedGroupId)}
+            >
+              Quick Start
+            </Button>
+          )}
+
+          {groupsData.length > 1 && (
+            <Select value={selectedGroupId?.toString()} onValueChange={(value) => setSelectedGroupId(Number(value))}>
+              <SelectTrigger aria-label='Select group' className='h-9 min-w-44 rounded-md text-sm'>
+                <SelectValue placeholder='Select group' />
+              </SelectTrigger>
+              <SelectContent>
+                {groupsData.map((group) => (
+                  <SelectItem key={group.groupId} value={group.groupId.toString()}>
+                    {group.groupName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </div>
 
       {error && (
@@ -259,31 +286,19 @@ export default function BossRaidPage() {
       )}
 
       {!selectedGroup || selectedGroup.raids.length === 0 ? (
-        <div className='rounded-xl border border-dashed p-12 text-center text-muted-foreground flex flex-col items-center gap-4'>
-          {groupsData.length === 0 ? (
-            <p>You are not in any group. Join a group to participate in boss raids.</p>
-          ) : (
-            <>
-              <p>No raids scheduled for this group yet.</p>
-              <Button onClick={() => handleQuickStart(selectedGroupId!)}>Quick Start Raid</Button>
-            </>
-          )}
+        <div className='rounded-xl border border-dashed p-12 text-center text-muted-foreground'>
+          {groupsData.length === 0
+            ? 'You are not in any group. Join a group to participate in boss raids.'
+            : 'No raids scheduled for this group yet. Use Quick Start above.'}
         </div>
       ) : currentRaid ? (
-        <>
-          <RaidView
-            raid={currentRaid}
-            currentUserId={currentUser.id}
-            onlineUserIds={onlineUserIds}
-            onJoin={() => handleJoin(currentRaid.id, currentRaid.groupId)}
-            onCompleteTask={(task, success) => handleCompleteTask(currentRaid.id, task, success, currentRaid.groupId)}
-          />
-          {(currentRaid.status === 'DEFEATED' || currentRaid.status === 'FAILED') && (
-            <div className='flex justify-center pt-2'>
-              <Button onClick={() => handleQuickStart(selectedGroupId!)}>Quick Start New Raid</Button>
-            </div>
-          )}
-        </>
+        <RaidView
+          raid={currentRaid}
+          currentUserId={currentUser.id}
+          onlineUserIds={onlineUserIds}
+          onJoin={() => handleJoin(currentRaid.id, currentRaid.groupId)}
+          onCompleteTask={(task, success) => handleCompleteTask(currentRaid.id, task, success, currentRaid.groupId)}
+        />
       ) : null}
     </div>
   )
