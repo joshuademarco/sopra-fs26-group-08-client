@@ -108,6 +108,7 @@ export default function BossRaidPage() {
 
           if (isRaidUpdate(payload)) {
             setGroupsData((prev) => applyRaidUpdate(prev, payload))
+            void refreshRaids(payload.groupId)
           } else if (Array.isArray(payload)) {
             setOnlineUserIds(new Set((payload as Array<{ id: number }>).map((u) => u.id)))
           }
