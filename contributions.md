@@ -85,7 +85,7 @@ reason).
 
 ---
 
-## Contributions Week 4 - [Begin Date] to [End Date]
+## Contributions Week 4 - [20.04.2026] to [24.04.2026]
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
@@ -93,8 +93,8 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@michaelCHer]** | [21.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/6689d249673849e8d091296d3c6883dc739a1a70] | [#54 bugfix implemented try/catch and fixed isusses with API fetch on client side] | [making sure API functionality is provided] |
+|                    | [24.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/45a4b2ee1652352debf6e324b97840b09cb62179] | [#80 Setup and start of RaidServices] | [BossRaids is one of our key features so it is important that it is implemented in Sprint 1] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
