@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/useAuth'
 import { GroupWithRaids, RaidData, RaidTaskData } from '@/types/raids'
 import { RaidUpdateMessage } from '@/types/websocket'
-import { getApiDomain, getWebSocketDomain } from '@/utils/domain'
+import { getWebSocketDomain } from '@/utils/domain'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { RaidView } from './raid-view'
 import { RECONNECT_DELAY_MS } from './utils'
@@ -64,7 +64,7 @@ export default function BossRaidPage() {
 
   const fetchAllRaids = async () => {
     try {
-      const groupsRes = await fetch(`${getApiDomain()}/api/groups`, { credentials: 'include' })
+      const groupsRes = await fetch(`/api/groups`, { credentials: 'include' })
 
       if (!groupsRes.ok) return
       const groups = (await groupsRes.json()) as Array<{ id: number; name: string }>
@@ -72,7 +72,7 @@ export default function BossRaidPage() {
       const results: GroupWithRaids[] = []
 
       for (const group of groups) {
-        const raidsRes = await fetch(`${getApiDomain()}/api/groups/${group.id}/raids`, { credentials: 'include' })
+        const raidsRes = await fetch(`/api/groups/${group.id}/raids`, { credentials: 'include' })
         const raids: RaidData[] = raidsRes.ok ? ((await raidsRes.json()) as RaidData[]) : []
         results.push({ groupId: group.id, groupName: group.name, raids })
       }
@@ -88,7 +88,7 @@ export default function BossRaidPage() {
 
   const refreshRaids = async (groupId: number) => {
     try {
-      const res = await fetch(`${getApiDomain()}/api/groups/${groupId}/raids`, { credentials: 'include' })
+      const res = await fetch(`/api/groups/${groupId}/raids`, { credentials: 'include' })
       if (!res.ok) return
       const raids = (await res.json()) as RaidData[]
       setGroupsData((prev) => prev.map((group) => (group.groupId === groupId ? { ...group, raids } : group)))
@@ -184,7 +184,7 @@ export default function BossRaidPage() {
   const handleJoin = async (raidId: number, groupId: number) => {
     setError(null)
     try {
-      const res = await fetch(`${getApiDomain()}/api/raids/${raidId}/join`, { method: 'POST', credentials: 'include' })
+      const res = await fetch(`/api/raids/${raidId}/join`, { method: 'POST', credentials: 'include' })
 
       if (!res.ok) {
         const err = await res.json()
@@ -201,7 +201,7 @@ export default function BossRaidPage() {
   const handleQuickStart = async (groupId: number) => {
     setError(null)
     try {
-      const res = await fetch(`${getApiDomain()}/api/groups/${groupId}/raids/quick`, {
+      const res = await fetch(`/api/groups/${groupId}/raids/quick`, {
         method: 'POST',
         credentials: 'include',
       })
@@ -211,7 +211,7 @@ export default function BossRaidPage() {
         return
       }
       const raid = (await res.json()) as { id: number }
-      await fetch(`${getApiDomain()}/api/raids/${raid.id}/join`, { method: 'POST', credentials: 'include' })
+      await fetch(`/api/raids/${raid.id}/join`, { method: 'POST', credentials: 'include' })
       await refreshRaids(groupId)
     } catch {
       setError('Network error')
@@ -221,7 +221,7 @@ export default function BossRaidPage() {
   const handleCompleteTask = async (raidId: number, task: RaidTaskData, success: boolean, groupId: number) => {
     setError(null)
     try {
-      const res = await fetch(`${getApiDomain()}/api/raids/${raidId}/tasks/${task.id}/complete?success=${success}`, {
+      const res = await fetch(`/api/raids/${raidId}/tasks/${task.id}/complete?success=${success}`, {
         method: 'POST',
         credentials: 'include',
       })
