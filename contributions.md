@@ -91,8 +91,8 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@yappayappay]** | [21.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/f9714ebaeb802a89aba1ca7b8a69279eedf10b8b] | [Trigger character stats and XP update on task completion (#36). Restrict page to logged-in user's own character (#43).] | [linkin habit success with character stats is a central feature for our gamified habit tracker.] |
+|                    | [23.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/23c0d3852089a0d0e519d9b6151afe67d31a1407] | [Character frontend page (#21 and #18)] | [character page is key feature in frontend for gamified habit tracker] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@alemicap]** | [22/23/24.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/a29aef294af979a4e34b0bdf63482d630e2a08d9 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/5c09f0a6e61080eeac2ccb5545473f4c97c70447 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/f74da594ff003707685b2a22747377601ac4b633 ] | [frontend and backend groups implementation as well as many fixes regarding previous group implementation #60 # 110 #68 #69 #73 #11] | [important for users to create and join groups to participate together in boss raids] |
