@@ -1,8 +1,9 @@
 'use client'
 
-import { GroupWithRaids, RaidData, RaidTaskData } from '@/types/raids'
+import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/hooks/useAuth'
+import { GroupWithRaids, RaidData, RaidTaskData } from '@/types/raids'
 import { RaidUpdateMessage } from '@/types/websocket'
 import { getApiDomain, getWebSocketDomain } from '@/utils/domain'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -183,6 +184,26 @@ export default function BossRaidPage() {
     }
   }
 
+  const handleQuickStart = async (groupId: number) => {
+    setError(null)
+    try {
+      const res = await fetch(`${getApiDomain()}/api/groups/${groupId}/raids/quick`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        setError((err as { message?: string }).message ?? 'Could not start raid')
+        return
+      }
+      const raid = (await res.json()) as { id: number }
+      await fetch(`${getApiDomain()}/api/raids/${raid.id}/join`, { method: 'POST', credentials: 'include' })
+      await refreshRaids(groupId)
+    } catch {
+      setError('Network error')
+    }
+  }
+
   const handleCompleteTask = async (raidId: number, task: RaidTaskData, success: boolean, groupId: number) => {
     setError(null)
     try {
@@ -238,19 +259,31 @@ export default function BossRaidPage() {
       )}
 
       {!selectedGroup || selectedGroup.raids.length === 0 ? (
-        <div className='rounded-xl border border-dashed p-12 text-center text-muted-foreground'>
-          {groupsData.length === 0
-            ? 'You are not in any group. Join a group to participate in boss raids.'
-            : 'No raids scheduled for this group yet.'}
+        <div className='rounded-xl border border-dashed p-12 text-center text-muted-foreground flex flex-col items-center gap-4'>
+          {groupsData.length === 0 ? (
+            <p>You are not in any group. Join a group to participate in boss raids.</p>
+          ) : (
+            <>
+              <p>No raids scheduled for this group yet.</p>
+              <Button onClick={() => handleQuickStart(selectedGroupId!)}>Quick Start Raid</Button>
+            </>
+          )}
         </div>
       ) : currentRaid ? (
-        <RaidView
-          raid={currentRaid}
-          currentUserId={currentUser.id}
-          onlineUserIds={onlineUserIds}
-          onJoin={() => handleJoin(currentRaid.id, currentRaid.groupId)}
-          onCompleteTask={(task, success) => handleCompleteTask(currentRaid.id, task, success, currentRaid.groupId)}
-        />
+        <>
+          <RaidView
+            raid={currentRaid}
+            currentUserId={currentUser.id}
+            onlineUserIds={onlineUserIds}
+            onJoin={() => handleJoin(currentRaid.id, currentRaid.groupId)}
+            onCompleteTask={(task, success) => handleCompleteTask(currentRaid.id, task, success, currentRaid.groupId)}
+          />
+          {(currentRaid.status === 'DEFEATED' || currentRaid.status === 'FAILED') && (
+            <div className='flex justify-center pt-2'>
+              <Button onClick={() => handleQuickStart(selectedGroupId!)}>Quick Start New Raid</Button>
+            </div>
+          )}
+        </>
       ) : null}
     </div>
   )
