@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Image from 'next/image'
 import * as React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -12,8 +13,15 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/hooks/useAuth'
 
+const CHARACTER_TYPES = [
+  { value: 'josh', label: 'Josh' },
+  { value: 'ale', label: 'Ale' },
+  { value: 'michi', label: 'Michi' },
+  { value: 'leo', label: 'Leo' },
+] as const
 
 //zod form schema
 const formSchema = z
@@ -25,6 +33,7 @@ const formSchema = z
       .min(8, 'Password must be at least 8 characters.')
       .regex(/[0-9]/, 'Password must contain at least 1 number.'),
     confirmPassword: z.string(),
+    characterType: z.enum(['josh', 'ale', 'michi', 'leo'] as const, { message: 'Please choose a character.' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match.',
@@ -45,9 +54,11 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
       email: process.env.NEXT_PUBLIC_DEFAULT_EMAIL || '',
       password: process.env.NEXT_PUBLIC_DEFAULT_PASSWORD || '',
       confirmPassword: process.env.NEXT_PUBLIC_DEFAULT_PASSWORD || '',
+      characterType: "josh",
     },
   })
 
+  const selectedCharacter = form.watch('characterType')
 
   //async -> use await for fetch
   async function onSubmit(data: z.infer<typeof formSchema>) {
@@ -57,6 +68,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
         username: data.username,
         email: data.email,
         password: data.password,
+        type: data.characterType,
       })
 
       console.log("User successfully created", user);
@@ -148,6 +160,51 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
                 />
               </Field>
               <FieldDescription>Password must be at least 8 characters and contain 1 number.</FieldDescription>
+
+              <Controller
+                name='characterType'
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>Character</FieldLabel>
+                    <div className='flex items-center gap-4'>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Choose your character' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CHARACTER_TYPES.map((c) => (
+                            <SelectItem key={c.value} value={c.value}>
+                              <div className='flex items-center gap-2'>
+                                <Image
+                                  src={`/characters/${c.value}/rotations/south.png`}
+                                  alt={c.label}
+                                  width={24}
+                                  height={24}
+                                  style={{ imageRendering: 'pixelated' }}
+                                />
+                                {c.label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {selectedCharacter && (
+                        <div className='flex size-14 shrink-0 items-center justify-center rounded-lg bg-muted'>
+                          <Image
+                            src={`/characters/${selectedCharacter}/rotations/south.png`}
+                            alt={selectedCharacter}
+                            width={48}
+                            height={48}
+                            style={{ imageRendering: 'pixelated' }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
 
               <Field>
                 {formError && <FieldError>{formError}</FieldError>}

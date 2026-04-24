@@ -15,6 +15,7 @@ export interface RaidMember {
   name: string
   status: MemberStatus
   isCurrentUser?: boolean
+  characterType?: string | null
   level?: number
   taskDescription?: string
   taskDamage?: number
@@ -22,6 +23,27 @@ export interface RaidMember {
   totalTasks?: number
   xpChange?: number
   died?: boolean
+}
+
+function CharacterAvatar({ member }: { member: RaidMember }) {
+  if (member.characterType) {
+    return (
+      <div className='size-10 shrink-0 flex items-center justify-center rounded-full bg-muted overflow-hidden'>
+        <Image
+          src={`/characters/${member.characterType}/rotations/south.png`}
+          alt={member.name}
+          width={40}
+          height={40}
+          style={{ imageRendering: 'pixelated' }}
+        />
+      </div>
+    )
+  }
+  return (
+    <Avatar size={'default'}>
+      <AvatarFallback>{member.name[0]}</AvatarFallback>
+    </Avatar>
+  )
 }
 
 export interface Monster {
@@ -124,9 +146,7 @@ function LobbyCard({ raid }: { raid: BossRaid }) {
           <div className='flex flex-col gap-2'>
             {raid.members.map((member) => (
               <div key={member.name} className='flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2'>
-                <Avatar>
-                  <AvatarFallback>{member.name[0]}</AvatarFallback>
-                </Avatar>
+                <CharacterAvatar member={member} />
                 <p className='flex-1 text-sm font-medium'>{member.isCurrentUser ? 'You' : member.name}</p>
                 <Badge className={STATUS_STYLES[member.status]}>{member.status}</Badge>
               </div>
@@ -158,9 +178,7 @@ function ActiveCard({ raid }: { raid: BossRaid }) {
           <div className='flex flex-col gap-2'>
             {raid.members.map((member) => (
               <div key={member.name} className='flex items-center gap-3 rounded-lg px-3 py-2'>
-                <Avatar size='sm'>
-                  <AvatarFallback>{member.name[0]}</AvatarFallback>
-                </Avatar>
+                <CharacterAvatar member={member} />
                 <div className='flex-1 min-w-0'>
                   <p className='text-sm font-medium'>{member.isCurrentUser ? 'You' : member.name}</p>
                   <p className='text-xs text-muted-foreground truncate'>{member.taskDescription}</p>
@@ -196,9 +214,7 @@ function DefeatCard({ raid }: { raid: BossRaid }) {
           <div className='flex flex-col gap-2'>
             {raid.members.map((member) => (
               <div key={member.name} className='flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2'>
-                <Avatar size='sm'>
-                  <AvatarFallback>{member.name[0]}</AvatarFallback>
-                </Avatar>
+                <CharacterAvatar member={member} />
                 <div className='flex-1 min-w-0'>
                   <div className='flex items-center gap-2'>
                     <p className='text-sm font-medium'>{member.isCurrentUser ? 'You' : member.name}</p>
@@ -247,9 +263,7 @@ function VictoryCard({ raid }: { raid: BossRaid }) {
           <div className='flex flex-col gap-2'>
             {raid.members.map((member) => (
               <div key={member.name} className='flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2'>
-                <Avatar size='sm'>
-                  <AvatarFallback>{member.name[0]}</AvatarFallback>
-                </Avatar>
+                <CharacterAvatar member={member} />
                 <div className='flex-1 min-w-0'>
                   <p className='text-sm font-medium'>{member.isCurrentUser ? 'You' : member.name}</p>
                   <p className='text-xs text-muted-foreground'>

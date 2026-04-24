@@ -100,6 +100,7 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
       return {
         name: member.username,
         isCurrentUser,
+        characterType: member.characterType ?? null,
         status: member.joined ? 'Ready' : onlineUserIds.has(member.userId) ? 'Pending' : 'Offline',
       }
     }
@@ -109,6 +110,7 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
       return {
         name: member.username,
         isCurrentUser,
+        characterType: member.characterType ?? null,
         status: 'Ready',
         taskDescription: nextTask ? nextTask.title : 'All tasks done!',
         taskDamage: nextTask?.successfulDamage,
@@ -121,6 +123,7 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
     return {
       name: member.username,
       isCurrentUser,
+      characterType: member.characterType ?? null,
       status: 'Ready',
       tasksCompleted: myTasks.filter((task) => (task.successfullyCompletedByUsers ?? []).includes(member.userId)).length,
       totalTasks: myTasks.length,

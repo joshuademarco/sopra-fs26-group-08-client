@@ -4,6 +4,7 @@ import { CharacterStats } from '@/components/stats'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { Axe, Book, Flame, HatGlasses, Heart, Shirt, Star, Sword, User } from 'lucide-react'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 type CharacterData = {
@@ -67,17 +68,23 @@ export default function CharacterPage() {
 
   const xpThreshold = character.level * 100
 
-  const statMaxDisplay = Math.max(10, Math.ceil(character.strength / 10) * 10)
-
   return (
     <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
       <h1 className='text-3xl font-bold tracking-tight'>My Character</h1>
 
-      {/* --- character card --- */}
       <div className='w-full rounded-xl border border-border bg-card p-4 flex flex-col md:flex-row gap-6 md:items-center'>
-        {/* avatar placeholder */}
         <div className='w-full md:w-48 aspect-square rounded-xl bg-muted/20 flex items-center justify-center shrink-0'>
-          <User className='w-20 h-20' />
+          {character.type ? (
+            <Image
+              src={`/characters/${character.type}/rotations/south.png`}
+              alt={character.type}
+              width={192}
+              height={192}
+              style={{ imageRendering: 'pixelated' }}
+            />
+          ) : (
+            <User className='w-20 h-20' />
+          )}
         </div>
 
         <div className='flex flex-1 flex-col gap-6 w-full'>

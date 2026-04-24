@@ -8,6 +8,7 @@ export interface RaidMemberData {
   damageDealt: number
   health: number | null
   maxHealth: number | null
+  characterType?: string | null
 }
 
 export interface RaidTaskData {
