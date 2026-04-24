@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/hooks/useAuth'
 import { User } from '@/types/user'
-import { getApiDomain } from '@/utils/domain'
 import { useEffect, useState } from 'react'
 
 interface Group {
@@ -34,7 +33,7 @@ export default function GroupsPage() {
     setLoading(true)
 
     try {
-      const response = await fetch(`${getApiDomain()}/api/groups`, {
+      const response = await fetch(`/api/groups`, {
         method: 'GET',
         credentials: 'include',
       })
@@ -66,7 +65,7 @@ export default function GroupsPage() {
     setError('')
 
     try {
-      const response = await fetch(`${getApiDomain()}/api/groups`, {
+      const response = await fetch(`/api/groups`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +94,7 @@ export default function GroupsPage() {
     setError('')
 
     try {
-      const response = await fetch(`${getApiDomain()}/api/groups/join`, {
+      const response = await fetch(`/api/groups/join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +197,9 @@ export default function GroupsPage() {
         <div className='grid gap-4 grid-cols-3'>
           {groups.map((g) => {
             const isOwner = g.createdBy === user?.username
-            const createdAt = g.createdAt ? new Date(g.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'Unknown'
+            const createdAt = g.createdAt
+              ? new Date(g.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+              : 'Unknown'
 
             return (
               <div key={g.id} className='flex flex-col rounded-xl border bg-card text-card-foreground shadow-sm'>
@@ -213,9 +214,7 @@ export default function GroupsPage() {
                     )}
                   </div>
                   <p className='text-sm text-muted-foreground pt-1'>Created by {g.createdBy}</p>
-                  <p className='text-sm text-muted-foreground pt-1'>
-                    Created on {createdAt}
-                  </p>
+                  <p className='text-sm text-muted-foreground pt-1'>Created on {createdAt}</p>
                 </div>
 
                 {/* Group Body: Member */}
@@ -236,9 +235,8 @@ export default function GroupsPage() {
                       </span>
                     ))}
                   </div>
-
-                    </div>
-                  </div>
+                </div>
+              </div>
             )
           })}
         </div>
