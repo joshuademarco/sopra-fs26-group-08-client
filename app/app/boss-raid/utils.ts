@@ -1,5 +1,5 @@
-import { RaidData, RaidTaskData } from '@/types/raids'
 import { BossRaid, RaidMember, RaidState } from '@/components/raid-card'
+import { RaidData, RaidMemberData, RaidTaskData } from '@/types/raids'
 
 export const MONSTER_IMAGE = '/characters/bosses/innereschweinehund.png'
 export const RECONNECT_DELAY_MS = 2000
@@ -29,6 +29,10 @@ export function assignedPendingTasks(tasks: RaidTaskData[], userId: number): Rai
 
 export function assignedTasks(tasks: RaidTaskData[], userId: number): RaidTaskData[] {
   return tasks.filter((t) => t.assignedUserId === userId)
+}
+
+export function sortRaidUsers(users: RaidMemberData[]): RaidMemberData[] {
+  return [...users].sort((left, right) => left.username.localeCompare(right.username))
 }
 
 export function taskWindowSecondsLeft(task: RaidTaskData, startedAt: string | null): number {
@@ -85,7 +89,9 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
   const timeLeft = calcTimeLeft(raid.startedAt, raid.durationSeconds)
   const tasks = raid.tasks ?? []
 
-  const members: RaidMember[] = (raid.users ?? []).map((member) => {
+  const orderedUsers = sortRaidUsers(raid.users ?? [])
+
+  const members: RaidMember[] = orderedUsers.map((member) => {
     const isCurrentUser = currentUserId !== undefined && member.userId === Number(currentUserId)
     const myTasks = assignedTasks(tasks, member.userId)
     const myPending = assignedPendingTasks(tasks, member.userId)

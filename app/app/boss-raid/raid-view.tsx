@@ -5,7 +5,7 @@ import { RaidCard } from '@/components/raid-card'
 import { Button } from '@/components/ui/button'
 import { MemberHealthBar } from './member-health-bar'
 import { TaskCard } from './task-card'
-import { assignedTasks, getActiveTask, getUpcomingTasks, raidStatusToState, toRaidCard } from './utils'
+import { assignedTasks, getActiveTask, getUpcomingTasks, raidStatusToState, sortRaidUsers, toRaidCard } from './utils'
 import { Check } from 'lucide-react'
 
 export function RaidView({
@@ -31,6 +31,7 @@ export function RaidView({
   const upcomingTasks = state === 'active' ? getUpcomingTasks(tasks, uid, raid.startedAt, activeTask) : []
   const myDone = assignedTasks(tasks, uid).filter((task) => (task.successfullyCompletedByUsers ?? []).includes(uid))
   const allMyTasks = assignedTasks(tasks, uid)
+  const orderedUsers = sortRaidUsers(raid.users ?? [])
 
   return (
     <div className='flex flex-col gap-4'>
@@ -46,7 +47,7 @@ export function RaidView({
         <div className='flex flex-col gap-2'>
           <p className='text-sm font-semibold'>Team Health</p>
           <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
-            {(raid.users ?? [])
+            {orderedUsers
               .filter((user) => user.joined)
               .map((user) => (
                 <MemberHealthBar key={user.userId} member={user} isCurrentUser={user.userId === uid} />
