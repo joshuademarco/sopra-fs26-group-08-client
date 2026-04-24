@@ -95,8 +95,8 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@michaelCHer]** | [21.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/6689d249673849e8d091296d3c6883dc739a1a70] | [#54 bugfix implemented try/catch and fixed isusses with API fetch on client side] | [making sure API functionality is provided] |
 |                    | [24.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/45a4b2ee1652352debf6e324b97840b09cb62179] | [#80 Setup and start of RaidServices] | [BossRaids is one of our key features so it is important that it is implemented in Sprint 1] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@alemicap]** | [22/23/24.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/a29aef294af979a4e34b0bdf63482d630e2a08d9 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/5c09f0a6e61080eeac2ccb5545473f4c97c70447 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/f74da594ff003707685b2a22747377601ac4b633 ] | [frontend and backend groups implementation as well as many fixes regarding previous group implementation #60 # 110 #68 #69 #73 #11] | [important for users to create and join groups to participate together in boss raids] |
+|                    | [23.04.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/d455ef784b19d57f3de6cc10f902785eca150d27 https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/81965cd8990fe9eee556b043264fc77958c27c88] | [front and backend leaderboard implementation #22 #4 #39] | [logged-in users want to see a global leaderboard sorted by the total xp gained per user to compare themselves with others to get motivation] |
 
 ---
 
