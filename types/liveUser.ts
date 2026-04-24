@@ -3,6 +3,7 @@ export interface LiveUser {
   email: string
   username: string
   status: string | null
+  characterType?: string | null
   level?: number | null
   health?: number | null
   strength?: number | null
