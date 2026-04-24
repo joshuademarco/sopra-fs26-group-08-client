@@ -128,7 +128,7 @@ function ActiveCard({ raid }: { raid: BossRaid }) {
             <div className='flex items-center gap-2 mt-1'>
               <Progress value={pct} className='h-2 flex-1' innerClassName='bg-orange-400' />
               <Badge className='whitespace-nowrap' variant={'outline'}>
-                {raid.totalSeconds} seconds
+                {raid.timeLeftSeconds ?? raid.totalSeconds ?? 0} seconds left
               </Badge>
             </div>
           </div>

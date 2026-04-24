@@ -1,6 +1,7 @@
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { useState } from 'react'
@@ -12,11 +13,21 @@ import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
 
 export default function ClientApplicationPage({ weatherCode }: { weatherCode: number | null }) {
-  const [currentPage, setCurrentPage] = useState('dashboard')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const [currentPage, setCurrentPage] = useState(searchParams.get('page') ?? 'dashboard')
+
+  const setCurrentPageWithQuery = (page: string) => {
+    setCurrentPage(page)
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('page', page)
+    router.replace(`${pathname}?${params.toString()}`)
+  }
 
   return (
     <SidebarProvider>
-      <AppSidebar setCurrentPage={setCurrentPage} />
+      <AppSidebar setCurrentPage={setCurrentPageWithQuery} />
       <SidebarInset>
         <header className='flex h-16 shrink-0 items-center gap-2'>
           <div className='flex items-center gap-2 px-4'>

@@ -18,7 +18,7 @@ export function NavMain({
   callback: callback,
   items,
 }: {
-  callback: React.Dispatch<React.SetStateAction<string>>
+  callback: (page: string) => void
   items: {
     title: string
     key: string

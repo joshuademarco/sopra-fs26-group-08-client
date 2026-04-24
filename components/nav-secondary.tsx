@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 
 import {
   SidebarGroup,
@@ -16,7 +15,7 @@ export function NavSecondary({
   items,
   ...props
 }: {
-  callback: React.Dispatch<React.SetStateAction<string>>
+  callback: (page: string) => void
   items: {
     title: string
     key: string
@@ -33,7 +32,7 @@ export function NavSecondary({
                 <div key={item.title}>
                   {item.icon}
                   <span>{item.title}</span>
-                </ div>
+                </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
