@@ -1,23 +1,33 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/hooks/useAuth'
+import { useLiveOnlineUsers } from '@/hooks/useLiveOnlineUsers'
 import { User } from '@/types/user'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+interface GroupMember extends User {
+  level?: number | null
+  status: string | null
+  character?: {
+    level?: number | null
+  } | null
+}
 
 interface Group {
   id: number
   name: string
   createdBy: string
   createdAt: string | null
-  users: User[]
+  users: GroupMember[]
 }
 
 export default function GroupsPage() {
   const auth = useAuth()
   const user = auth.user
+  const { users: onlineUsers } = useLiveOnlineUsers()
 
   const [groups, setGroups] = useState<Group[]>([])
   const [loading, setLoading] = useState(true)
@@ -25,6 +35,36 @@ export default function GroupsPage() {
 
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [isJoinOpen, setIsJoinOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<GroupMember | null>(null)
+
+  const onlineUsernames = useMemo(() => new Set(onlineUsers.map((onlineUser) => onlineUser.username)), [onlineUsers])
+
+  const getMemberStatus = (member: GroupMember) => {
+    if (member.username && onlineUsernames.has(member.username)) {
+      return 'Online'
+    }
+
+    if (member.status) {
+      const normalized = member.status.toLowerCase()
+      if (normalized === 'online') return 'Online'
+      if (normalized === 'offline') return 'Offline'
+      return member.status
+    }
+
+    return 'Offline'
+  }
+
+  const handleOpenProfile = (member: GroupMember) => {
+    setSelectedMember(member)
+    setIsProfileOpen(true)
+  }
+
+  const isCurrentUserProfile = selectedMember?.username === user?.username
+
+  const getMemberLevel = (member: GroupMember) => {
+    return member.level ?? member.character?.level ?? null
+  }
 
   const [groupName, setGroupName] = useState('')
   const [password, setPassword] = useState('')
@@ -222,18 +262,24 @@ export default function GroupsPage() {
                   <h3 className='text-sm font-medium mb-3'>Members ({g.users?.length || 0})</h3>
 
                   <div className='flex flex-wrap gap-2'>
-                    {g.users?.map((user) => (
-                      <span
-                        key={user.id}
-                        className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
-                          user.username === g.createdBy
-                            ? 'bg-primary text-primary-foreground ring-primary'
-                            : 'bg-muted text-muted-foreground ring-border'
-                        }`}
-                      >
-                        {user.username}
-                      </span>
-                    ))}
+                    {g.users?.map((member) => {
+                      const memberStatus = getMemberStatus(member)
+
+                      return (
+                        <button
+                          key={member.id}
+                          type='button'
+                          onClick={() => handleOpenProfile(member)}
+                          className={`inline-flex items-center rounded-md px-3 py-2 text-xs font-medium ring-1 ring-inset transition hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
+                            member.username === g.createdBy
+                              ? 'bg-primary text-primary-foreground ring-primary'
+                              : 'bg-muted text-muted-foreground ring-border'
+                          }`}
+                        >
+                          <span>{member.username}</span>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -241,6 +287,64 @@ export default function GroupsPage() {
           })}
         </div>
       )}
+
+      <Dialog
+        open={isProfileOpen}
+        onOpenChange={(open) => {
+          setIsProfileOpen(open)
+          if (!open) {
+            setSelectedMember(null)
+          }
+        }}
+      >
+        <DialogContent className='max-w-lg'>
+          <DialogHeader>
+            <DialogTitle>{selectedMember ? `${selectedMember.username}'s profile` : 'Profile'}</DialogTitle>
+          </DialogHeader>
+
+          {selectedMember ? (
+            <div className='space-y-5'>
+              <div className='rounded-2xl border bg-background p-5'>
+                <div className='flex items-center justify-between gap-4'>
+                  <div>
+                    <p className='text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground'>Username</p>
+                    <p className='text-lg font-semibold'>{selectedMember.username}</p>
+                  </div>
+                  <div className='text-right'>
+                    <p className='text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground'>Level</p>
+                    <p className='text-lg font-semibold'>{getMemberLevel(selectedMember) ?? '—'}</p>
+                  </div>
+                </div>
+                <div className='mt-4 flex items-center gap-2'>
+                  <span
+                    className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                      getMemberStatus(selectedMember) === 'Online' ? 'bg-emerald-500' : 'bg-red-500'
+                    }`}
+                  />
+                  <span className='text-sm font-medium'>{getMemberStatus(selectedMember)}</span>
+                </div>
+              </div>
+
+              <div className='rounded-2xl border bg-background p-5'>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <p className='text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground'>Achievement badges</p>
+                  </div>
+                </div>
+                <div className='mt-4 flex flex-wrap gap-3'>
+                  <span className='inline-flex h-10 min-w-[5rem] items-center justify-center rounded-full border border-dashed border-muted text-xs text-muted-foreground'>Badge 1</span>
+                  <span className='inline-flex h-10 min-w-[5rem] items-center justify-center rounded-full border border-dashed border-muted text-xs text-muted-foreground'>Badge 2</span>
+                  <span className='inline-flex h-10 min-w-[5rem] items-center justify-center rounded-full border border-dashed border-muted text-xs text-muted-foreground'>Badge 3</span>
+                </div>
+              </div>
+
+              <DialogFooter />
+            </div>
+          ) : (
+            <p className='text-sm text-muted-foreground'>Select a member to view their profile.</p>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
