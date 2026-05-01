@@ -26,22 +26,33 @@ type RegisterInput = {
   type?: string
 }
 
+type UpdateProfileInput = {
+  username: string
+  email: string
+}
+
 type AuthContextValue = {
   user: AuthUser | null
   isAuthenticated: boolean
   isLoading: boolean
   login: (input: LoginInput) => Promise<AuthUser>
   register: (input: RegisterInput) => Promise<AuthUser>
+  updateProfile: (input: UpdateProfileInput) => Promise<AuthUser>
   logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 function readReason(payload: unknown): string | null {
-  if (payload && typeof payload === 'object' && 'reason' in payload) {
+  if (payload && typeof payload === 'object') {
     const reason = (payload as { reason?: unknown }).reason
     if (typeof reason === 'string' && reason.length > 0) {
       return reason
+    }
+
+    const message = (payload as { message?: unknown }).message
+    if (typeof message === 'string' && message.length > 0) {
+      return message
     }
   }
 
@@ -135,6 +146,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [persistSession],
   )
 
+  const updateProfile = useCallback(
+    async (input: UpdateProfileInput) => {
+      const res = await fetch(buildAuthUrl('/auth/update-profile'), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(input),
+      })
+
+      if (!res.ok) {
+        await parseError(res, 'Unable to update profile')
+      }
+
+      const payload = (await res.json()) as AuthUser
+      persistSession(payload)
+      return payload
+    },
+    [persistSession],
+  )
+
   const register = useCallback(
     async (input: RegisterInput) => {
       const res = await fetch(buildAuthUrl('/auth/register'), {
@@ -175,9 +208,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       login,
       register,
+      updateProfile,
       logout,
     }
-  }, [isLoading, login, logout, register, user])
+  }, [isLoading, login, logout, register, updateProfile, user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
