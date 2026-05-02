@@ -1,7 +1,9 @@
 'use client'
 
-import { RaidTaskData } from '@/types/raids'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { RaidTaskData } from '@/types/raids'
 import { Check } from 'lucide-react'
 import { taskWindowSecondsLeft } from './utils'
 
@@ -15,38 +17,29 @@ export function TaskCard({
   onSuccess: () => void
 }) {
   const secsLeft = Math.max(0, taskWindowSecondsLeft(task, startedAt))
-  const minutes = String(Math.floor(secsLeft / 60)).padStart(2, '0')
-  const seconds = String(secsLeft % 60).padStart(2, '0')
+  const hasTimer = task.timeLimitSeconds != null && task.timeLimitSeconds > 0
+  const percentLeft = hasTimer ? Math.max(0, Math.min(100, (secsLeft / task.timeLimitSeconds!) * 100)) : 0
+  const isLow = hasTimer && percentLeft <= 25
 
   return (
-    <div className='flex items-start gap-4 rounded-lg border bg-card px-4 py-3'>
-      <div className='flex-1 min-w-0'>
-        <div className='flex items-center justify-between gap-2'>
-          <p className='text-sm font-medium'>{task.title}</p>
-          {task.timeLimitSeconds != null && (
-            <span className={`text-xs font-mono font-semibold tabular-nums text-destructive animate-pulse`}>
-              {minutes}:{seconds}
-            </span>
-          )}
+    <Card>
+      <CardContent className='flex flex-col gap-3'>
+        <div className='flex items-start gap-4'>
+          <div className='flex min-w-0 flex-1 flex-col gap-1'>
+            <p className='text-sm font-medium'>{task.title}</p>
+            {task.description && <p className='text-xs text-muted-foreground'>{task.description}</p>}
+            <div className='flex gap-3 text-xs'>
+              <span className='font-medium text-emerald-600'>+{task.successfulDamage ?? 0} damage to boss</span>
+              {(task.groupDamage ?? 0) > 0 && <span className='text-destructive'>{task.groupDamage} group damage</span>}
+            </div>
+          </div>
+          <Button size='sm' onClick={onSuccess} title='Mark as done' className='self-center'>
+            <Check />
+            Done
+          </Button>
         </div>
-        {task.description && <p className='text-xs text-muted-foreground mt-0.5'>{task.description}</p>}
-        <div className='flex gap-3 mt-1.5 text-xs'>
-          <span className='text-green-600 font-medium'>+{task.successfulDamage ?? 0} damage to boss</span>
-          {(task.groupDamage ?? 0) > 0 && <span className='text-destructive'>{task.groupDamage} group damage</span>}
-        </div>
-      </div>
-      <div className='flex shrink-0 items-center self-center'>
-        <Button
-          variant='outline'
-          size='sm'
-          onClick={onSuccess}
-          title='Mark as done'
-          className='h-8 gap-1.5 rounded-full px-3 text-green-700 shadow-sm transition-all  hover:bg-green-100 hover:text-green-800'
-        >
-          <Check className='size-4' />
-          <span className='text-xs font-medium'>Done</span>
-        </Button>
-      </div>
-    </div>
+        {hasTimer && <Progress value={percentLeft} innerClassName={isLow ? 'bg-destructive' : 'bg-primary'} />}
+      </CardContent>
+    </Card>
   )
 }
