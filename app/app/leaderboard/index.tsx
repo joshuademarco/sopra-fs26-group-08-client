@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { LeaderboardEntry } from '../../../types/leaderboard';
-import { getApiDomain } from '../../../utils/domain';
-import { useAuth } from '../../../hooks/useAuth';
+import { Card, CardContent } from '@/components/ui/card'
+import { useEffect, useState } from 'react'
+import { useAuth } from '../../../hooks/useAuth'
+import { LeaderboardEntry } from '../../../types/leaderboard'
+import { getApiDomain } from '../../../utils/domain'
 
 export default function LeaderboardPage() {
-  const [fullLeaderboard, setFullLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [displayLeaderboard, setDisplayLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { user: currentUser } = useAuth();
+  const [fullLeaderboard, setFullLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [displayLeaderboard, setDisplayLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { user: currentUser } = useAuth()
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -16,72 +17,56 @@ export default function LeaderboardPage() {
         const response = await fetch(`${getApiDomain()}/api/leaderboard`, {
           method: 'GET',
           credentials: 'include',
-        });
+        })
         if (!response.ok) {
-          throw new Error('Failed to fetch leaderboard');
+          throw new Error('Failed to fetch leaderboard')
         }
-        const data: LeaderboardEntry[] = await response.json();
-        const currentUsername = currentUser?.username;
+        const data: LeaderboardEntry[] = await response.json()
         const sortedLeaderboard = [...data].sort((a, b) => {
-          if (b.level !== a.level) return b.level - a.level;
-          if (b.experience !== a.experience) return b.experience - a.experience;
-          return a.username.localeCompare(b.username);
-        });
-        setFullLeaderboard(sortedLeaderboard);
-        
-        const top10 = sortedLeaderboard.slice(0, 10);
-        setDisplayLeaderboard(top10);
+          if (b.level !== a.level) return b.level - a.level
+          if (b.experience !== a.experience) return b.experience - a.experience
+          return a.username.localeCompare(b.username)
+        })
+        setFullLeaderboard(sortedLeaderboard)
+        setDisplayLeaderboard(sortedLeaderboard.slice(0, 10))
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchLeaderboard();
-  }, [currentUser?.username]);
-
-  if (loading) {
-    return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold text-white">Leaderboard</h1>
-        <p className="text-primary">Loading...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold text-white">Leaderboard</h1>
-        <p className="text-red-500">Error: {error}</p>
-      </div>
-    );
-  }
+    fetchLeaderboard()
+  }, [currentUser?.username])
 
   return (
-    <div className="p-8">
-      <h2 className="font-bold mb-4 text-white">Leaderboard</h2>
-      <div className="space-y-2">
-        {displayLeaderboard.map((entry) => {
-          const actualRank = fullLeaderboard.findIndex(e => e.username === entry.username) + 1;
-          
-          return (
-            <div key={entry.username}>
-              <div className="flex justify-between items-center p-4 bg-card rounded">
-                <div className="flex items-center">
-                  <span className="font-bold mr-4 text-primary">#{actualRank}</span>
-                  <span className="text-primary">{entry.username}</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-primary">Level {entry.level}</span>
-                  <span className="ml-4 text-primary">{entry.experience} XP</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+    <main className='flex flex-col gap-4 p-4'>
+      <h2>Leaderboard</h2>
+
+      {loading && <p className='text-muted-foreground'>Loading...</p>}
+      {error && <p className='text-sm text-destructive'>{error}</p>}
+
+      {!loading && !error && (
+        <div className='space-y-2'>
+          {displayLeaderboard.map((entry) => {
+            const rank = fullLeaderboard.findIndex((e) => e.username === entry.username) + 1
+            return (
+              <Card key={entry.username}>
+                <CardContent className='flex items-center justify-between'>
+                  <div className='flex items-center gap-4'>
+                    <span className='font-bold text-muted-foreground'>#{rank}</span>
+                    <span className='font-medium'>{entry.username}</span>
+                  </div>
+                  <div className='flex items-center gap-4 text-sm text-muted-foreground'>
+                    <span>Level {entry.level}</span>
+                    <span>{entry.experience} XP</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+    </main>
+  )
 }
