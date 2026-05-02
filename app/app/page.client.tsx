@@ -1,10 +1,10 @@
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { WeatherIcon } from '@/components/weather-icon'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import BossRaidPage from './boss-raid'
 import CharacterPage from './character'
@@ -41,22 +41,20 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
         </header>
         <div className='flex w-full flex-col'>
           <div className='flex p-4 pb-0'>
-            <div className='ml-auto'>
-              {weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}
-            </div>
+            <div className='ml-auto'>{weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}</div>
           </div>
           <div className='flex flex-1 flex-col gap-6 p-4 pt-0'>
-          {currentPage === 'dashboard' && <Dashboard weatherCode={weatherCode} />}
+            {currentPage === 'dashboard' && <Dashboard />}
 
-          {currentPage === 'habits' && <HabitsPage />}
+            {currentPage === 'habits' && <HabitsPage />}
 
-          {currentPage === 'character' && <CharacterPage />}
+            {currentPage === 'character' && <CharacterPage />}
 
-          {currentPage === 'groups' && <GroupsPage />}
+            {currentPage === 'groups' && <GroupsPage />}
 
-          {currentPage === 'boss-raids' && <BossRaidPage />}
+            {currentPage === 'boss-raids' && <BossRaidPage />}
 
-          {currentPage === 'leaderboard' && <LeaderboardPage />}
+            {currentPage === 'leaderboard' && <LeaderboardPage />}
           </div>
         </div>
       </SidebarInset>
