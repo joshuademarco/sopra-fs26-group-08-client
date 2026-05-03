@@ -1,6 +1,8 @@
 'use client'
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { getApiDomain } from '@/utils/domain'
+import { isProduction } from '@/utils/environment'
 
 type AuthUser = {
   id: string | number
@@ -70,7 +72,7 @@ async function parseError(res: Response, fallback: string): Promise<never> {
 }
 
 function buildAuthUrl(path: string): string {
-  return `/api${path}`
+  return isProduction() ? `${getApiDomain()}/api${path}` : `/api${path}`
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

@@ -13,13 +13,10 @@ export function getApiDomain(): string {
 }
 
 /**
- * Returns the websocket base URL. In production, uses the same origin as the
- * page so WebSocket connections go through the Vercel proxy (which forwards
- * the auth cookie). In development, connects directly to the local backend.
+ * Returns the websocket base URL derived from the API base URL.
  */
 export function getWebSocketDomain(): string {
-  if (isProduction() && typeof window !== "undefined") {
-    return window.location.origin.replace(/^https/, "wss").replace(/^http/, "ws");
-  }
-  return "ws://localhost:8080";
+  const apiUrl = new URL(getApiDomain());
+  apiUrl.protocol = apiUrl.protocol === "https:" ? "wss:" : "ws:";
+  return apiUrl.toString();
 }
