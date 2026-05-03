@@ -18,7 +18,7 @@ function weightLabel(w: number) {
   return w === 1 ? 'Easy' : w === 2 ? 'Medium' : 'Hard'
 }
 
-// ─── main page ────────────────────────────────────────────────────────────────
+// ============================== main page ==============================
 
 export default function HabitsPage() {
   const { user } = useAuth()
@@ -45,11 +45,12 @@ export default function HabitsPage() {
   )
 }
 
-// ─── habits ───────────────────────────────────────────────────────────
+// ============================== habits ==============================
 
 function HabitsSection({ userId }: { userId: string | number }) {
   const api = useApi()
   const [habits, setHabits] = useState<Habit[]>([])
+  const [weatherCode, setWeatherCode] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -65,6 +66,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
 
   useEffect(() => {
     void fetchHabits()
+    void fetchWeather()
   }, [userId])
 
   async function fetchHabits() {
@@ -76,6 +78,15 @@ function HabitsSection({ userId }: { userId: string | number }) {
       setError(e instanceof Error ? e.message : 'Failed to load habits')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  async function fetchWeather() {
+    try {
+      const code = await api.get<number>('/weather')
+      setWeatherCode(code)
+    } catch {
+      // just for safety (if weather API fails) -> no bonus
     }
   }
 
@@ -140,6 +151,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
             <HabitCard
               key={habit.id}
               habit={habit}
+              weatherCode={weatherCode}
               onComplete={() => void completeHabit(habit.id)}
               onDelete={() => void deleteHabit(habit.id)}
             />
@@ -150,7 +162,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
   )
 }
 
-// ─── todos ────────────────────────────────────────────────────────────
+// ============================== todos ==============================
 
 function TodosSection({ userId }: { userId: string | number }) {
   const api = useApi()
@@ -257,7 +269,7 @@ function TodosSection({ userId }: { userId: string | number }) {
   )
 }
 
-// ─── form components ──────────────────────────────────────────────────────────
+// ============================== form components ==============================
 // extracted so dialog content stays readable
 
 function HabitForm({ value, onChange, onSubmit }: { value: NewHabit; onChange: (v: NewHabit) => void; onSubmit: () => void }) {
