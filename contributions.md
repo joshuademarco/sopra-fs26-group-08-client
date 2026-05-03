@@ -102,14 +102,14 @@ reason).
 
 ---
 
-## Contributions Week 5 - [Begin Date] to [End Date]
+## Contributions Week 5 - [27.04.2026] to [03.05.2026]
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@yappayappay]** | [01.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/e66b4837387c7b500ebbced313410e520c6846f8] | [implemented achievement backend logic with streak tracking and habit reset scheduler. closes #44 #45 #46 #58] | [achievements are an important gamification part of our habit tracker, allowing users to earn badges that can also be seen by other users for further motivation. ] |
+|                    | [03.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/ac69a1604b10f9d9034e78217f78d7c0fd1ee3c7] | [frontend implementation for achievements in character and group member. closes #23, #10] | [now users can visually see the achievements they earned and furhter they can also check out the achievements other group members earned. further the weather multiplier is now being correctly dynamically displayed for each habit category so the user understands how much XP they will earn] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
