@@ -9,6 +9,7 @@ export interface RaidMemberData {
   health: number | null
   maxHealth: number | null
   characterType?: string | null
+  knockedOut?: boolean
 }
 
 export interface RaidTaskData {

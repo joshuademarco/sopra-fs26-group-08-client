@@ -4,16 +4,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/hooks/useAuth'
+import { useWebsocketContext } from '@/hooks/useWebsocketContext'
 import { GroupWithRaids, RaidData, RaidTaskData } from '@/types/raids'
 import { RaidUpdateMessage } from '@/types/websocket'
-import { getWebSocketDomain } from '@/utils/domain'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { RaidView } from './raid-view'
-import { RECONNECT_DELAY_MS } from './utils'
-
-function isRaidUpdate(msg: unknown): msg is RaidUpdateMessage {
-  return typeof msg === 'object' && msg !== null && (msg as RaidUpdateMessage).type === 'RAID_UPDATE'
-}
 
 function modifyRaidState(raid: RaidData, msg: RaidUpdateMessage): RaidData {
   if (raid.id !== msg.raidId) return raid
@@ -25,7 +20,14 @@ function modifyRaidState(raid: RaidData, msg: RaidUpdateMessage): RaidData {
   const users = memberPatchesByUserId
     ? raid.users.map((user) => {
         const memberPatch = memberPatchesByUserId.get(user.userId)
-        return memberPatch ? { ...user, health: memberPatch.health, maxHealth: memberPatch.maxHealth } : user
+        return memberPatch
+          ? {
+              ...user,
+              health: memberPatch.health,
+              maxHealth: memberPatch.maxHealth,
+              knockedOut: memberPatch.knockedOut ?? user.knockedOut,
+            }
+          : user
       })
     : raid.users
 
@@ -52,16 +54,19 @@ function applyRaidUpdate(groups: GroupWithRaids[], msg: RaidUpdateMessage): Grou
 export default function BossRaidPage() {
   const auth = useAuth()
   const currentUser = auth.user
+  const { onlineUsers, subscribeToRaidUpdates } = useWebsocketContext()
 
   const [groupsData, setGroupsData] = useState<GroupWithRaids[]>([])
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
-  const [onlineUserIds, setOnlineUserIds] = useState<Set<number>>(new Set())
   const [, setTick] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const currentRaidRef = useRef<RaidData | null>(null)
-  const wsConnectedRef = useRef(false)
 
-  const socketUrl = useMemo(() => new URL('/api/ws/presence', getWebSocketDomain()).toString(), [])
+  // Derive onlineUserIds from context
+  const onlineUserIds = useMemo(
+    () => new Set(onlineUsers.map((u) => (typeof u.id === 'number' ? u.id : parseInt(u.id, 10)))),
+    [onlineUsers],
+  )
 
   const fetchAllRaids = async () => {
     try {
@@ -98,64 +103,26 @@ export default function BossRaidPage() {
 
   useEffect(() => {
     let ignore = false
-    let socket: WebSocket | null = null
-    let reconnectTimer: ReturnType<typeof setTimeout> | undefined
 
-    const connect = () => {
-      if (ignore) return
-      socket = new WebSocket(socketUrl)
-
-      socket.onopen = () => {
-        wsConnectedRef.current = true
+    const unsubscribe = subscribeToRaidUpdates((msg: RaidUpdateMessage) => {
+      if (!ignore) {
+        setGroupsData((prev) => applyRaidUpdate(prev, msg))
+        refreshRaids(msg.groupId)
       }
+    })
 
-      socket.onmessage = (event) => {
-        try {
-          const payload: unknown = JSON.parse(event.data as string)
-
-          if (isRaidUpdate(payload)) {
-            setGroupsData((prev) => applyRaidUpdate(prev, payload))
-            void refreshRaids(payload.groupId)
-          } else if (Array.isArray(payload)) {
-            setOnlineUserIds(new Set((payload as Array<{ id: number }>).map((u) => u.id)))
-          }
-        } catch {}
-      }
-
-      socket.onclose = () => {
-        wsConnectedRef.current = false
-        if (!ignore) {
-          reconnectTimer = setTimeout(connect, RECONNECT_DELAY_MS)
-        }
-      }
-
-      socket.onerror = () => {
-        wsConnectedRef.current = false
-      }
-    }
-
-    connect()
     return () => {
       ignore = true
-      wsConnectedRef.current = false
-      clearTimeout(reconnectTimer)
-      socket?.close(1000, 'unmounted')
+      unsubscribe()
     }
-  }, [socketUrl])
+  }, [subscribeToRaidUpdates])
 
   // 1-second ticker for active countdown; falls back to polling when WebSocket is unavailable
   useEffect(() => {
-    let pollTick = 0
     const id = setInterval(() => {
       setTick((t) => t + 1)
-      pollTick++
 
       const raid = currentRaidRef.current
-
-      if (!wsConnectedRef.current && pollTick % 3 === 0) {
-        if (raid) void refreshRaids(raid.groupId)
-        else void fetchAllRaids()
-      }
 
       if (!raid) return
 

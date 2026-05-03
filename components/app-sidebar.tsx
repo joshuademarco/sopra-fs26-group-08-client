@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/sidebar'
 import { useAuth } from '@/hooks/useAuth'
 import { Award, Home, PersonStanding, Settings, ShieldHalf, StickyNote, Sword } from 'lucide-react'
+import { CharacterWidget } from './character-widget'
 import { NavUser } from './nav-user'
 
 const data = {
@@ -94,6 +95,7 @@ export function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <CharacterWidget />
       </SidebarHeader>
       <SidebarContent>
         <NavMain callback={setCurrentPage} items={data.navMain} />

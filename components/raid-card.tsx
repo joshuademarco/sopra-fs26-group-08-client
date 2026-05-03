@@ -142,23 +142,19 @@ function BossStage({
     setHitKey((k) => k + 1)
     animate(scope.current, { x: [-10, 10, -7, 7, -4, 4, 0] }, { duration: 0.45 })
     animate('.hit-overlay', { opacity: [0.75, 0] }, { duration: 0.4 })
-  }, [monster.hp])
+  }, [animate, monster.hp, scope])
 
   return (
-    <div className='flex w-full flex-col gap-3 rounded-lg bg-linear-to-b from-muted/40 to-transparent p-4'>
+    <div className='flex w-full flex-col gap-3 px-4 pb-6'>
       <div className='flex items-center justify-between gap-2'>
-        <div className='flex flex-col'>
-          <span className='text-base font-semibold'>{monster.name}</span>
-          <span className='text-xs text-muted-foreground'>{monster.description}</span>
-        </div>
+        <span className='text-xs text-muted-foreground'>{/* {monster.description} */}</span>
         <Badge variant='destructive'>LVL {monster.level}</Badge>
       </div>
 
       <div ref={scope} className='relative mx-auto flex flex-col items-center gap-2'>
+        <span className='text-3xl font-extrabold text-foreground'>{monster.name}</span>
         <div
-          className={`relative flex size-56 items-center justify-center overflow-hidden rounded-lg bg-muted select-none ${
-            dim ? 'opacity-50' : ''
-          }`}
+          className={`relative flex size-56 items-center justify-center overflow-hidden rounded-lg bg-muted select-none ${dim ? 'opacity-50' : ''}`}
         >
           <Image src={monster.imageUrl} alt={monster.name} width={224} height={224} />
           <div className='hit-overlay pointer-events-none absolute inset-0 rounded-lg bg-red-500 opacity-0' />
@@ -273,7 +269,11 @@ function LobbyCard({ raid }: { raid: BossRaid }) {
 }
 
 function ActiveCard({ raid }: { raid: BossRaid }) {
-  const pct = raid.timeLeftSeconds && raid.totalSeconds ? (raid.timeLeftSeconds / raid.totalSeconds) * 100 : 0
+  const secondsLeft = raid.timeLeftSeconds ?? raid.totalSeconds ?? 0
+  const hours = Math.floor(secondsLeft / 3600)
+  const minutes = Math.floor((secondsLeft % 3600) / 60)
+  const seconds = secondsLeft % 60
+  const countdown = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`
 
   return (
     <Layout
@@ -288,17 +288,18 @@ function ActiveCard({ raid }: { raid: BossRaid }) {
         />
       }
       right={
-        <Card>
-          <CardHeader>
-            <CardTitle>{raid.groupName}</CardTitle>
-            <CardDescription>Battle in progress</CardDescription>
-          </CardHeader>
-          <CardContent className='flex flex-col gap-4'>
-            <BossStage monster={raid.monster} members={raid.members} />
-            <div className='flex items-center gap-2'>
-              <Progress value={pct} className='h-2 flex-1' innerClassName='bg-orange-400' />
-              <Badge variant='outline'>{raid.timeLeftSeconds ?? raid.totalSeconds ?? 0}s left</Badge>
+        <Card className='max-w-6xl'>
+          <CardHeader className='flex flex-row items-start justify-between gap-4'>
+            <div className='space-y-1'>
+              <CardTitle>{raid.groupName}</CardTitle>
+              <CardDescription>Battle in progress</CardDescription>
             </div>
+            <Badge variant='outline' className='whitespace-nowrap px-4 py-2 text-base font-semibold shadow-sm'>
+              {countdown} left
+            </Badge>
+          </CardHeader>
+          <CardContent className='flex min-h-112 flex-col gap-6'>
+            <BossStage monster={raid.monster} members={raid.members} />
           </CardContent>
         </Card>
       }
