@@ -1,5 +1,6 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import { RaidMemberData } from '@/types/raids'
 import { useEffect, useRef } from 'react'
 
@@ -10,7 +11,13 @@ export function MemberHealthBar({ member, isCurrentUser }: { member: RaidMemberD
   const isDead = maxHp > 0 && hp <= 0
   const barRef = useRef<HTMLDivElement>(null)
 
-  const barColor = isDead ? 'bg-muted-foreground/40' : percent <= 25 ? 'bg-red-500' : percent <= 50 ? 'bg-yellow-400' : 'bg-green-500'
+  const barColor = isDead
+    ? 'bg-muted-foreground/40'
+    : percent <= 25
+      ? 'bg-red-500'
+      : percent <= 50
+        ? 'bg-yellow-400'
+        : 'bg-green-500'
 
   useEffect(() => {
     if (barRef.current) {
@@ -19,19 +26,25 @@ export function MemberHealthBar({ member, isCurrentUser }: { member: RaidMemberD
   }, [percent])
 
   return (
-    <div className={`rounded-lg px-3 py-2 ${isDead ? 'opacity-60' : ''} ${isCurrentUser ? 'bg-primary/5' : 'bg-card'}`}>
-      <div className='flex items-center justify-between mb-1'>
-        <span className={`text-xs font-medium truncate ${isCurrentUser ? 'text-primary' : ''}`}>
+    <div
+      className={`flex flex-col gap-1 rounded-lg px-3 py-2 ${isDead ? 'opacity-60' : ''} ${
+        isCurrentUser ? 'bg-primary/5' : 'bg-card'
+      }`}
+    >
+      <div className='flex items-center justify-between gap-2'>
+        <span className={`truncate text-xs font-medium ${isCurrentUser ? 'text-primary' : ''}`}>
           {member.username}
           {isCurrentUser && ' (you)'}
         </span>
         {isDead ? (
-          <span className='ml-2 shrink-0 rounded px-1.5 py-0.5 text-xs font-bold bg-destructive/15 text-destructive'>KO</span>
+          <Badge variant='destructive'>K/O</Badge>
         ) : (
-          <span className='text-xs ml-2 shrink-0'>{hp}/{maxHp}</span>
+          <span className='shrink-0 text-xs tabular-nums'>
+            {hp}/{maxHp}
+          </span>
         )}
       </div>
-      <div className='h-2 w-full rounded-full bg-muted overflow-hidden'>
+      <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
         <div ref={barRef} className={`h-full rounded-full transition-all duration-500 ${barColor}`} />
       </div>
     </div>

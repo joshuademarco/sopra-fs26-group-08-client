@@ -1,12 +1,12 @@
 'use client'
 
-import { RaidData, RaidTaskData } from '@/types/raids'
 import { RaidCard } from '@/components/raid-card'
 import { Button } from '@/components/ui/button'
-import { MemberHealthBar } from './member-health-bar'
-import { TaskCard } from './task-card'
-import { assignedTasks, getActiveTask, getUpcomingTasks, raidStatusToState, sortRaidUsers, toRaidCard } from './utils'
+import { Card, CardContent } from '@/components/ui/card'
+import { RaidData, RaidTaskData } from '@/types/raids'
 import { Check } from 'lucide-react'
+import { TaskCard } from './task-card'
+import { assignedTasks, getActiveTask, getUpcomingTasks, raidStatusToState, toRaidCard } from './utils'
 
 export function RaidView({
   raid,
@@ -31,7 +31,6 @@ export function RaidView({
   const upcomingTasks = state === 'active' ? getUpcomingTasks(tasks, uid, raid.startedAt, activeTask) : []
   const myDone = assignedTasks(tasks, uid).filter((task) => (task.successfullyCompletedByUsers ?? []).includes(uid))
   const allMyTasks = assignedTasks(tasks, uid)
-  const orderedUsers = sortRaidUsers(raid.users ?? [])
 
   return (
     <div className='flex flex-col gap-4'>
@@ -40,19 +39,6 @@ export function RaidView({
       {state === 'lobby' && !isJoined && (
         <div className='flex justify-center'>
           <Button onClick={onJoin}>Join Raid</Button>
-        </div>
-      )}
-
-      {state === 'active' && (
-        <div className='flex flex-col gap-2'>
-          <p className='text-sm font-semibold'>Team Health</p>
-          <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
-            {orderedUsers
-              .filter((user) => user.joined)
-              .map((user) => (
-                <MemberHealthBar key={user.userId} member={user} isCurrentUser={user.userId === uid} />
-              ))}
-          </div>
         </div>
       )}
 
@@ -73,35 +59,33 @@ export function RaidView({
 
           {upcomingTasks.length > 0 && (
             <div className='flex flex-col gap-2'>
-              <p className='text-xs font-medium text-muted-foreground uppercase tracking-wide'>Upcoming</p>
+              <p className='text-xs font-medium uppercase tracking-wide text-muted-foreground'>Upcoming</p>
               {upcomingTasks.map((task) => (
-                <div key={task.id} className='flex items-center gap-3 rounded-lg border bg-muted/20 px-4 py-3 opacity-60'>
-                  <div className='flex-1 min-w-0'>
+                <Card key={task.id} className='opacity-60'>
+                  <CardContent>
                     <p className='text-sm font-medium text-muted-foreground'>{task.title}</p>
                     {task.timeLimitSeconds != null && (
                       <p className='text-xs text-muted-foreground'>
                         {task.timeLimitSeconds}s time, {task.successfulDamage ?? 0} damage dealt
                       </p>
                     )}
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
 
           {myDone.map((task) => (
-            <div key={task.id} className='flex items-center gap-3 rounded-lg border bg-muted/40 px-4 py-3 opacity-60'>
-              <span className='flex size-7 shrink-0 items-center justify-center rounded-full bg-green-500'>
-                <Check className='size-4' />
-              </span>
-              <p className='text-sm line-through text-muted-foreground'>{task.title}</p>
-            </div>
+            <Card key={task.id} className='opacity-60'>
+              <CardContent className='flex items-center gap-3'>
+                <Check className='size-4 text-emerald-600' />
+                <p className='text-sm text-muted-foreground line-through'>{task.title}</p>
+              </CardContent>
+            </Card>
           ))}
 
           {activeTask == null && upcomingTasks.length === 0 && myDone.length > 0 && (
-            <p className='text-center text-sm text-green-600 font-medium'>
-              Congratulations! all your tasks are done, waiting for teammates…
-            </p>
+            <p className='text-center text-sm font-medium text-emerald-600'>All your tasks are done — waiting for teammates…</p>
           )}
         </div>
       )}

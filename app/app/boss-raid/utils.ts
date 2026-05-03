@@ -101,6 +101,8 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
         name: member.username,
         isCurrentUser,
         characterType: member.characterType ?? null,
+        health: member.health,
+        maxHealth: member.maxHealth,
         status: member.joined ? 'Ready' : onlineUserIds.has(member.userId) ? 'Pending' : 'Offline',
       }
     }
@@ -111,6 +113,8 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
         name: member.username,
         isCurrentUser,
         characterType: member.characterType ?? null,
+        health: member.health,
+        maxHealth: member.maxHealth,
         status: 'Ready',
         taskDescription: nextTask ? nextTask.title : 'All tasks done!',
         taskDamage: nextTask?.successfulDamage,
