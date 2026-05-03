@@ -4,28 +4,15 @@ import { HabitCard } from '@/components/habit-card'
 import { TodoCard } from '@/components/todo-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { useAuth } from '@/hooks/useAuth'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useApi } from '@/hooks/useApi'
+import { useAuth } from '@/hooks/useAuth'
 import type { Habit, HabitCategory, HabitFrequency, NewHabit, NewTodo, Todo } from '@/types/task'
-import { Plus, Minus, Flame, Brain, Heart } from 'lucide-react'
+import { Brain, Flame, Heart, Minus, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
 
 function weightLabel(w: number) {
   return w === 1 ? 'Easy' : w === 2 ? 'Medium' : 'Hard'
@@ -43,32 +30,17 @@ export default function HabitsPage() {
     <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
       <h1 className='text-3xl font-bold tracking-tight'>Tasks</h1>
 
-      {/* tab switcher */}
       <div className='flex gap-2'>
-        <button
-          onClick={() => setActiveTab('habits')}
-          className={`rounded-full px-5 py-2 text-sm font-medium transition-colors
-            ${activeTab === 'habits'
-              ? 'bg-primary text-primary-foreground'
-              : 'border border-border bg-muted/40 text-muted-foreground hover:bg-muted'
-            }`}
-        >
+        <Button variant={activeTab === 'habits' ? 'default' : 'outline'} onClick={() => setActiveTab('habits')}>
           Habits
-        </button>
-        <button
-          onClick={() => setActiveTab('todos')}
-          className={`rounded-full px-5 py-2 text-sm font-medium transition-colors
-            ${activeTab === 'todos'
-              ? 'bg-primary text-primary-foreground'
-              : 'border border-border bg-muted/40 text-muted-foreground hover:bg-muted'
-            }`}
-        >
+        </Button>
+        <Button variant={activeTab === 'todos' ? 'default' : 'outline'} onClick={() => setActiveTab('todos')}>
           To-Dos
-        </button>
+        </Button>
       </div>
 
       {activeTab === 'habits' && <HabitsSection userId={user.id} />}
-      {activeTab === 'todos'  && <TodosSection  userId={user.id} />}
+      {activeTab === 'todos' && <TodosSection userId={user.id} />}
     </main>
   )
 }
@@ -77,21 +49,23 @@ export default function HabitsPage() {
 
 function HabitsSection({ userId }: { userId: string | number }) {
   const api = useApi()
-  const [habits, setHabits]       = useState<Habit[]>([])
+  const [habits, setHabits] = useState<Habit[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError]         = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const [newHabit, setNewHabit] = useState<NewHabit>({
-    title:       '',
+    title: '',
     description: '',
-    category:    'PHYSICAL',
-    frequency:   'DAILY',
-    positive:    true,
-    weight:      1,
+    category: 'PHYSICAL',
+    frequency: 'DAILY',
+    positive: true,
+    weight: 1,
   })
 
-  useEffect(() => { void fetchHabits() }, [userId])
+  useEffect(() => {
+    void fetchHabits()
+  }, [userId])
 
   async function fetchHabits() {
     try {
@@ -109,9 +83,8 @@ function HabitsSection({ userId }: { userId: string | number }) {
     if (!newHabit.title.trim()) return
     try {
       const created = await api.post<Habit>(`/users/${userId}/habits`, newHabit)
-      setHabits(prev => [...prev, created])
-      setNewHabit({ title: '', description: '', category: 'PHYSICAL',
-                    frequency: 'DAILY', positive: true, weight: 1 })
+      setHabits((prev) => [...prev, created])
+      setNewHabit({ title: '', description: '', category: 'PHYSICAL', frequency: 'DAILY', positive: true, weight: 1 })
       setDialogOpen(false)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to create habit')
@@ -120,9 +93,8 @@ function HabitsSection({ userId }: { userId: string | number }) {
 
   async function completeHabit(habitId: number) {
     try {
-      const updated = await api.put<Habit>(
-        `/users/${userId}/habits/${habitId}/complete`, {})
-      setHabits(prev => prev.map(h => h.id === habitId ? updated : h))
+      const updated = await api.put<Habit>(`/users/${userId}/habits/${habitId}/complete`, {})
+      setHabits((prev) => prev.map((h) => (h.id === habitId ? updated : h)))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to complete habit')
     }
@@ -131,7 +103,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
   async function deleteHabit(habitId: number) {
     try {
       await api.delete(`/users/${userId}/habits/${habitId}`)
-      setHabits(prev => prev.filter(h => h.id !== habitId))
+      setHabits((prev) => prev.filter((h) => h.id !== habitId))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to delete habit')
     }
@@ -143,28 +115,19 @@ function HabitsSection({ userId }: { userId: string | number }) {
 
   return (
     <div className='flex flex-col gap-4'>
-      {error && (
-        <div className='rounded-lg bg-red-50 border border-red-200 px-4 py-3'>
-          <p className='text-sm text-red-700'>{error}</p>
-        </div>
-      )}
+      {error && <p className='text-sm text-destructive'>{error}</p>}
 
-      {/* create button + dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button className='w-fit'>
-            <Plus className='mr-2 h-4 w-4' /> Add Habit
+            <Plus /> Add Habit
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Habit</DialogTitle>
           </DialogHeader>
-          <HabitForm
-            value={newHabit}
-            onChange={setNewHabit}
-            onSubmit={createHabit}
-          />
+          <HabitForm value={newHabit} onChange={setNewHabit} onSubmit={createHabit} />
         </DialogContent>
       </Dialog>
 
@@ -173,7 +136,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
         <EmptyState message='No habits yet. Add one to start earning XP!' />
       ) : (
         <div className='flex flex-col gap-3'>
-          {habits.map(habit => (
+          {habits.map((habit) => (
             <HabitCard
               key={habit.id}
               habit={habit}
@@ -191,20 +154,22 @@ function HabitsSection({ userId }: { userId: string | number }) {
 
 function TodosSection({ userId }: { userId: string | number }) {
   const api = useApi()
-  const [todos, setTodos]         = useState<Todo[]>([])
+  const [todos, setTodos] = useState<Todo[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError]         = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const [newTodo, setNewTodo] = useState<NewTodo>({
-    title:       '',
+    title: '',
     description: '',
-    category:    'PHYSICAL',
-    weight:      1,
-    dueAt:       '',
+    category: 'PHYSICAL',
+    weight: 1,
+    dueAt: '',
   })
 
-  useEffect(() => { void fetchTodos() }, [userId])
+  useEffect(() => {
+    void fetchTodos()
+  }, [userId])
 
   async function fetchTodos() {
     try {
@@ -223,14 +188,11 @@ function TodosSection({ userId }: { userId: string | number }) {
     try {
       const payload = {
         ...newTodo,
-        dueAt: newTodo.dueAt
-          ? new Date(newTodo.dueAt).toISOString()
-          : undefined,
+        dueAt: newTodo.dueAt ? new Date(newTodo.dueAt).toISOString() : undefined,
       }
       const created = await api.post<Todo>(`/users/${userId}/todos`, payload)
-      setTodos(prev => [...prev, created])
-      setNewTodo({ title: '', description: '', category: 'PHYSICAL',
-                   weight: 1, dueAt: '' })
+      setTodos((prev) => [...prev, created])
+      setNewTodo({ title: '', description: '', category: 'PHYSICAL', weight: 1, dueAt: '' })
       setDialogOpen(false)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to create todo')
@@ -239,9 +201,8 @@ function TodosSection({ userId }: { userId: string | number }) {
 
   async function completeTodo(todoId: number) {
     try {
-      const updated = await api.put<Todo>(
-        `/users/${userId}/todos/${todoId}/complete`, {})
-      setTodos(prev => prev.map(t => t.id === todoId ? updated : t))
+      const updated = await api.put<Todo>(`/users/${userId}/todos/${todoId}/complete`, {})
+      setTodos((prev) => prev.map((t) => (t.id === todoId ? updated : t)))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to complete todo')
     }
@@ -250,7 +211,7 @@ function TodosSection({ userId }: { userId: string | number }) {
   async function deleteTodo(todoId: number) {
     try {
       await api.delete(`/users/${userId}/todos/${todoId}`)
-      setTodos(prev => prev.filter(t => t.id !== todoId))
+      setTodos((prev) => prev.filter((t) => t.id !== todoId))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to delete todo')
     }
@@ -262,27 +223,19 @@ function TodosSection({ userId }: { userId: string | number }) {
 
   return (
     <div className='flex flex-col gap-4'>
-      {error && (
-        <div className='rounded-lg bg-red-50 border border-red-200 px-4 py-3'>
-          <p className='text-sm text-red-700'>{error}</p>
-        </div>
-      )}
+      {error && <p className='text-sm text-destructive'>{error}</p>}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button className='w-fit'>
-            <Plus className='mr-2 h-4 w-4' /> Add To-Do
+            <Plus /> Add To-Do
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New To-Do</DialogTitle>
           </DialogHeader>
-          <TodoForm
-            value={newTodo}
-            onChange={setNewTodo}
-            onSubmit={createTodo}
-          />
+          <TodoForm value={newTodo} onChange={setNewTodo} onSubmit={createTodo} />
         </DialogContent>
       </Dialog>
 
@@ -290,7 +243,7 @@ function TodosSection({ userId }: { userId: string | number }) {
         <EmptyState message='No to-dos yet. Add one to start!' />
       ) : (
         <div className='flex flex-col gap-3'>
-          {todos.map(todo => (
+          {todos.map((todo) => (
             <TodoCard
               key={todo.id}
               todo={todo}
@@ -307,15 +260,7 @@ function TodosSection({ userId }: { userId: string | number }) {
 // ─── form components ──────────────────────────────────────────────────────────
 // extracted so dialog content stays readable
 
-function HabitForm({
-  value,
-  onChange,
-  onSubmit,
-}: {
-  value: NewHabit
-  onChange: (v: NewHabit) => void
-  onSubmit: () => void
-}) {
+function HabitForm({ value, onChange, onSubmit }: { value: NewHabit; onChange: (v: NewHabit) => void; onSubmit: () => void }) {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex flex-col gap-1.5'>
@@ -324,7 +269,7 @@ function HabitForm({
           id='habit-title'
           placeholder='Morning run, Read 20 pages...'
           value={value.title}
-          onChange={e => onChange({ ...value, title: e.target.value })}
+          onChange={(e) => onChange({ ...value, title: e.target.value })}
         />
       </div>
 
@@ -335,27 +280,32 @@ function HabitForm({
           id='habit-desc'
           placeholder='More details...'
           value={value.description}
-          onChange={e => onChange({ ...value, description: e.target.value })}
+          onChange={(e) => onChange({ ...value, description: e.target.value })}
         />
       </div>
 
       {/* habit category for character stats */}
       <div className='flex flex-col gap-1.5'>
         <Label>Category</Label>
-        <Select
-          value={value.category}
-          onValueChange={v => onChange({ ...value, category: v as HabitCategory })}
-        >
-          <SelectTrigger><SelectValue /></SelectTrigger>
+        <Select value={value.category} onValueChange={(v) => onChange({ ...value, category: v as HabitCategory })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value='PHYSICAL'>
-              <div className="flex items-center gap-2"><Flame className="h-4 w-4 text-rose-500" /> Physical (levelling Strength)</div>
+              <div className='flex items-center gap-2'>
+                <Flame className='h-4 w-4 text-rose-500' /> Physical (levelling Strength)
+              </div>
             </SelectItem>
             <SelectItem value='COGNITIVE'>
-              <div className="flex items-center gap-2"><Brain className="h-4 w-4 text-sky-500" /> Cognitive (levelling Intelligence)</div>
+              <div className='flex items-center gap-2'>
+                <Brain className='h-4 w-4 text-sky-500' /> Cognitive (levelling Intelligence)
+              </div>
             </SelectItem>
             <SelectItem value='EMOTIONAL'>
-              <div className="flex items-center gap-2"><Heart className="h-4 w-4 text-emerald-500" /> Emotional (levelling Resilience)</div>
+              <div className='flex items-center gap-2'>
+                <Heart className='h-4 w-4 text-emerald-500' /> Emotional (levelling Resilience)
+              </div>
             </SelectItem>
           </SelectContent>
         </Select>
@@ -364,11 +314,10 @@ function HabitForm({
       {/* habit frequency */}
       <div className='flex flex-col gap-1.5'>
         <Label>Frequency</Label>
-        <Select
-          value={value.frequency}
-          onValueChange={v => onChange({ ...value, frequency: v as HabitFrequency })}
-        >
-          <SelectTrigger><SelectValue /></SelectTrigger>
+        <Select value={value.frequency} onValueChange={(v) => onChange({ ...value, frequency: v as HabitFrequency })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value='DAILY'>Daily</SelectItem>
             <SelectItem value='WEEKLY'>Weekly</SelectItem>
@@ -377,77 +326,53 @@ function HabitForm({
         </Select>
       </div>
 
-      {/* positive/negative */}
       <div className='flex flex-col gap-1.5'>
         <Label>Type</Label>
-        <div className='flex gap-3'>
-          <button
+        <div className='flex gap-2'>
+          <Button
             type='button'
+            variant={value.positive ? 'default' : 'outline'}
             onClick={() => onChange({ ...value, positive: true })}
-            className={`flex-1 rounded-lg py-2 text-sm font-medium border transition-colors
-              ${value.positive
-                ? 'bg-green-500 text-white border-green-500'
-                : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted'
-              }`}
+            className='flex-1'
           >
-            <Plus className="h-4 w-4" /> Positive
-          </button>
-          <button
+            <Plus /> Positive
+          </Button>
+          <Button
             type='button'
+            variant={!value.positive ? 'default' : 'outline'}
             onClick={() => onChange({ ...value, positive: false })}
-            className={`flex-1 rounded-lg py-2 text-sm font-medium border transition-colors
-              ${!value.positive
-                ? 'bg-amber-500 text-white border-amber-500'
-                : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted'
-              }`}
+            className='flex-1'
           >
-            <Minus className="h-4 w-4" /> Negative
-          </button>
+            <Minus /> Negative
+          </Button>
         </div>
       </div>
 
-      {/* weight (difficulty) for amount of XP */}
       <div className='flex flex-col gap-1.5'>
         <Label>Difficulty</Label>
         <div className='flex gap-2'>
-          {[1, 2, 3].map(w => (
-            <button
+          {[1, 2, 3].map((w) => (
+            <Button
               key={w}
               type='button'
+              variant={value.weight === w ? 'default' : 'outline'}
               onClick={() => onChange({ ...value, weight: w })}
-              className={`flex-1 rounded-lg py-2 text-sm font-medium border transition-colors
-                ${value.weight === w
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted'
-                }`}
+              className='flex-1'
             >
               {weightLabel(w)}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
-      
-      <button
-        onClick={onSubmit}
-        disabled={!value.title.trim()}
-        className='w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground
-          hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-      >
+
+      <Button onClick={onSubmit} disabled={!value.title.trim()}>
         Create Habit
-      </button>
+      </Button>
     </div>
   )
 }
 
-function TodoForm({
-  value,
-  onChange,
-  onSubmit,
-}: {
-  value: NewTodo
-  onChange: (v: NewTodo) => void
-  onSubmit: () => void
-}) {
+function TodoForm({ value, onChange, onSubmit }: { value: NewTodo; onChange: (v: NewTodo) => void; onSubmit: () => void }) {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex flex-col gap-1.5'>
@@ -456,7 +381,7 @@ function TodoForm({
           id='todo-title'
           placeholder='Schedule dentist, Buy groceries...'
           value={value.title}
-          onChange={e => onChange({ ...value, title: e.target.value })}
+          onChange={(e) => onChange({ ...value, title: e.target.value })}
         />
       </div>
 
@@ -467,72 +392,62 @@ function TodoForm({
           id='todo-desc'
           placeholder='More details...'
           value={value.description}
-          onChange={e => onChange({ ...value, description: e.target.value })}
+          onChange={(e) => onChange({ ...value, description: e.target.value })}
         />
       </div>
 
       {/* todo category for character stats */}
       <div className='flex flex-col gap-1.5'>
         <Label>Category</Label>
-        <Select
-          value={value.category}
-          onValueChange={v => onChange({ ...value, category: v as HabitCategory })}
-        >
-          <SelectTrigger><SelectValue /></SelectTrigger>
+        <Select value={value.category} onValueChange={(v) => onChange({ ...value, category: v as HabitCategory })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value='PHYSICAL'>
-              <div className="flex items-center gap-2"><Flame className="h-4 w-4 text-rose-500" /> Physical (levelling Strength)</div>
+              <div className='flex items-center gap-2'>
+                <Flame className='h-4 w-4 text-rose-500' /> Physical (levelling Strength)
+              </div>
             </SelectItem>
             <SelectItem value='COGNITIVE'>
-              <div className="flex items-center gap-2"><Brain className="h-4 w-4 text-sky-500" /> Cognitive (levelling Intelligence)</div>
+              <div className='flex items-center gap-2'>
+                <Brain className='h-4 w-4 text-sky-500' /> Cognitive (levelling Intelligence)
+              </div>
             </SelectItem>
             <SelectItem value='EMOTIONAL'>
-              <div className="flex items-center gap-2"><Heart className="h-4 w-4 text-emerald-500" /> Emotional (levelling Resilience)</div>
+              <div className='flex items-center gap-2'>
+                <Heart className='h-4 w-4 text-emerald-500' /> Emotional (levelling Resilience)
+              </div>
             </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* weight (difficulty) for amount of XP */}
       <div className='flex flex-col gap-1.5'>
         <Label>Difficulty</Label>
         <div className='flex gap-2'>
-          {[1, 2, 3].map(w => (
-            <button
+          {[1, 2, 3].map((w) => (
+            <Button
               key={w}
               type='button'
+              variant={value.weight === w ? 'default' : 'outline'}
               onClick={() => onChange({ ...value, weight: w })}
-              className={`flex-1 rounded-lg py-2 text-sm font-medium border transition-colors
-                ${value.weight === w
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted'
-                }`}
+              className='flex-1'
             >
               {weightLabel(w)}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
-      
-      {/* todo due date */}
+
       <div className='flex flex-col gap-1.5'>
         <Label htmlFor='todo-due'>Due Date (optional)</Label>
-        <Input
-          id='todo-due'
-          type='date'
-          value={value.dueAt}
-          onChange={e => onChange({ ...value, dueAt: e.target.value })}
-        />
+        <Input id='todo-due' type='date' value={value.dueAt} onChange={(e) => onChange({ ...value, dueAt: e.target.value })} />
       </div>
 
-      <button
-        onClick={onSubmit}
-        disabled={!value.title.trim()}
-        className='w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground
-          hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-      >
+      <Button onClick={onSubmit} disabled={!value.title.trim()}>
         Create To-Do
-      </button>
+      </Button>
     </div>
   )
 }

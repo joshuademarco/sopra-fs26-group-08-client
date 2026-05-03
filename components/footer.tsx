@@ -32,7 +32,7 @@ interface FooterProps {
 
 const Footer = ({ className }: FooterProps) => {
   return (
-    <section className={cn('py-16', className)}>
+    <section className={cn('w-full py-16', className)}>
       <div className='container mx-auto'>
         <footer>
           <div className='relative mb-8 flex w-full flex-col gap-x-28 gap-y-8 md:flex-row md:justify-between md:gap-y-0'>

@@ -1,6 +1,7 @@
 'use client'
 
 import { CharacterStats } from '@/components/stats'
+import { Card, CardContent } from '@/components/ui/card'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { Axe, Book, Flame, HatGlasses, Heart, Shirt, Star, Sword, User } from 'lucide-react'
@@ -73,59 +74,57 @@ export default function CharacterPage() {
 
   return (
     <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-      <h1 className='text-3xl font-bold tracking-tight'>My Character</h1>
+      <h2>My Character</h2>
 
-      <div className='w-full rounded-xl border border-border bg-card p-4 flex flex-col md:flex-row gap-6 md:items-center'>
-        <div className='w-full md:w-48 aspect-square rounded-xl bg-muted/20 flex items-center justify-center shrink-0'>
-          {character.type ? (
-            <Image
-              src={`/characters/${character.type}/rotations/south.png`}
-              alt={character.type}
-              width={192}
-              height={192}
-              style={{ imageRendering: 'pixelated' }}
-            />
-          ) : (
-            <User className='w-20 h-20' />
-          )}
-        </div>
-
-        <div className='flex flex-1 flex-col gap-6 w-full'>
-          {/* name + level */}
-          <div className='flex items-baseline gap-2'>
-            <h2 className='text-3xl font-bold tracking-tight'>{user.username}</h2>
-            <span className='text-md font-bold text-muted-foreground'>Level {character.level}</span>
+      <Card>
+        <CardContent className='flex flex-col gap-6 md:flex-row md:items-center'>
+          <div className='flex aspect-square w-full items-center justify-center rounded-lg bg-muted/20 md:w-48'>
+            {character.type ? (
+              <Image
+                src={`/characters/${character.type}/rotations/south.png`}
+                alt={character.type}
+                width={192}
+                height={192}
+                style={{ imageRendering: 'pixelated' }}
+              />
+            ) : (
+              <User className='size-20' />
+            )}
           </div>
 
-          {/* health bar */}
-          <div className='flex items-center gap-4'>
-            <Heart className='shrink-0' />
-            <CharacterStats
-              label='Health'
-              value={character.health}
-              maxValue={character.maxHealth}
-              color='bg-green-600'
-              height='h-4'
-            />
-          </div>
+          <div className='flex flex-1 flex-col gap-6'>
+            <div className='flex items-baseline gap-2'>
+              <h2 className='text-3xl font-bold tracking-tight'>{user.username}</h2>
+              <span className='text-sm font-bold text-muted-foreground'>Level {character.level}</span>
+            </div>
 
-          {/* XP bar */}
-          <div className='flex items-center gap-4'>
-            <Star className='shrink-0' />
-            <CharacterStats
-              label='Experience'
-              value={character.experience}
-              maxValue={xpThreshold}
-              color='bg-yellow-500'
-              height='h-4'
-            />
-          </div>
-        </div>
-      </div>
+            <div className='flex items-center gap-4'>
+              <Heart className='shrink-0' />
+              <CharacterStats
+                label='Health'
+                value={character.health}
+                maxValue={character.maxHealth}
+                color='bg-emerald-600'
+                height='h-4'
+              />
+            </div>
 
-      {/* --- stats --- */}
-      <h1 className='text-3xl font-bold tracking-tight'>Stats</h1>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+            <div className='flex items-center gap-4'>
+              <Star className='shrink-0' />
+              <CharacterStats
+                label='Experience'
+                value={character.experience}
+                maxValue={xpThreshold}
+                color='bg-yellow-500'
+                height='h-4'
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <h3>Stats</h3>
+      <div className='grid gap-4 md:grid-cols-3'>
         <CharacterStats
           label='Strength'
           value={character.strength}
@@ -149,73 +148,40 @@ export default function CharacterPage() {
         />
       </div>
 
-      <h1 className='text-3xl font-bold tracking-tight'>Inventory</h1>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
-        <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
-          <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            {character.equippedHat ? (
-              <Image
-                src={`/items/${character.equippedHat.assetKey}.png`}
-                alt={character.equippedHat.assetKey}
-                width={192}
-                height={192}
-                style={{ imageRendering: 'pixelated' }}
-              />
-            ) : (
-              <HatGlasses className='w-20 h-20 text-muted-foreground/40' />
-            )}
-          </div>
-        </div>
-        <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
-          <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            {character.equippedChestPiece ? (
-              <Image
-                src={`/items/${character.equippedChestPiece.assetKey}.png`}
-                alt={character.equippedChestPiece.assetKey}
-                width={192}
-                height={192}
-                style={{ imageRendering: 'pixelated' }}
-              />
-            ) : (
-              <Shirt className='w-20 h-20 text-muted-foreground/40' />
-            )}
-          </div>
-        </div>
-        <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
-          <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            {character.equippedChestPiece ? (
-              <Image
-                src={`/items/${character.equippedChestPiece.assetKey}.png`}
-                alt={character.equippedChestPiece.assetKey}
-                width={192}
-                height={192}
-                style={{ imageRendering: 'pixelated' }}
-              />
-            ) : (
-              <Sword className='w-20 h-20 text-muted-foreground/40' />
-            )}
-          </div>
-        </div>
+      <h3>Inventory</h3>
+      <div className='grid gap-4 md:grid-cols-3'>
+        {[
+          { item: character.equippedHat, Icon: HatGlasses },
+          { item: character.equippedChestPiece, Icon: Shirt },
+          { item: character.equippedHandheld, Icon: Sword },
+        ].map(({ item, Icon }, i) => (
+          <Card key={i}>
+            <CardContent className='flex aspect-square items-center justify-center'>
+              {item ? (
+                <Image
+                  src={`/items/${item.assetKey}.png`}
+                  alt={item.assetKey}
+                  width={192}
+                  height={192}
+                  style={{ imageRendering: 'pixelated' }}
+                />
+              ) : (
+                <Icon className='size-20 text-muted-foreground/40' />
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* --- achievements (static for now)--- */}
-      <h1 className='text-3xl font-bold tracking-tight'>Achievements</h1>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
-        <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
-          <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            <Axe className='w-20 h-20 text-muted-foreground/40' />
-          </div>
-        </div>
-        <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
-          <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            <Flame className='w-20 h-20 text-muted-foreground/40' />
-          </div>
-        </div>
-        <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
-          <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            <Book className='w-20 h-20 text-muted-foreground/40' />
-          </div>
-        </div>
+      <h3>Achievements</h3>
+      <div className='grid gap-4 md:grid-cols-3'>
+        {[Axe, Flame, Book].map((Icon, i) => (
+          <Card key={i}>
+            <CardContent className='flex aspect-square items-center justify-center'>
+              <Icon className='size-20 text-muted-foreground/40' />
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </main>
   )

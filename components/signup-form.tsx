@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
+import Link from 'next/link'
 import * as React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -105,8 +106,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
-        <CardHeader className='text-center'>
-          <CardTitle className='text-xl'>Create your account</CardTitle>
+        <CardHeader>
+          <CardTitle>Create your account</CardTitle>
           <CardDescription>Enter your email below to create your account</CardDescription>
         </CardHeader>
         <CardContent>
@@ -135,7 +136,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
                   </Field>
                 )}
               />
-              <Field className='grid grid-cols-2 gap-4'>
+              <div className='grid grid-cols-2 gap-4'>
                 <Controller
                   name='password'
                   control={form.control}
@@ -158,7 +159,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
                     </Field>
                   )}
                 />
-              </Field>
+              </div>
               <FieldDescription>Password must be at least 8 characters and contain 1 number.</FieldDescription>
 
               <Controller
@@ -208,14 +209,11 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
 
               <Field>
                 {formError && <FieldError>{formError}</FieldError>}
-                <Button type='submit' className='w-full' disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? 'Creating account...' : 'Create Account'}
+                <Button type='submit' disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? 'Creating account...' : 'Sign up'}
                 </Button>
                 <FieldDescription className='text-center'>
-                  Already have an account?{' '}
-                  <a href='/login' className='underline'>
-                    Login
-                  </a>
+                  Already have an account? <Link href='/login'>Login</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

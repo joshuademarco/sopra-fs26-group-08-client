@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/hooks/useAuth'
 import { GroupWithRaids, RaidData, RaidTaskData } from '@/types/raids'
@@ -242,7 +243,7 @@ export default function BossRaidPage() {
   }
 
   return (
-    <div className='flex flex-col gap-4 p-4'>
+    <main className='flex flex-col gap-4 p-4'>
       <div className='flex items-center justify-between gap-4'>
         <div>
           <h2>Boss Raid</h2>
@@ -252,7 +253,6 @@ export default function BossRaidPage() {
         <div className='flex items-center gap-2'>
           {selectedGroupId && (
             <Button
-              size='sm'
               variant='outline'
               disabled={currentRaid?.status === 'ACTIVE'}
               onClick={() => handleQuickStart(selectedGroupId)}
@@ -263,7 +263,7 @@ export default function BossRaidPage() {
 
           {groupsData.length > 1 && (
             <Select value={selectedGroupId?.toString()} onValueChange={(value) => setSelectedGroupId(Number(value))}>
-              <SelectTrigger aria-label='Select group' className='h-9 min-w-44 rounded-md text-sm'>
+              <SelectTrigger aria-label='Select group' className='min-w-44'>
                 <SelectValue placeholder='Select group' />
               </SelectTrigger>
               <SelectContent>
@@ -278,19 +278,19 @@ export default function BossRaidPage() {
         </div>
       </div>
 
-      {error && (
-        <div className='rounded-lg border border-destructive px-4 py-3'>
-          {/* TODO: Implement shadcn sonner */}
-          <p className='text-sm text-destructive'>{error}</p>
-        </div>
-      )}
+      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {/* TODO: Implement shadcn sonner */}
 
       {!selectedGroup || selectedGroup.raids.length === 0 ? (
-        <div className='rounded-xl border border-dashed p-12 text-center text-muted-foreground'>
-          {groupsData.length === 0
-            ? 'You are not in any group. Join a group to participate in boss raids.'
-            : 'No raids scheduled for this group yet. Use Quick Start above.'}
-        </div>
+        <Card>
+          <CardContent className='flex items-center justify-center py-12'>
+            <p className='text-sm text-muted-foreground'>
+              {groupsData.length === 0
+                ? 'You are not in any group. Join a group to participate in boss raids.'
+                : 'No raids scheduled for this group yet. Use Quick Start above.'}
+            </p>
+          </CardContent>
+        </Card>
       ) : currentRaid ? (
         <RaidView
           raid={currentRaid}
@@ -300,6 +300,6 @@ export default function BossRaidPage() {
           onCompleteTask={(task, success) => handleCompleteTask(currentRaid.id, task, success, currentRaid.groupId)}
         />
       ) : null}
-    </div>
+    </main>
   )
 }
