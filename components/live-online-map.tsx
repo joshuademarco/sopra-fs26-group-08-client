@@ -2,10 +2,11 @@
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useWebsocketContext } from '@/hooks/useWebsocketContext'
 import type { LiveUser } from '@/types/liveUser'
 import { MapPinned, Users } from 'lucide-react'
 import Image from 'next/image'
-import { useMemo } from 'react'
+import { useRef } from 'react'
 import { Badge } from './ui/badge'
 
 function UserMarker({ user }: { user: LiveUser }) {
@@ -17,7 +18,7 @@ function UserMarker({ user }: { user: LiveUser }) {
           alt={user.username}
           width={80}
           height={80}
-          className='[image-rendering:pixelated]'
+          className='[image-rendering:pixelated] filter-[drop-shadow(0_0_1px_black)_drop-shadow(0_0_1px_black)_drop-shadow(0_0_1px_black)_drop-shadow(0_3px_8px_rgba(0,0,0,0.75))]'
         />
         <Badge variant='secondary' className='px-1 py-0 text-[10px] font-medium'>
           {user.username}
@@ -28,31 +29,13 @@ function UserMarker({ user }: { user: LiveUser }) {
 
   return (
     <div className='relative flex flex-col items-center gap-1.5'>
-      <Avatar className='size-9'>
-        <AvatarFallback className='bg-foreground text-background'>
-          {user.username.slice(0, 2).toUpperCase()}
-        </AvatarFallback>
+      <Avatar className='size-9 ring-2 ring-black/80 shadow-[0_3px_8px_rgba(0,0,0,0.65)]'>
+        <AvatarFallback className='bg-foreground text-background'>{user.username.slice(0, 2).toUpperCase()}</AvatarFallback>
       </Avatar>
       <span className='text-[10px] font-medium text-foreground'>{user.username}</span>
     </div>
   )
 }
-
-type LiveOnlineMapProps = {
-  users: LiveUser[]
-  isConnected: boolean
-  lastUpdated: Date | null
-}
-
-function getRandomPosition() {
-  const left = 8 + Math.random() * 84
-  const top = 12 + Math.random() * 72
-  return {
-    left: `${left}%`,
-    top: `${top}%`,
-  }
-}
-
 
 function formatUpdatedAt(lastUpdated: Date | null) {
   if (!lastUpdated) {
@@ -62,11 +45,24 @@ function formatUpdatedAt(lastUpdated: Date | null) {
   return `Updated ${lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
 }
 
-export function LiveOnlineMap({ users, isConnected: _isConnected, lastUpdated }: LiveOnlineMapProps) {
-  const randomPositions = useMemo(() => users.map(() => getRandomPosition()), [users])
+function getRandomPosition() {
+  const left = 8 + Math.random() * 84
+  const top = 12 + Math.random() * 72
+  return { left: `${left}%`, top: `${top}%` }
+}
+
+export function LiveOnlineMap() {
+  const userPositionsRef = useRef<Map<LiveUser['id'], { left: string; top: string }>>(new Map())
+  const { onlineUsers: users, lastPresenceUpdate: lastUpdated } = useWebsocketContext()
+
+  for (const user of users) {
+    if (!userPositionsRef.current.has(user.id)) {
+      userPositionsRef.current.set(user.id, getRandomPosition())
+    }
+  }
 
   return (
-    <Card>
+    <Card className='max-w-6xl'>
       <CardHeader>
         <div className='flex flex-row items-start justify-between gap-3'>
           <div className='space-y-1'>
@@ -90,8 +86,8 @@ export function LiveOnlineMap({ users, isConnected: _isConnected, lastUpdated }:
         <div className='relative h-136 overflow-hidden rounded-lg border'>
           <Image src='/map.png' fill alt='Online Map' className='object-contain object-center bg-muted' />
 
-          {users.map((user, index) => {
-            const position = randomPositions[index] ?? { left: '50%', top: '50%' }
+          {users.map((user) => {
+            const position = userPositionsRef.current.get(user.id) ?? { left: '50%', top: '50%' }
 
             return (
               <div

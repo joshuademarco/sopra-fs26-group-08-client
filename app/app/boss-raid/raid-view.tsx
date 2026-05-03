@@ -24,11 +24,13 @@ export function RaidView({
   const uid = Number(currentUserId)
   const cardData = toRaidCard(raid, currentUserId, onlineUserIds)
   const state = raidStatusToState(raid.status)
-  const isJoined = raid.users?.find((m) => m.userId === uid)?.joined ?? false
+  const me = raid.users?.find((m) => m.userId === uid)
+  const isJoined = me?.joined ?? false
+  const isKnockedOut = me?.knockedOut ?? false
   const tasks = raid.tasks ?? []
 
-  const activeTask = state === 'active' ? getActiveTask(tasks, uid, raid.startedAt) : null
-  const upcomingTasks = state === 'active' ? getUpcomingTasks(tasks, uid, raid.startedAt, activeTask) : []
+  const activeTask = state === 'active' && !isKnockedOut ? getActiveTask(tasks, uid, raid.startedAt) : null
+  const upcomingTasks = state === 'active' && !isKnockedOut ? getUpcomingTasks(tasks, uid, raid.startedAt, activeTask) : []
   const myDone = assignedTasks(tasks, uid).filter((task) => (task.successfullyCompletedByUsers ?? []).includes(uid))
   const allMyTasks = assignedTasks(tasks, uid)
 
@@ -42,7 +44,16 @@ export function RaidView({
         </div>
       )}
 
-      {state === 'active' && isJoined && (
+      {state === 'active' && isJoined && isKnockedOut && (
+        <Card>
+          <CardContent className='py-6 text-center'>
+            <p className='text-sm font-semibold text-destructive'>You are knocked out</p>
+            <p className='text-xs text-muted-foreground'>Wait for your teammates to finish the raid.</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {state === 'active' && isJoined && !isKnockedOut && (
         <div className='flex flex-col gap-3'>
           <p className='text-sm font-semibold'>Your tasks</p>
 

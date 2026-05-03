@@ -1,7 +1,13 @@
 import { LiveOnlineMap } from '@/components/live-online-map'
-import { useLiveOnlineUsers } from '@/hooks/useLiveOnlineUsers'
 
 export default function Dashboard() {
-  const { users, isConnected, lastUpdated } = useLiveOnlineUsers()
-  return <LiveOnlineMap users={users} isConnected={isConnected} lastUpdated={lastUpdated} />
+  return (
+    <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
+      <div>
+        <h1 className='text-3xl font-bold tracking-tight'>Dashboard</h1>
+        <p className='text-sm text-muted-foreground'>See who is currently online</p>
+      </div>
+      <LiveOnlineMap />
+    </main>
+  )
 }
