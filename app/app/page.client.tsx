@@ -12,6 +12,7 @@ import Dashboard from './dashboard'
 import GroupsPage from './groups'
 import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
+import SettingsPage from './settings'
 
 export default function ClientApplicationPage({ weatherCode }: { weatherCode: number | null }) {
   const router = useRouter()
@@ -57,6 +58,8 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           {currentPage === 'boss-raids' && <BossRaidPage />}
 
           {currentPage === 'leaderboard' && <LeaderboardPage />}
+
+          {currentPage === 'settings' && <SettingsPage />}
           </div>
         </div>
       </SidebarInset>
