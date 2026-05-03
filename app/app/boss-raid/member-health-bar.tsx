@@ -5,10 +5,11 @@ import { RaidMemberData } from '@/types/raids'
 import { useEffect, useRef } from 'react'
 
 export function MemberHealthBar({ member, isCurrentUser }: { member: RaidMemberData; isCurrentUser: boolean }) {
+  const hasHealth = member.health != null && member.maxHealth != null
   const hp = member.health ?? 0
   const maxHp = member.maxHealth ?? 100
   const percent = maxHp > 0 ? Math.max(0, Math.min(100, (hp / maxHp) * 100)) : 0
-  const isDead = maxHp > 0 && hp <= 0
+  const isDead = hasHealth && maxHp > 0 && hp <= 0
   const barRef = useRef<HTMLDivElement>(null)
 
   const barColor = isDead
