@@ -19,6 +19,9 @@ type CharacterData = {
   resilience: number
   skinColor: string | null
   type: string | null
+  equippedHat: { id: number; assetKey: string } | null
+  equippedChestPiece: { id: number; assetKey: string } | null
+  equippedHandheld: { id: number; assetKey: string } | null
 }
 
 export default function CharacterPage() {
@@ -147,10 +150,24 @@ export default function CharacterPage() {
 
       <h3>Inventory</h3>
       <div className='grid gap-4 md:grid-cols-3'>
-        {[HatGlasses, Shirt, Sword].map((Icon, i) => (
+        {[
+          { item: character.equippedHat, Icon: HatGlasses },
+          { item: character.equippedChestPiece, Icon: Shirt },
+          { item: character.equippedHandheld, Icon: Sword },
+        ].map(({ item, Icon }, i) => (
           <Card key={i}>
             <CardContent className='flex aspect-square items-center justify-center'>
-              <Icon className='size-20 text-muted-foreground/40' />
+              {item ? (
+                <Image
+                  src={`/items/${item.assetKey}.png`}
+                  alt={item.assetKey}
+                  width={192}
+                  height={192}
+                  style={{ imageRendering: 'pixelated' }}
+                />
+              ) : (
+                <Icon className='size-20 text-muted-foreground/40' />
+              )}
             </CardContent>
           </Card>
         ))}
