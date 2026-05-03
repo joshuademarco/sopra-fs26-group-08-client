@@ -18,6 +18,9 @@ type CharacterData = {
   resilience: number
   skinColor: string | null
   type: string | null
+  equippedHat: { id: number; assetKey: string } | null
+  equippedChestPiece: { id: number; assetKey: string } | null
+  equippedHandheld: { id: number; assetKey: string } | null
 }
 
 export default function CharacterPage() {
@@ -146,22 +149,51 @@ export default function CharacterPage() {
         />
       </div>
 
-      {/* --- inventory (static for now)--- */}
       <h1 className='text-3xl font-bold tracking-tight'>Inventory</h1>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
         <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
           <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            <HatGlasses className='w-20 h-20 text-muted-foreground/40' />
+            {character.equippedHat ? (
+              <Image
+                src={`/items/${character.equippedHat.assetKey}.png`}
+                alt={character.equippedHat.assetKey}
+                width={192}
+                height={192}
+                style={{ imageRendering: 'pixelated' }}
+              />
+            ) : (
+              <HatGlasses className='w-20 h-20 text-muted-foreground/40' />
+            )}
           </div>
         </div>
         <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
           <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            <Shirt className='w-20 h-20 text-muted-foreground/40' />
+            {character.equippedChestPiece ? (
+              <Image
+                src={`/items/${character.equippedChestPiece.assetKey}.png`}
+                alt={character.equippedChestPiece.assetKey}
+                width={192}
+                height={192}
+                style={{ imageRendering: 'pixelated' }}
+              />
+            ) : (
+              <Shirt className='w-20 h-20 text-muted-foreground/40' />
+            )}
           </div>
         </div>
         <div className='min-h-37.5 rounded-xl border border-border bg-muted/20 p-4'>
           <div className='w-full aspect-square rounded-xl bg-muted/20 flex items-center justify-center'>
-            <Sword className='w-20 h-20 text-muted-foreground/40' />
+            {character.equippedChestPiece ? (
+              <Image
+                src={`/items/${character.equippedChestPiece.assetKey}.png`}
+                alt={character.equippedChestPiece.assetKey}
+                width={192}
+                height={192}
+                style={{ imageRendering: 'pixelated' }}
+              />
+            ) : (
+              <Sword className='w-20 h-20 text-muted-foreground/40' />
+            )}
           </div>
         </div>
       </div>
