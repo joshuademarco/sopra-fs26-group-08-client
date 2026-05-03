@@ -4,9 +4,41 @@ import { CharacterStats } from '@/components/stats'
 import { Card, CardContent } from '@/components/ui/card'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
-import { Axe, Book, Flame, HatGlasses, Heart, Shirt, Star, Sword, User } from 'lucide-react'
+import {
+  CheckCircle,
+  Dumbbell,
+  HatGlasses,
+  Heart,
+  Lightbulb,
+  LucideIcon,
+  Shield,
+  Shirt,
+  Star,
+  Sword,
+  TrendingUp,
+  Trophy,
+  User,
+} from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+
+const achievementConfig: Record<string, { icon: LucideIcon; color: string }> = {
+  FIRST_HABIT: { icon: CheckCircle, color: 'text-emerald-500' },
+  STREAK_3: { icon: TrendingUp, color: 'text-orange-400' },
+  STREAK_7: { icon: Trophy, color: 'text-yellow-500' },
+  STRENGTH_25: { icon: Dumbbell, color: 'text-rose-500' },
+  INTELLIGENCE_25: { icon: Lightbulb, color: 'text-sky-400' },
+  RESILIENCE_25: { icon: Shield, color: 'text-violet-500' },
+}
+
+type AchievementData = {
+  id: number
+  key: string
+  name: string
+  description: string
+  icon: string
+  earnedAt: string
+}
 
 type CharacterData = {
   id: number
@@ -29,17 +61,22 @@ export default function CharacterPage() {
   const api = useApi()
 
   const [character, setCharacter] = useState<CharacterData | null>(null)
+  const [achievements, setAchievements] = useState<AchievementData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
 
-    const fetchCharacter = async () => {
+    const fetchAll = async () => {
       try {
         setIsLoading(true)
-        const data = await api.get<CharacterData>(`/users/${user.id}/character`)
-        setCharacter(data)
+        const [characterData, achievementsData] = await Promise.all([
+          api.get<CharacterData>(`/users/${user.id}/character`),
+          api.get<AchievementData[]>(`/users/${user.id}/achievements`),
+        ])
+        setCharacter(characterData)
+        setAchievements(achievementsData)
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Failed to load character')
       } finally {
@@ -47,7 +84,7 @@ export default function CharacterPage() {
       }
     }
 
-    void fetchCharacter()
+    void fetchAll()
   }, [user])
 
   if (!user) return null
@@ -174,15 +211,25 @@ export default function CharacterPage() {
       </div>
 
       <h3>Achievements</h3>
-      <div className='grid gap-4 md:grid-cols-3'>
-        {[Axe, Flame, Book].map((Icon, i) => (
-          <Card key={i}>
-            <CardContent className='flex aspect-square items-center justify-center'>
-              <Icon className='size-20 text-muted-foreground/40' />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {achievements.length === 0 ? (
+        <p className='text-muted-foreground'>No achievements earned yet.</p>
+      ) : (
+        <div className='grid gap-4 md:grid-cols-3'>
+          {achievements.map((a) => {
+            const { icon: Icon, color } = achievementConfig[a.key] ?? { icon: Trophy, color: 'text-muted-foreground' }
+            return (
+              <Card key={a.id}>
+                <CardContent className='flex flex-col items-center justify-center gap-2 p-6 text-center'>
+                  <Icon className={`size-12 ${color}`} />
+                  <p className='font-bold'>{a.name}</p>
+                  <p className='text-sm text-muted-foreground'>{a.description}</p>
+                  <p className='text-xs text-muted-foreground/60'>Earned {new Date(a.earnedAt).toLocaleDateString()}</p>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      )}
     </main>
   )
 }

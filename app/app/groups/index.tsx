@@ -5,10 +5,23 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { useLiveOnlineUsers } from '@/hooks/useLiveOnlineUsers'
 import { User } from '@/types/user'
+import { CheckCircle, Dumbbell, Lightbulb, LucideIcon, Shield, TrendingUp, Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+
+const achievementConfig: Record<string, { icon: LucideIcon; color: string }> = {
+  FIRST_HABIT: { icon: CheckCircle, color: 'text-emerald-500' },
+  STREAK_3: { icon: TrendingUp, color: 'text-orange-400' },
+  STREAK_7: { icon: Trophy, color: 'text-yellow-500' },
+  STRENGTH_25: { icon: Dumbbell, color: 'text-rose-500' },
+  INTELLIGENCE_25: { icon: Lightbulb, color: 'text-sky-400' },
+  RESILIENCE_25: { icon: Shield, color: 'text-violet-500' },
+}
+
+type Achievement = { id: number; key: string; name: string; description: string }
 
 interface GroupMember extends User {
   level?: number | null
@@ -29,7 +42,9 @@ interface Group {
 export default function GroupsPage() {
   const auth = useAuth()
   const user = auth.user
+  const api = useApi()
   const { users: onlineUsers } = useLiveOnlineUsers()
+  const [memberAchievements, setMemberAchievements] = useState<Achievement[]>([])
 
   const [groups, setGroups] = useState<Group[]>([])
   const [loading, setLoading] = useState(true)
@@ -50,9 +65,15 @@ export default function GroupsPage() {
 
   const getMemberLevel = (member: GroupMember) => member.level ?? member.character?.level ?? null
 
-  const handleOpenProfile = (member: GroupMember) => {
+  const handleOpenProfile = async (member: GroupMember) => {
     setSelectedMember(member)
     setIsProfileOpen(true)
+    try {
+      const data = await api.get<Achievement[]>(`/users/${member.id}/achievements`)
+      setMemberAchievements(data)
+    } catch {
+      setMemberAchievements([])
+    }
   }
 
   const [groupName, setGroupName] = useState('')
@@ -260,6 +281,7 @@ export default function GroupsPage() {
           setIsProfileOpen(open)
           if (!open) {
             setSelectedMember(null)
+            setMemberAchievements([])
           }
         }}
       >
@@ -293,12 +315,28 @@ export default function GroupsPage() {
 
               <Card>
                 <CardContent className='flex flex-col gap-3'>
-                  <p className='text-xs uppercase text-muted-foreground'>Achievement badges</p>
-                  <div className='flex flex-wrap gap-2'>
-                    <Badge variant='outline'>Badge 1</Badge> {/* TODO: Implement Badges here */}
-                    <Badge variant='outline'>Badge 2</Badge>
-                    <Badge variant='outline'>Badge 3</Badge>
-                  </div>
+                  <p className='text-xs uppercase text-muted-foreground'>Achievements</p>
+                  {memberAchievements.length === 0 ? (
+                    <p className='text-sm text-muted-foreground'>No achievements yet.</p>
+                  ) : (
+                    <div className='flex flex-col gap-2'>
+                      {memberAchievements.map((a) => {
+                        const { icon: Icon, color } = achievementConfig[a.key] ?? {
+                          icon: Trophy,
+                          color: 'text-muted-foreground',
+                        }
+                        return (
+                          <div key={a.id} className='flex items-center gap-3'>
+                            <Icon className={`size-5 shrink-0 ${color}`} />
+                            <div>
+                              <p className='text-sm font-medium'>{a.name}</p>
+                              <p className='text-xs text-muted-foreground'>{a.description}</p>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 

@@ -6,8 +6,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { type Habit, categoryLabel, weightLabel } from '@/types/task'
 import { Brain, Check, Flame, Heart, Trash2 } from 'lucide-react'
 
+function getMultiplier(weatherCode: number, category: Habit['category']): number {
+  if (category === 'PHYSICAL') {
+    if (weatherCode <= 3) return 1.0
+    else if (weatherCode <= 48) return 1.2
+    else if (weatherCode <= 67) return 1.5
+    else if (weatherCode <= 77) return 1.8
+    else return 2.0
+  } 
+  else if (category === 'COGNITIVE') {
+    if (weatherCode <= 3) return 1.8
+    else if (weatherCode <= 48) return 1.6
+    else if (weatherCode <= 67) return 1.4
+    else if (weatherCode <= 77) return 1.2
+    else return 1.0
+  } 
+  else if (category === 'EMOTIONAL') {
+    if (weatherCode <= 3) return 1.0
+    else if (weatherCode <= 48) return 1.2
+    else if (weatherCode <= 67) return 1.6
+    else if (weatherCode <= 77) return 1.8
+    else return 1.0
+  }
+  return 1.0
+}
+
 interface HabitCardProps {
   habit: Habit
+  weatherCode: number
   onComplete: () => void
   onDelete: () => void
 }
@@ -23,7 +49,8 @@ function CategoryIcon({ category }: { category: Habit['category'] }) {
   }
 }
 
-export function HabitCard({ habit, onComplete, onDelete }: HabitCardProps) {
+export function HabitCard({ habit, weatherCode, onComplete, onDelete }: HabitCardProps) {
+  const multiplier = getMultiplier(weatherCode, habit.category)
   return (
     <Card className={habit.completed ? 'opacity-60' : ''}>
       <CardHeader>
@@ -48,7 +75,7 @@ export function HabitCard({ habit, onComplete, onDelete }: HabitCardProps) {
             </div>
 
             <p className='text-xs text-muted-foreground'>
-              Completes for {habit.weight * 10} base XP — weather multiplier applies.
+              Completes for {habit.weight * 10} base XP{multiplier > 1.0 ? ` -> ${multiplier}x XP weather multiplier` : ''}
             </p>
 
             {habit.dueAt && !habit.completed && (
