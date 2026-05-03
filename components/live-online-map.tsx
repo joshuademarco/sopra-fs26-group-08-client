@@ -6,7 +6,7 @@ import { useWebsocketContext } from '@/hooks/useWebsocketContext'
 import type { LiveUser } from '@/types/liveUser'
 import { MapPinned, Users } from 'lucide-react'
 import Image from 'next/image'
-import { useMemo } from 'react'
+import { useRef } from 'react'
 import { Badge } from './ui/badge'
 
 function UserMarker({ user }: { user: LiveUser }) {
@@ -48,15 +48,18 @@ function formatUpdatedAt(lastUpdated: Date | null) {
 function getRandomPosition() {
   const left = 8 + Math.random() * 84
   const top = 12 + Math.random() * 72
-  return {
-    left: `${left}%`,
-    top: `${top}%`,
-  }
+  return { left: `${left}%`, top: `${top}%` }
 }
 
 export function LiveOnlineMap() {
+  const userPositionsRef = useRef<Map<LiveUser['id'], { left: string; top: string }>>(new Map())
   const { onlineUsers: users, lastPresenceUpdate: lastUpdated } = useWebsocketContext()
-  const randomPositions = useMemo(() => users.map(() => getRandomPosition()), [users])
+
+  for (const user of users) {
+    if (!userPositionsRef.current.has(user.id)) {
+      userPositionsRef.current.set(user.id, getRandomPosition())
+    }
+  }
 
   return (
     <Card className='max-w-6xl'>
@@ -83,8 +86,8 @@ export function LiveOnlineMap() {
         <div className='relative h-136 overflow-hidden rounded-lg border'>
           <Image src='/map.png' fill alt='Online Map' className='object-contain object-center bg-muted' />
 
-          {users.map((user, index) => {
-            const position = randomPositions[index] ?? { left: '50%', top: '50%' }
+          {users.map((user) => {
+            const position = userPositionsRef.current.get(user.id) ?? { left: '50%', top: '50%' }
 
             return (
               <div
