@@ -1,13 +1,12 @@
 import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
-import { Hero } from '@/components/hero'
 import { Footer } from '@/components/footer'
+import { Hero } from '@/components/hero'
+import { Button } from '@/components/ui/button'
 import { getServerAuthUser } from '@/lib/server-auth'
 import { redirect } from 'next/navigation'
 
 export default async function Home() {
-
   const user = await getServerAuthUser()
 
   if (user) {
