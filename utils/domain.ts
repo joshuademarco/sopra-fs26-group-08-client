@@ -7,7 +7,7 @@ import { isProduction } from "./environment";
  */
 export function getApiDomain(): string {
   const prodUrl = process.env.NEXT_PUBLIC_PROD_API_URL ||
-    "https://grounded-jetty-490810-t0.oa.r.appspot.com";
+    "https://api.bettertogeter.ch";
   const devUrl = "http://localhost:8080";
   return isProduction() ? prodUrl : devUrl;
 }
