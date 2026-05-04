@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next'
-import { getApiDomain } from './utils/domain'
 
 const nextConfig: NextConfig = {
   logging: {
@@ -17,15 +16,6 @@ const nextConfig: NextConfig = {
       '.mjs': ['.mts', '.mjs'],
     }
     return webpackConfig
-  },
-  rewrites: async () => {
-    
-    return [
-      {
-        source: '/api/:path*',
-        destination: getApiDomain() + '/api/:path*',
-      },
-    ]
   },
 }
 

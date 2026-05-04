@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../hooks/useAuth'
 import { LeaderboardEntry } from '../../../types/leaderboard'
-import { getApiDomain } from '../../../utils/domain'
+import { buildApiUrl } from '../../../utils/domain'
 
 export default function LeaderboardPage() {
   const [fullLeaderboard, setFullLeaderboard] = useState<LeaderboardEntry[]>([])
@@ -14,7 +14,7 @@ export default function LeaderboardPage() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch(`${getApiDomain()}/api/leaderboard`, {
+        const response = await fetch(buildApiUrl('/leaderboard'), {
           method: 'GET',
           credentials: 'include',
         })

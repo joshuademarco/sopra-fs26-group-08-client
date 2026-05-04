@@ -9,6 +9,7 @@ import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { useLiveOnlineUsers } from '@/hooks/useLiveOnlineUsers'
 import { User } from '@/types/user'
+import { buildApiUrl } from '@/utils/domain'
 import { CheckCircle, Dumbbell, Lightbulb, LucideIcon, Shield, TrendingUp, Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -82,7 +83,7 @@ export default function GroupsPage() {
   async function fetchGroups() {
     setLoading(true)
     try {
-      const response = await fetch(`/api/groups`, { method: 'GET', credentials: 'include' })
+      const response = await fetch(buildApiUrl('/groups'), { method: 'GET', credentials: 'include' })
       if (response.ok) {
         const data = await response.json()
         if (Array.isArray(data)) {
@@ -108,7 +109,7 @@ export default function GroupsPage() {
   async function handleCreateGroup() {
     setError('')
     try {
-      const response = await fetch(`/api/groups`, {
+      const response = await fetch(buildApiUrl('/groups'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +136,7 @@ export default function GroupsPage() {
   async function handleJoinGroup() {
     setError('')
     try {
-      const response = await fetch(`/api/groups/join`, {
+      const response = await fetch(buildApiUrl('/groups/join'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

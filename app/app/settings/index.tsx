@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { buildApiUrl } from '@/utils/domain'
 
 export default function SettingsPage() {
   const { user, updateProfile } = useAuth()
@@ -72,7 +73,7 @@ export default function SettingsPage() {
     setIsSaving(true)
 
     try {
-      const response = await fetch('/api/auth/change-password', {
+      const response = await fetch(buildApiUrl('/auth/change-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

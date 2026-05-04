@@ -12,6 +12,10 @@ export function getApiDomain(): string {
   return isProduction() ? prodUrl : devUrl;
 }
 
+export function buildApiUrl(endpoint: string): string {
+  return `${getApiDomain()}/api${endpoint}`;
+}
+
 /**
  * Returns the websocket base URL derived from the API base URL.
  */

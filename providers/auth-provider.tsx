@@ -1,5 +1,6 @@
 'use client'
 
+import { buildApiUrl } from '@/utils/domain'
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
 type AuthUser = {
@@ -70,7 +71,7 @@ async function parseError(res: Response, fallback: string): Promise<never> {
 }
 
 function buildAuthUrl(path: string): string {
-  return `/api${path}`
+  return buildApiUrl(path)
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
