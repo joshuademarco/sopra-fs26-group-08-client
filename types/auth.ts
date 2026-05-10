@@ -8,4 +8,5 @@ export interface AuthUser {
   strength?: number | null
   intelligence?: number | null
   resilience?: number | null
+  onboardingCompleted?: boolean | null
 }

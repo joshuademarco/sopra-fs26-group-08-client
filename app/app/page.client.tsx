@@ -13,6 +13,7 @@ import GroupsPage from './groups'
 import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
 import AccountPage from './account'
+import { Onboarding } from '@/components/ui/onboarding'
 
 export default function ClientApplicationPage({ weatherCode }: { weatherCode: number | null }) {
   const router = useRouter()
@@ -72,6 +73,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           </div>
         </div>
       </SidebarInset>
+      <Onboarding />
     </SidebarProvider>
   )
 }

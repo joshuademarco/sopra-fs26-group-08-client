@@ -13,6 +13,7 @@ type AuthUser = {
   strength?: number | null
   intelligence?: number | null
   resilience?: number | null
+  onboardingCompleted?: boolean | null
 }
 
 type LoginInput = {
@@ -40,6 +41,7 @@ type AuthContextValue = {
   register: (input: RegisterInput) => Promise<AuthUser>
   updateProfile: (input: UpdateProfileInput) => Promise<AuthUser>
   logout: () => Promise<void>
+  completeOnboarding: () => Promise<AuthUser>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -202,6 +204,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [clearSession])
 
+  const completeOnboarding = useCallback(async () => {
+    const res = await fetch(buildAuthUrl('/auth/onboarding'), {
+      method: 'PATCH',
+      credentials: 'include',
+    })
+
+    if (!res.ok) {
+      await parseError(res, 'Failed to complete onboarding')
+    }
+
+    const payload = (await res.json()) as AuthUser
+    persistSession(payload)
+    return payload
+  }, [persistSession])
+
   const value = useMemo<AuthContextValue>(() => {
     return {
       user,
@@ -211,8 +228,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       register,
       updateProfile,
       logout,
+      completeOnboarding,
     }
-  }, [isLoading, login, logout, register, updateProfile, user])
+  }, [isLoading, login, logout, register, updateProfile, completeOnboarding, user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
