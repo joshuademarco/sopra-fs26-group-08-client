@@ -1,5 +1,4 @@
-import { BossRaid, RaidMember, RaidState } from '@/components/raid-card'
-import { RaidData, RaidMemberData, RaidTaskData } from '@/types/raids'
+import { BossRaid, RaidData, RaidMember, RaidMemberData, RaidState, RaidTaskData } from '@/types/raids'
 
 export const MONSTER_IMAGE = '/characters/bosses/innereschweinehund.png'
 export const RECONNECT_DELAY_MS = 2000
@@ -97,13 +96,21 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
     const myPending = assignedPendingTasks(tasks, member.userId)
 
     if (state === 'lobby') {
+      const lobbyStatus =
+        member.accepted === true
+          ? 'Ready'
+          : member.accepted === false
+            ? 'Declined'
+            : onlineUserIds.has(member.userId)
+              ? 'Pending'
+              : 'Offline'
       return {
         name: member.username,
         isCurrentUser,
         characterType: member.characterType ?? null,
         health: member.health,
         maxHealth: member.maxHealth,
-        status: member.joined ? 'Ready' : onlineUserIds.has(member.userId) ? 'Pending' : 'Offline',
+        status: lobbyStatus,
       }
     }
 
@@ -115,11 +122,12 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
         characterType: member.characterType ?? null,
         health: member.health,
         maxHealth: member.maxHealth,
-        status: 'Ready',
+        status: onlineUserIds.has(member.userId) ? 'Ready' : 'Offline',
         taskDescription: nextTask ? nextTask.title : 'All tasks done!',
         taskDamage: nextTask?.successfulDamage,
         tasksCompleted: myTasks.length - myPending.length,
         totalTasks: myTasks.length,
+        damageDealt: member.damageDealt ?? 0,
       }
     }
 
@@ -131,20 +139,28 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
       status: 'Ready',
       tasksCompleted: myTasks.filter((task) => (task.successfullyCompletedByUsers ?? []).includes(member.userId)).length,
       totalTasks: myTasks.length,
-      xpChange: member.damageDealt,
-      died: false,
+      xpChange: member.xpEarned ?? 0,
+      damageDealt: member.damageDealt ?? 0,
+      mvp: member.mvp ?? false,
+      died: (member.knockedOut ?? false) || (member.health != null && member.health <= 0),
     }
   })
 
   let raidStartsIn: string | undefined
-  if (raid.scheduledTime && state === 'lobby') {
-    const diff = Math.max(0, Math.floor((new Date(raid.scheduledTime).getTime() - Date.now()) / 1000))
-    const h = Math.floor(diff / 3600)
-    const m = Math.floor((diff % 3600) / 60)
-    const s = diff % 60
-    raidStartsIn = h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${s}s` : `${s}s`
+  if (state === 'lobby') {
+    if (!raid.scheduledTime) {
+      raidStartsIn = 'Finding best time...'
+    } else {
+      const diff = Math.max(0, Math.floor((new Date(raid.scheduledTime).getTime() - Date.now()) / 1000))
+      const d = Math.floor(diff / 86400)
+      const h = Math.floor((diff % 86400) / 3600)
+      const m = Math.floor((diff % 3600) / 60)
+      const s = diff % 60
+      raidStartsIn = d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${s}s` : `${s}s`
+    }
   }
 
+  const estimatedReward = raid.maxHealth + tasks.length * 10
   return {
     id: raid.id,
     groupName: raid.groupName,
@@ -153,6 +169,9 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
     raidStartsIn,
     timeLeftSeconds: state === 'active' ? timeLeft : undefined,
     totalSeconds: state === 'active' ? raid.durationSeconds : undefined,
+    durationSeconds: raid.durationSeconds,
+    tasksCount: tasks.length,
+    estimatedReward,
     state,
     monster: {
       name: raid.name,

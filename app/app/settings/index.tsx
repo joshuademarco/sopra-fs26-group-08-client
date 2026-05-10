@@ -1,11 +1,11 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuth } from '@/hooks/useAuth'
 import { buildApiUrl } from '@/utils/domain'
+import { FormEvent, useEffect, useState } from 'react'
 
 export default function SettingsPage() {
   const { user, updateProfile } = useAuth()
@@ -64,7 +64,7 @@ export default function SettingsPage() {
       setError('New password must be at least 8 characters long')
       return
     }
-    
+
     if (newPassword !== confirmPassword) {
       setError('New passwords do not match')
       return
@@ -89,7 +89,9 @@ export default function SettingsPage() {
         const payload = await response.json().catch(() => null)
         const reason =
           payload && typeof payload === 'object'
-            ? ('reason' in payload ? (payload as any).reason : (payload as any).message)
+            ? 'reason' in payload
+              ? (payload as any).reason
+              : (payload as any).message
             : null
         if (response.status === 401 && !reason) {
           throw new Error('Wrong current password')
@@ -109,7 +111,7 @@ export default function SettingsPage() {
   }
 
   if (!user) {
-    return <div className='rounded-xl border border-input/20 bg-background p-6'>You must be logged in to view settings.</div>
+    return <div>Loading...</div>
   }
 
   return (
@@ -121,11 +123,15 @@ export default function SettingsPage() {
         <div className='mt-6 grid gap-4 text-sm'>
           <div>
             <Label htmlFor='username'>Username</Label>
-            <div className='mt-1 rounded-md border border-input/20 bg-input/10 px-3 py-2 text-sm text-foreground'>{user.username}</div>
+            <div className='mt-1 rounded-md border border-input/20 bg-input/10 px-3 py-2 text-sm text-foreground'>
+              {user.username}
+            </div>
           </div>
           <div>
             <Label htmlFor='email'>Email</Label>
-            <div className='mt-1 rounded-md border border-input/20 bg-input/10 px-3 py-2 text-sm text-foreground'>{user.email}</div>
+            <div className='mt-1 rounded-md border border-input/20 bg-input/10 px-3 py-2 text-sm text-foreground'>
+              {user.email}
+            </div>
           </div>
         </div>
       </section>
@@ -137,24 +143,12 @@ export default function SettingsPage() {
         <div className='mt-6 grid gap-4 text-sm'>
           <div className='grid gap-2'>
             <Label htmlFor='username'>Username</Label>
-            <Input
-              id='username'
-              type='text'
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              required
-            />
+            <Input id='username' type='text' value={username} onChange={(event) => setUsername(event.target.value)} required />
           </div>
 
           <div className='grid gap-2'>
             <Label htmlFor='email'>Email</Label>
-            <Input
-              id='email'
-              type='email'
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
+            <Input id='email' type='email' value={email} onChange={(event) => setEmail(event.target.value)} required />
           </div>
 
           {profileError ? <p className='text-sm text-destructive'>{profileError}</p> : null}

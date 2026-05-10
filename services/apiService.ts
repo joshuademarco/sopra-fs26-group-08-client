@@ -28,6 +28,9 @@ export class ApiService {
     errorMessage: string,
   ): Promise<T> {
     if (!res.ok) {
+      if (res.status === 401 && typeof window !== "undefined") {
+        window.location.assign("/login");
+      }
       let errorDetail = res.statusText;
       try {
         const errorInfo = await res.json();

@@ -9,7 +9,6 @@ import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { useLiveOnlineUsers } from '@/hooks/useLiveOnlineUsers'
 import { User } from '@/types/user'
-import { buildApiUrl } from '@/utils/domain'
 import { CheckCircle, Dumbbell, Lightbulb, LucideIcon, Shield, TrendingUp, Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -83,23 +82,18 @@ export default function GroupsPage() {
   async function fetchGroups() {
     setLoading(true)
     try {
-      const response = await fetch(buildApiUrl('/groups'), { method: 'GET', credentials: 'include' })
-      if (response.ok) {
-        const data = await response.json()
-        if (Array.isArray(data)) {
-          setGroups(data)
-        } else if (Array.isArray(data?.groups)) {
-          setGroups(data.groups)
-        } else {
-          setGroups([])
-        }
+      const data = await api.get<Group[] | { groups: Group[] }>('/groups')
+      if (Array.isArray(data)) {
+        setGroups(data)
+      } else if (Array.isArray(data?.groups)) {
+        setGroups(data.groups)
+      } else {
+        setGroups([])
       }
-
-      setLoading(false)
-    } catch (err) {
-      console.log('Error:', err)
-      setLoading(false)
+    } catch {
+      setGroups([])
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -109,124 +103,88 @@ export default function GroupsPage() {
   async function handleCreateGroup() {
     setError('')
     try {
-      const response = await fetch(buildApiUrl('/groups'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: groupName,
-          password: password,
-        }),
-      })
-      if (response.ok) {
-        setIsCreateOpen(false)
-        setGroupName('')
-        setPassword('')
-        fetchGroups()
-      } else {
-        setError('Could not create the group.')
-      }
+      await api.post('/groups', { name: groupName, password })
+      setIsCreateOpen(false)
+      setGroupName('')
+      setPassword('')
+      fetchGroups()
     } catch {
-      setError('Server error. Please try again.')
+      setError('Could not create the group.')
     }
   }
 
   async function handleJoinGroup() {
     setError('')
     try {
-      const response = await fetch(buildApiUrl('/groups/join'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: groupName,
-          password: password,
-        }),
-      })
-      if (response.ok) {
-        setIsJoinOpen(false)
-        setGroupName('')
-        setPassword('')
-        fetchGroups()
-      } else {
-        setError('Could not join the group.')
-      }
+      await api.post('/groups/join', { name: groupName, password })
+      setIsJoinOpen(false)
+      setGroupName('')
+      setPassword('')
+      fetchGroups()
     } catch {
-      setError('Server error. Please try again.')
+      setError('Could not join the group.')
     }
   }
 
   if (loading) {
     return (
-      <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-        <h1 className='text-3xl font-bold tracking-tight'>Groups</h1>
+      <main className='flex flex-1 flex-col gap-4'>
         <p className='text-muted-foreground'>Loading...</p>
       </main>
     )
   }
 
   return (
-    <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-      {/* Header */}
-      <div className='flex items-center justify-between gap-4'>
-        <div>
-          <h1 className='text-3xl font-bold tracking-tight'>Groups</h1>
-          <p className='text-sm text-muted-foreground'>Manage and view your groups</p>
-        </div>
-        {/* Buttons Join + Create */}
-        <div className='flex gap-2'>
-          {/* Join */}
-          <Dialog
-            open={isJoinOpen}
-            onOpenChange={(open) => {
-              setIsJoinOpen(open)
-              setError('')
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button variant='outline'>Join Group</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Join a Group</DialogTitle>
-              </DialogHeader>
-              <div className='flex flex-col gap-4'>
-                <Input placeholder='Group Name' value={groupName} onChange={(e) => setGroupName(e.target.value)} />
-                <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
-                {error && <p className='text-sm text-destructive'>{error}</p>}
-                <Button onClick={handleJoinGroup}>Confirm</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+    <main className='flex flex-1 flex-col gap-4'>
+      {/* Buttons Join + Create */}
+      <div className='flex gap-2'>
+        {/* Join */}
+        <Dialog
+          open={isJoinOpen}
+          onOpenChange={(open) => {
+            setIsJoinOpen(open)
+            setError('')
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button variant='outline'>Join Group</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Join a Group</DialogTitle>
+            </DialogHeader>
+            <div className='flex flex-col gap-4'>
+              <Input placeholder='Group Name' value={groupName} onChange={(e) => setGroupName(e.target.value)} />
+              <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
+              {error && <p className='text-sm text-destructive'>{error}</p>}
+              <Button onClick={handleJoinGroup}>Confirm</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
-          {/* Create */}
-          <Dialog
-            open={isCreateOpen}
-            onOpenChange={(open) => {
-              setIsCreateOpen(open)
-              setError('')
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button>Create Group</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create a new Group</DialogTitle>
-              </DialogHeader>
-              <div className='flex flex-col gap-4'>
-                <Input placeholder='Group Name' value={groupName} onChange={(e) => setGroupName(e.target.value)} />
-                <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
-                {error && <p className='text-sm text-destructive'>{error}</p>}
-                <Button onClick={handleCreateGroup}>Confirm</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+        {/* Create */}
+        <Dialog
+          open={isCreateOpen}
+          onOpenChange={(open) => {
+            setIsCreateOpen(open)
+            setError('')
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button>Create Group</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create a new Group</DialogTitle>
+            </DialogHeader>
+            <div className='flex flex-col gap-4'>
+              <Input placeholder='Group Name' value={groupName} onChange={(e) => setGroupName(e.target.value)} />
+              <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
+              {error && <p className='text-sm text-destructive'>{error}</p>}
+              <Button onClick={handleCreateGroup}>Confirm</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Groups */}

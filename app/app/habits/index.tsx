@@ -27,9 +27,7 @@ export default function HabitsPage() {
   if (!user) return null
 
   return (
-    <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-      <h1 className='text-3xl font-bold tracking-tight'>Tasks</h1>
-
+    <main className='flex flex-1 flex-col gap-4'>
       <div className='flex gap-2'>
         <Button variant={activeTab === 'habits' ? 'default' : 'outline'} onClick={() => setActiveTab('habits')}>
           Habits

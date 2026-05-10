@@ -14,6 +14,24 @@ import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
 import SettingsPage from './settings'
 
+interface PageTitle {
+  title: string
+  subtitle?: string
+}
+
+const getPageTitle = (page: string): PageTitle => {
+  const titles: Record<string, PageTitle> = {
+    dashboard: { title: 'Dashboard' },
+    habits: { title: 'Habits', subtitle: 'Tasks' },
+    character: { title: 'Character' },
+    groups: { title: 'Groups' },
+    'boss-raids': { title: 'Boss Raids' },
+    leaderboard: { title: 'Leaderboard' },
+    settings: { title: 'Settings' },
+  }
+  return titles[page] || { title: 'Dashboard' }
+}
+
 export default function ClientApplicationPage({ weatherCode }: { weatherCode: number | null }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -40,11 +58,17 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
             </div>
           </div>
         </header>
-        <div className='flex w-full flex-col'>
-          <div className='flex p-4 pb-0'>
-            <div className='ml-auto'>{weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}</div>
+        <div className='flex w-full flex-col p-12 pt-0'>
+          <div className='flex items-center justify-between gap-4 mb-6'>
+            <div className='flex flex-col'>
+              <h2>{getPageTitle(currentPage).title}</h2>
+              {getPageTitle(currentPage).subtitle && (
+                <p className='text-sm text-muted-foreground'>{getPageTitle(currentPage).subtitle}</p>
+              )}
+            </div>
+            <div className='shrink-0'>{weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}</div>
           </div>
-          <div className='flex flex-1 flex-col gap-6 p-4 pt-0'>
+          <div className='flex-1'>
             {currentPage === 'dashboard' && <Dashboard />}
 
             {currentPage === 'habits' && <HabitsPage />}
