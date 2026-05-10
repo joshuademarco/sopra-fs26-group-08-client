@@ -2,6 +2,7 @@
 
 import { CharacterStats } from '@/components/stats'
 import { Card, CardContent } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import {
@@ -57,6 +58,13 @@ type CharacterData = {
   equippedHandheld: { id: number; assetKey: string } | null
 }
 
+type InventoryItem = {
+  id: number
+  name: string
+  assetKey: string
+  itemType: 'HAT' | 'CHESTPIECE' | 'HANDHELD'
+}
+
 export default function CharacterPage() {
   const { user } = useAuth()
   const api = useApi()
@@ -64,6 +72,9 @@ export default function CharacterPage() {
   const [character, setCharacter] = useState<CharacterData | null>(null)
   const [achievements, setAchievements] = useState<AchievementData[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [inventory, setInventory] = useState<InventoryItem[]>([])
+  const [pickerSlot, setPickerSlot] = useState<'HAT' | 'CHESTPIECE' | 'HANDHELD' | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -71,12 +82,14 @@ export default function CharacterPage() {
     const fetchAll = async () => {
       try {
         setIsLoading(true)
-        const [characterData, achievementsData] = await Promise.all([
+        const [characterData, achievementsData, inventoryData] = await Promise.all([
           api.get<CharacterData>(`/users/${user.id}/character`),
           api.get<AchievementData[]>(`/users/${user.id}/achievements`),
+          api.get<InventoryItem[]>(`/users/${user.id}/items`),
         ])
         setCharacter(characterData)
         setAchievements(achievementsData)
+        setInventory(inventoryData)
       } catch (e) {
         toast.error(e instanceof Error ? e.message : 'Failed to load character')
       } finally {
@@ -85,7 +98,27 @@ export default function CharacterPage() {
     }
 
     void fetchAll()
-  }, [user])
+  }, [user, api])
+
+  async function equipItem(itemId: number) {
+    if (!character) return
+
+    const dto = {
+      hatId: character.equippedHat?.id ?? null,
+      chestPieceId: character.equippedChestPiece?.id ?? null,
+      handHeldId: character.equippedHandheld?.id ?? null,
+    }
+
+    if (pickerSlot === 'HAT') dto.hatId = itemId
+    else if (pickerSlot === 'CHESTPIECE') dto.chestPieceId = itemId
+    else if (pickerSlot === 'HANDHELD') dto.handHeldId = itemId
+
+    setPickerSlot(null)
+    
+    const updated = await api.put<CharacterData>(`/characters/${character.id}/equipment`, dto)
+    
+    setCharacter(updated)
+  }
 
   if (!user) return null
 
@@ -108,6 +141,18 @@ export default function CharacterPage() {
   }
 
   const xpThreshold = character.level * 100
+
+  const slotLabels: Record<string, string> = {
+    HAT: 'hats',
+    CHESTPIECE: 'chest pieces',
+    HANDHELD: 'handheld items',
+  }
+
+  const slotTitleLabels: Record<string, string> = {
+    HAT: 'hat',
+    CHESTPIECE: 'chest piece',
+    HANDHELD: 'handheld item',
+  }
 
   return (
     <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
@@ -188,11 +233,11 @@ export default function CharacterPage() {
       <h3>Inventory</h3>
       <div className='grid gap-4 md:grid-cols-3'>
         {[
-          { item: character.equippedHat, Icon: HatGlasses },
-          { item: character.equippedChestPiece, Icon: Shirt },
-          { item: character.equippedHandheld, Icon: Sword },
-        ].map(({ item, Icon }, i) => (
-          <Card key={i}>
+          { item: character.equippedHat, Icon: HatGlasses, slotType: 'HAT' as const },
+          { item: character.equippedChestPiece, Icon: Shirt, slotType: 'CHESTPIECE' as const },
+          { item: character.equippedHandheld, Icon: Sword, slotType: 'HANDHELD' as const },
+        ].map(({ item, Icon, slotType }, i) => (
+          <Card key={i} onClick={() => setPickerSlot(slotType)} className='cursor-pointer hover:ring-2 hover:ring-primary'>
             <CardContent className='flex aspect-square items-center justify-center'>
               {item ? (
                 <Image
@@ -209,6 +254,45 @@ export default function CharacterPage() {
           </Card>
         ))}
       </div>
+
+      <Dialog
+        open={pickerSlot !== null}
+        onOpenChange={(open) => {
+          if (!open) setPickerSlot(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Choose a {slotTitleLabels[pickerSlot ?? '']}.</DialogTitle>
+          </DialogHeader>
+          {(() => {
+            const slotItems = inventory.filter((item) => item.itemType === pickerSlot)
+            return slotItems.length === 0 ? (
+              <p className='text-muted-foreground'>You don&apos;t have any {slotLabels[pickerSlot ?? '']} yet.</p>
+            ) : (
+              <div className='grid grid-cols-3 gap-2'>
+                {slotItems.map((item) => (
+                  <Card
+                    key={item.id}
+                    onClick={() => equipItem(item.id)}
+                    className='cursor-pointer hover:ring-2 hover:ring-primary'
+                  >
+                    <CardContent className='flex aspect-square items-center justify-center p-2'>
+                      <Image
+                        src={`/items/${item.assetKey}.png`}
+                        alt={item.name}
+                        width={80}
+                        height={80}
+                        style={{ imageRendering: 'pixelated' }}
+                      />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )
+          })()}
+        </DialogContent>
+      </Dialog>
 
       <h3>Achievements</h3>
       {achievements.length === 0 ? (
