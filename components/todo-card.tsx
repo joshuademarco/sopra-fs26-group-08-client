@@ -70,9 +70,7 @@ export function TodoCard({ todo, onComplete, onDelete }: TodoCardProps) {
               <Badge variant='secondary'>{weightLabel(todo.weight)}</Badge>
             </div>
 
-            <p className='text-xs text-muted-foreground'>
-              Completes for {todo.weight * 10} XP — one-time, no weather multiplier.
-            </p>
+            <p className='text-xs text-muted-foreground'>Completes for {todo.weight * 10} XP</p>
 
             <div className='flex items-center gap-2'>
               <Button size='icon-lg' onClick={onComplete} disabled={todo.completed}>
