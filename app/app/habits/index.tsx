@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth'
 import type { Habit, HabitCategory, HabitFrequency, NewHabit, NewTodo, Todo } from '@/types/task'
 import { Brain, Flame, Heart, Minus, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 function weightLabel(w: number) {
   return w === 1 ? 'Easy' : w === 2 ? 'Medium' : 'Hard'
@@ -52,7 +53,6 @@ function HabitsSection({ userId }: { userId: string | number }) {
   const [habits, setHabits] = useState<Habit[]>([])
   const [weatherCode, setWeatherCode] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const [newHabit, setNewHabit] = useState<NewHabit>({
@@ -75,7 +75,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
       const data = await api.get<Habit[]>(`/users/${userId}/habits`)
       setHabits(data)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load habits')
+      toast.error(e instanceof Error ? e.message : 'Failed to load habits')
     } finally {
       setIsLoading(false)
     }
@@ -98,7 +98,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
       setNewHabit({ title: '', description: '', category: 'PHYSICAL', frequency: 'DAILY', positive: true, weight: 1 })
       setDialogOpen(false)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to create habit')
+      toast.error(e instanceof Error ? e.message : 'Failed to create habit')
     }
   }
 
@@ -107,7 +107,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
       const updated = await api.put<Habit>(`/users/${userId}/habits/${habitId}/complete`, {})
       setHabits((prev) => prev.map((h) => (h.id === habitId ? updated : h)))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to complete habit')
+      toast.error(e instanceof Error ? e.message : 'Failed to complete habit')
     }
   }
 
@@ -116,7 +116,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
       await api.delete(`/users/${userId}/habits/${habitId}`)
       setHabits((prev) => prev.filter((h) => h.id !== habitId))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to delete habit')
+      toast.error(e instanceof Error ? e.message : 'Failed to delete habit')
     }
   }
 
@@ -126,8 +126,6 @@ function HabitsSection({ userId }: { userId: string | number }) {
 
   return (
     <div className='flex flex-col gap-4'>
-      {error && <p className='text-sm text-destructive'>{error}</p>}
-
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button className='w-fit'>
@@ -168,7 +166,6 @@ function TodosSection({ userId }: { userId: string | number }) {
   const api = useApi()
   const [todos, setTodos] = useState<Todo[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const [newTodo, setNewTodo] = useState<NewTodo>({
@@ -189,7 +186,7 @@ function TodosSection({ userId }: { userId: string | number }) {
       const data = await api.get<Todo[]>(`/users/${userId}/todos`)
       setTodos(data)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load todos')
+      toast.error(e instanceof Error ? e.message : 'Failed to load todos')
     } finally {
       setIsLoading(false)
     }
@@ -207,7 +204,7 @@ function TodosSection({ userId }: { userId: string | number }) {
       setNewTodo({ title: '', description: '', category: 'PHYSICAL', weight: 1, dueAt: '' })
       setDialogOpen(false)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to create todo')
+      toast.error(e instanceof Error ? e.message : 'Failed to create todo')
     }
   }
 
@@ -216,7 +213,7 @@ function TodosSection({ userId }: { userId: string | number }) {
       const updated = await api.put<Todo>(`/users/${userId}/todos/${todoId}/complete`, {})
       setTodos((prev) => prev.map((t) => (t.id === todoId ? updated : t)))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to complete todo')
+      toast.error(e instanceof Error ? e.message : 'Failed to complete todo')
     }
   }
 
@@ -225,7 +222,7 @@ function TodosSection({ userId }: { userId: string | number }) {
       await api.delete(`/users/${userId}/todos/${todoId}`)
       setTodos((prev) => prev.filter((t) => t.id !== todoId))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to delete todo')
+      toast.error(e instanceof Error ? e.message : 'Failed to delete todo')
     }
   }
 
@@ -235,8 +232,6 @@ function TodosSection({ userId }: { userId: string | number }) {
 
   return (
     <div className='flex flex-col gap-4'>
-      {error && <p className='text-sm text-destructive'>{error}</p>}
-
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button className='w-fit'>

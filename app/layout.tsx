@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 
 import { Providers } from '@/providers'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -23,6 +24,7 @@ export default function RootLayout({
         <Providers>
           <div className='flex min-h-screen flex-col'>
             <main className='grow'>{children}</main>
+            <Toaster />
           </div>
         </Providers>
       </body>

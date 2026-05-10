@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { useAuth } from '@/hooks/useAuth'
-import { Award, Home, PersonStanding, Settings, ShieldHalf, StickyNote, Sword } from 'lucide-react'
+import { Award, Home, PersonStanding, ShieldHalf, StickyNote, Sword, UserCog } from 'lucide-react'
 import { CharacterWidget } from './character-widget'
 import { NavUser } from './nav-user'
 
@@ -58,9 +58,9 @@ const data = {
   ],
   navSecondary: [
     {
-      title: 'Settings',
-      key: 'settings',
-      icon: <Settings />,
+      title: 'Account',
+      key: 'account',
+      icon: <UserCog />,
     },
   ],
 }
