@@ -30,7 +30,7 @@ export default function HabitsPage() {
   return (
     <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
       <div className='flex items-center gap-2'>
-        <h1 className='text-3xl font-bold tracking-tight'>Tasks</h1>
+        <h2>Tasks</h2>
         <Tooltip>
           <TooltipTrigger asChild>
             <Info className='h-5 w-5 text-muted-foreground' />
@@ -38,7 +38,7 @@ export default function HabitsPage() {
           <TooltipContent className='max-w-sm'>
             <strong>Habits:</strong> Recurring actions you do daily, weekly, or monthly. Keep an eye on the sky! Specific habit
             categories get a weather-based XP boost to keep you motivated. <strong>ToDos:</strong> One-time tasks. While these
-            don't receive weather bonuses, completing them still earns you base XP and levels up your character's stats in that
+            don&apos;t receive weather bonuses, completing them still earns you base XP and levels up your character&apos;s stats in that
             category.
           </TooltipContent>
         </Tooltip>
@@ -313,8 +313,8 @@ function HabitForm({ value, onChange, onSubmit }: { value: NewHabit; onChange: (
               <Info className='h-3.5 w-3.5 text-muted-foreground' />
             </TooltipTrigger>
             <TooltipContent>
-              Choose the category that best fits your habit. Completing it levels the matching character stat ("Morning Run"
-              could be an example for a Physical habit, hence completing it would level up your character's Strength). Weather
+              Choose the category that best fits your habit. Completing it levels the matching character stat (&quot;Morning Run&quot;
+              could be an example for a Physical habit, hence completing it would level up your character&apos;s Strength). Weather
               conditions can boost XP for specific categories.
             </TooltipContent>
           </Tooltip>
@@ -459,8 +459,8 @@ function TodoForm({ value, onChange, onSubmit }: { value: NewTodo; onChange: (v:
               <Info className='h-3.5 w-3.5 text-muted-foreground' />
             </TooltipTrigger>
             <TooltipContent>
-              Choose the category that best fits your To-Do. Completing it levels the matching character stat. ("Mow the lawn"
-              could be an example for a Physical To-Do, hence completing it would level up your character's Strength)
+              Choose the category that best fits your To-Do. Completing it levels the matching character stat. (&quot;Mow the lawn&quot;
+              could be an example for a Physical To-Do, hence completing it would level up your character&apos;s Strength)
             </TooltipContent>
           </Tooltip>
         </Label>
