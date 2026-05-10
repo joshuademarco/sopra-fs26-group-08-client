@@ -14,6 +14,8 @@ export type Habit = {
   dueAt?: string
   completedAt?: string
   createdAt: string
+  multiplier?: number
+  penaltyApplied: boolean
 }
 
 export type Todo = {

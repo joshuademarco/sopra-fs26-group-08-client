@@ -8,10 +8,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import type { Habit, HabitCategory, HabitFrequency, NewHabit, NewTodo, Todo } from '@/types/task'
-import { Brain, Flame, Heart, Minus, Plus } from 'lucide-react'
+import { AlertTriangle, Brain, Flame, Heart, Info, Minus, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 function weightLabel(w: number) {
@@ -28,7 +29,20 @@ export default function HabitsPage() {
 
   return (
     <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-      <h1 className='text-3xl font-bold tracking-tight'>Tasks</h1>
+      <div className='flex items-center gap-2'>
+        <h1 className='text-3xl font-bold tracking-tight'>Tasks</h1>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Info className='h-5 w-5 text-muted-foreground' />
+          </TooltipTrigger>
+          <TooltipContent className='max-w-sm'>
+            <strong>Habits:</strong> Recurring actions you do daily, weekly, or monthly. Keep an eye on the sky! Specific habit
+            categories get a weather-based XP boost to keep you motivated. <strong>ToDos:</strong> One-time tasks. While these
+            don't receive weather bonuses, completing them still earns you base XP and levels up your character's stats in that
+            category.
+          </TooltipContent>
+        </Tooltip>
+      </div>
 
       <div className='flex gap-2'>
         <Button variant={activeTab === 'habits' ? 'default' : 'outline'} onClick={() => setActiveTab('habits')}>
@@ -50,7 +64,6 @@ export default function HabitsPage() {
 function HabitsSection({ userId }: { userId: string | number }) {
   const api = useApi()
   const [habits, setHabits] = useState<Habit[]>([])
-  const [weatherCode, setWeatherCode] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -66,7 +79,6 @@ function HabitsSection({ userId }: { userId: string | number }) {
 
   useEffect(() => {
     void fetchHabits()
-    void fetchWeather()
   }, [userId])
 
   async function fetchHabits() {
@@ -78,15 +90,6 @@ function HabitsSection({ userId }: { userId: string | number }) {
       setError(e instanceof Error ? e.message : 'Failed to load habits')
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  async function fetchWeather() {
-    try {
-      const code = await api.get<number>('/weather')
-      setWeatherCode(code)
-    } catch {
-      // just for safety (if weather API fails) -> no bonus
     }
   }
 
@@ -147,11 +150,16 @@ function HabitsSection({ userId }: { userId: string | number }) {
         <EmptyState message='No habits yet. Add one to start earning XP!' />
       ) : (
         <div className='flex flex-col gap-3'>
+          {habits.some((h) => h.penaltyApplied) && (
+            <div className='flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive'>
+              <AlertTriangle className='h-4 w-4 shrink-0' />
+              <span>You missed habits last period - your character lost health.</span>
+            </div>
+          )}
           {habits.map((habit) => (
             <HabitCard
               key={habit.id}
               habit={habit}
-              weatherCode={weatherCode}
               onComplete={() => void completeHabit(habit.id)}
               onDelete={() => void deleteHabit(habit.id)}
             />
@@ -298,7 +306,19 @@ function HabitForm({ value, onChange, onSubmit }: { value: NewHabit; onChange: (
 
       {/* habit category for character stats */}
       <div className='flex flex-col gap-1.5'>
-        <Label>Category</Label>
+        <Label>
+          Category
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className='h-3.5 w-3.5 text-muted-foreground' />
+            </TooltipTrigger>
+            <TooltipContent>
+              Choose the category that best fits your habit. Completing it levels the matching character stat ("Morning Run"
+              could be an example for a Physical habit, hence completing it would level up your character's Strength). Weather
+              conditions can boost XP for specific categories.
+            </TooltipContent>
+          </Tooltip>
+        </Label>
         <Select value={value.category} onValueChange={(v) => onChange({ ...value, category: v as HabitCategory })}>
           <SelectTrigger>
             <SelectValue />
@@ -339,7 +359,18 @@ function HabitForm({ value, onChange, onSubmit }: { value: NewHabit; onChange: (
       </div>
 
       <div className='flex flex-col gap-1.5'>
-        <Label>Type</Label>
+        <Label>
+          Type
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className='h-3.5 w-3.5 text-muted-foreground' />
+            </TooltipTrigger>
+            <TooltipContent>
+              Positive habits (e.g. Morning run) reward you with XP when completed. Negative habits (e.g. Smoking) represent bad
+              habits you want to avoid - completing them applies a health reduction to your character.
+            </TooltipContent>
+          </Tooltip>
+        </Label>
         <div className='flex gap-2'>
           <Button
             type='button'
@@ -361,7 +392,18 @@ function HabitForm({ value, onChange, onSubmit }: { value: NewHabit; onChange: (
       </div>
 
       <div className='flex flex-col gap-1.5'>
-        <Label>Difficulty</Label>
+        <Label>
+          Difficulty
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className='h-3.5 w-3.5 text-muted-foreground' />
+            </TooltipTrigger>
+            <TooltipContent>
+              Difficulty describes how challenging this habit is to complete. Higher difficulty means greater XP rewards when
+              completed, but also greater health damage when missed or a negative habit is completed.
+            </TooltipContent>
+          </Tooltip>
+        </Label>
         <div className='flex gap-2'>
           {[1, 2, 3].map((w) => (
             <Button
@@ -410,7 +452,18 @@ function TodoForm({ value, onChange, onSubmit }: { value: NewTodo; onChange: (v:
 
       {/* todo category for character stats */}
       <div className='flex flex-col gap-1.5'>
-        <Label>Category</Label>
+        <Label>
+          Category
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className='h-3.5 w-3.5 text-muted-foreground' />
+            </TooltipTrigger>
+            <TooltipContent>
+              Choose the category that best fits your To-Do. Completing it levels the matching character stat. ("Mow the lawn"
+              could be an example for a Physical To-Do, hence completing it would level up your character's Strength)
+            </TooltipContent>
+          </Tooltip>
+        </Label>
         <Select value={value.category} onValueChange={(v) => onChange({ ...value, category: v as HabitCategory })}>
           <SelectTrigger>
             <SelectValue />
@@ -436,7 +489,18 @@ function TodoForm({ value, onChange, onSubmit }: { value: NewTodo; onChange: (v:
       </div>
 
       <div className='flex flex-col gap-1.5'>
-        <Label>Difficulty</Label>
+        <Label>
+          Difficulty
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className='h-3.5 w-3.5 text-muted-foreground' />
+            </TooltipTrigger>
+            <TooltipContent>
+              Difficulty describes how challenging this To-Do is to complete. Higher difficulty means greater XP rewards when
+              completed.
+            </TooltipContent>
+          </Tooltip>
+        </Label>
         <div className='flex gap-2'>
           {[1, 2, 3].map((w) => (
             <Button
