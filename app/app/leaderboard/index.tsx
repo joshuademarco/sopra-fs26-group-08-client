@@ -44,7 +44,7 @@ export default function LeaderboardPage() {
 
   return (
     <main className='flex flex-col gap-4 p-4'>
-      <h1 className='text-3xl font-bold tracking-tight'>Groups</h1>
+      <h2>Groups</h2>
 
       {loading && <p className='text-muted-foreground'>Loading...</p>}
 
