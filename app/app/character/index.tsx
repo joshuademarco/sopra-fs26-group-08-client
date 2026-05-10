@@ -97,7 +97,7 @@ export default function CharacterPage() {
     }
 
     void fetchAll()
-  }, [user])
+  }, [user, api])
 
   async function equipItem(itemId: number) {
     if (!character) return
@@ -267,7 +267,7 @@ export default function CharacterPage() {
           {(() => {
             const slotItems = inventory.filter((item) => item.itemType === pickerSlot)
             return slotItems.length === 0 ? (
-              <p className='text-muted-foreground'>You don't have any {slotLabels[pickerSlot ?? '']} yet.</p>
+              <p className='text-muted-foreground'>You don&apos;t have any {slotLabels[pickerSlot ?? '']} yet.</p>
             ) : (
               <div className='grid grid-cols-3 gap-2'>
                 {slotItems.map((item) => (
