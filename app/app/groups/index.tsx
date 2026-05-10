@@ -174,7 +174,7 @@ export default function GroupsPage() {
       {/* Header */}
       <div className='flex items-center justify-between gap-4'>
         <div>
-          <h1 className='text-3xl font-bold tracking-tight'>Groups</h1>
+          <h2>Groups</h2>
           <p className='text-sm text-muted-foreground'>Manage and view your groups</p>
         </div>
         {/* Buttons Join + Create */}
