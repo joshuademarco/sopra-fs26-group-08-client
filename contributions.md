@@ -119,14 +119,14 @@ reason).
 
 ---
 
-## Contributions Week 6 - [Begin Date] to [End Date]
+## Contributions Week 6 - [04.05.2026] to [10.05.2026]
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@yappayappay]** | [10.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/710da6ea2a29e911c389493352a60b84ebc1340c] | [implemented missed habit health penalty and bugfix weather multiplier backend part. closes#9 #59 #60] | [the penalty system is a relevant gamification part of completing the habits as it gives the user the incentive to complete habits on time otherwise the character takes damage and eventually they might lose their progress] |
+|                    | [10.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/25dcb7a9ce54fab355a2534e5916d380b68af79f] | [reflect penalty visually on UI and bugfix weather multiplier frontend part. closes #7 #90] | [users need to be able to visually comprehend that they got a penalty when missing a habit. further tooltips and the improvement for the user experience is essential to better navigate habits and todos] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@alemicap]** | [10.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/f6c2ffcc10feadcb23ba5403c7a6ebfb0356532a] | [leaderboard got aligned in two columns (lvl and xp), first three places in leaderboard get an icon shown at the leaderboard, fixed some inconsistencies, replaced settings for account and removed old account, side bar button is now alwyays visible and doesn't not disappear when scrolling, title of page next to side bar was always dashbaord and now it shows the page the user is on #97] | [UI refinements enhance the users experience and the usability] |
