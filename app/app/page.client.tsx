@@ -12,7 +12,7 @@ import Dashboard from './dashboard'
 import GroupsPage from './groups'
 import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
-import SettingsPage from './settings'
+import AccountPage from './account'
 
 interface PageTitle {
   title: string
@@ -38,6 +38,17 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
   const searchParams = useSearchParams()
   const [currentPage, setCurrentPage] = useState(searchParams.get('page') ?? 'dashboard')
 
+  const pageTitles: Record<string, string> = {
+    dashboard: 'Dashboard',
+    habits: 'Habits/To-Dos',
+    character: 'Character',
+    groups: 'Groups',
+    'boss-raids': 'Boss Raids',
+    leaderboard: 'Leaderboard',
+    account: 'Account',
+  }
+  const pageTitle = pageTitles[currentPage] || 'Dashboard'
+
   const setCurrentPageWithQuery = (page: string) => {
     setCurrentPage(page)
     const params = new URLSearchParams(searchParams.toString())
@@ -49,12 +60,12 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
     <SidebarProvider>
       <AppSidebar setCurrentPage={setCurrentPageWithQuery} />
       <SidebarInset>
-        <header className='flex h-16 shrink-0 items-center gap-2'>
+        <header className='sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 bg-background'>
           <div className='flex items-center gap-2 px-4'>
             <SidebarTrigger className='-ml-1' />
             <Separator orientation='vertical' className='mr-2 data-[orientation=vertical]:h-4' />
             <div className='hidden flex-col gap-0.5 sm:flex'>
-              <span className='text-sm font-medium'>Dashboard</span>
+              <span className='text-sm font-medium'>{pageTitle}</span>
             </div>
           </div>
         </header>
@@ -81,7 +92,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
 
             {currentPage === 'leaderboard' && <LeaderboardPage />}
 
-            {currentPage === 'settings' && <SettingsPage />}
+            {currentPage === 'account' && <AccountPage />}
           </div>
         </div>
       </SidebarInset>

@@ -16,6 +16,7 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/c
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuth } from '@/hooks/useAuth'
+import { toast } from 'sonner'
 
 const CHARACTER_TYPES = [
   { value: 'josh', label: 'Josh' },
@@ -72,7 +73,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
         type: data.characterType,
       })
 
-      console.log("User successfully created", user);
+      toast.success('Account created successfully')
       router.replace('/app')
 
       //check for backedn errors

@@ -7,21 +7,12 @@ const sitemap = [
     links: [
       {
         title: 'About Us',
-        href: '#',
+        href: '/about',
+      },
+      {
+        title: 'User Guide',
+        href: '/guide',
       }
-    ],
-  },
-  {
-    title: 'Support',
-    links: [
-      {
-        title: 'Help Center',
-        href: '#',
-      },
-      {
-        title: 'Status',
-        href: '#',
-      },
     ],
   },
 ]
@@ -63,14 +54,6 @@ const Footer = ({ className }: FooterProps) => {
           </div>
           <div className='flex flex-col items-baseline justify-between gap-8 border-t border-border pt-8 md:flex-row md:gap-16'>
             <div className='text-xs text-muted-foreground sm:text-sm'>&copy; BetterTogether {new Date().getFullYear()}</div>
-            <div className='flex flex-col items-start gap-4 text-xs text-muted-foreground sm:text-sm md:flex-row lg:items-center'>
-              <Link href='#' className='hover:text-accent-foreground'>
-                Terms & Conditions
-              </Link>
-              <Link href='#' className='hover:text-accent-foreground'>
-                Privacy Policy
-              </Link>
-            </div>
           </div>
         </footer>
       </div>

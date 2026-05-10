@@ -209,7 +209,6 @@ export default function BossRaidPage() {
   }
 
   const handleJoin = async (raidId: number, groupId: number) => {
-    setError(null)
     try {
       await api.post(`/raids/${raidId}/join`, {})
       await refreshRaids(groupId)
@@ -268,7 +267,6 @@ export default function BossRaidPage() {
   }
 
   const handleCompleteTask = async (raidId: number, task: RaidTaskData, success: boolean, groupId: number) => {
-    setError(null)
     try {
       await api.post(`/raids/${raidId}/tasks/${task.id}/complete?success=${success}`, {})
       await refreshRaids(groupId)
