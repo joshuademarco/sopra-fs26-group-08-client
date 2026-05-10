@@ -20,7 +20,7 @@ export default function GuidePage() {
           <li>Click <strong>Sign Up</strong> on the homepage</li>
           <li>Enter a username, email address and password</li>
           <li>Choose a character type (this is your in-game avatar)</li>
-          <li>You'll be taken to the dashboard automatically</li>
+          <li>You&apos;ll be taken to the dashboard automatically</li>
         </ul>
 
         <h3 className='text-xl font-medium mt-6'>Logging In</h3>
@@ -73,13 +73,13 @@ export default function GuidePage() {
           </Table>
         </div>
         <p className='mt-4 text-base text-muted-foreground'>
-          Click the check button on a habit to mark it complete. You'll earn XP and the relevant stat on your
+          Click the check button on a habit to mark it complete. You&apos;ll earn XP and the relevant stat on your
           character increases. Each habit also tracks a streak.
         </p>
 
         <h3 className='text-xl font-medium mt-6'>To-Dos (One-Time Tasks)</h3>
         <p className='mt-2 text-base text-muted-foreground'>
-          Same categories and difficulty settings as habits, but they're completed once. You can optionally set a due date.
+          Same categories and difficulty settings as habits, but they&apos;re completed once. You can optionally set a due date.
         </p>
 
         <h2 className='text-2xl font-semibold mt-10'>Weather Multipliers</h2>
@@ -105,10 +105,10 @@ export default function GuidePage() {
         <h3 className='text-xl font-medium mt-6'>Creating or Joining a Group</h3>
         <ul className='list-disc list-inside mt-2 space-y-1 text-base text-muted-foreground'>
           <li><strong>Create:</strong> Pick a group name and set a password</li>
-          <li><strong>Join:</strong> Enter an existing group's name and password</li>
+          <li><strong>Join:</strong> Enter an existing group&apos;s name and password</li>
         </ul>
         <p className='mt-2 text-base text-muted-foreground'>
-          Once in a group, you can view members, see who's online and check their achievements.
+          Once in a group, you can view members, see who&apos;s online and check their achievements.
         </p>
 
         <h2 className='text-2xl font-semibold mt-10'>Boss Raids</h2>
@@ -122,12 +122,12 @@ export default function GuidePage() {
           <li>The raid generates timed tasks, complete them before the timer runs out</li>
           <li>Completing a task deals damage to the boss</li>
           <li>Failing a task deals damage to your character</li>
-          <li>The raid ends when the boss's health reaches zero or the team's health is depleted</li>
+          <li>The raid ends when the boss&apos;s health reaches zero or the team&apos;s health is depleted</li>
         </ul>
 
         <h2 className='text-2xl font-semibold mt-10'>Leaderboard</h2>
         <p className='mt-2 text-base text-muted-foreground'>
-          The global Leaderboard ranks the top 10 players by level, then XP. It shows each player's username, level
+          The global Leaderboard ranks the top 10 players by level, then XP. It shows each player&apos;s username, level
           and total XP.
         </p>
 
