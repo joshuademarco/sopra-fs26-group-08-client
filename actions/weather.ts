@@ -9,7 +9,6 @@ export const getWeather = unstable_cache(
       const res = await fetch(buildApiUrl('/weather'))
       if (!res.ok) return null
       const weatherCode = await res.json()
-      console.log(weatherCode)
       return weatherCode as number
     } catch {
       return null

@@ -1,4 +1,8 @@
+'use client'
+
 import { Card, CardContent } from '@/components/ui/card'
+import { toast } from 'sonner'
+import { Trophy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../hooks/useAuth'
 import { LeaderboardEntry } from '../../../types/leaderboard'
@@ -8,7 +12,6 @@ export default function LeaderboardPage() {
   const [fullLeaderboard, setFullLeaderboard] = useState<LeaderboardEntry[]>([])
   const [displayLeaderboard, setDisplayLeaderboard] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const { user: currentUser } = useAuth()
 
   useEffect(() => {
@@ -30,7 +33,7 @@ export default function LeaderboardPage() {
         setFullLeaderboard(sortedLeaderboard)
         setDisplayLeaderboard(sortedLeaderboard.slice(0, 10))
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        toast.error(err instanceof Error ? err.message : 'An error occurred')
       } finally {
         setLoading(false)
       }
@@ -44,9 +47,8 @@ export default function LeaderboardPage() {
       <h2>Leaderboard</h2>
 
       {loading && <p className='text-muted-foreground'>Loading...</p>}
-      {error && <p className='text-sm text-destructive'>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && (
         <div className='space-y-2'>
           {displayLeaderboard.map((entry) => {
             const rank = fullLeaderboard.findIndex((e) => e.username === entry.username) + 1
@@ -54,12 +56,22 @@ export default function LeaderboardPage() {
               <Card key={entry.username}>
                 <CardContent className='flex items-center justify-between'>
                   <div className='flex items-center gap-4'>
-                    <span className='font-bold text-muted-foreground'>#{rank}</span>
+                    <div className='flex w-8 justify-center'>
+                      {rank === 1 ? (
+                        <Trophy className='size-5 text-yellow-500 fill-yellow-500' />
+                      ) : rank === 2 ? (
+                        <Trophy className='size-5 text-slate-400 fill-slate-400' />
+                      ) : rank === 3 ? (
+                        <Trophy className='size-5 text-amber-700 fill-amber-700' />
+                      ) : (
+                        <span className='font-bold text-muted-foreground'>#{rank}</span>
+                      )}
+                    </div>
                     <span className='font-medium'>{entry.username}</span>
                   </div>
-                  <div className='flex items-center gap-4 text-sm text-muted-foreground'>
-                    <span>Level {entry.level}</span>
-                    <span>{entry.experience} XP</span>
+                  <div className='grid grid-cols-2 gap-4 text-sm text-muted-foreground w-48'>
+                    <span className='text-left'>Level {entry.level}</span>
+                    <span className='text-right'>{entry.experience} XP</span>
                   </div>
                 </CardContent>
               </Card>

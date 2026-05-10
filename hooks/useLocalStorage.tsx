@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface LocalStorage<T> {
   value: T;
@@ -36,7 +37,7 @@ export default function useLocalStorage<T>(
         setValue(JSON.parse(stored) as T);
       }
     } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
+      toast.error(`Failed to read stored data for "${key}"`);
     }
   }, [key]);
 

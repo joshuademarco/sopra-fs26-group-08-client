@@ -9,6 +9,7 @@ import { GroupWithRaids, RaidData, RaidTaskData } from '@/types/raids'
 import { RaidUpdateMessage } from '@/types/websocket'
 import { buildApiUrl } from '@/utils/domain'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { RaidView } from './raid-view'
 
 function modifyRaidState(raid: RaidData, msg: RaidUpdateMessage): RaidData {
@@ -60,7 +61,6 @@ export default function BossRaidPage() {
   const [groupsData, setGroupsData] = useState<GroupWithRaids[]>([])
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const [, setTick] = useState(0)
-  const [error, setError] = useState<string | null>(null)
   const currentRaidRef = useRef<RaidData | null>(null)
 
   // Derive onlineUserIds from context
@@ -151,24 +151,22 @@ export default function BossRaidPage() {
   currentRaidRef.current = currentRaid
 
   const handleJoin = async (raidId: number, groupId: number) => {
-    setError(null)
     try {
       const res = await fetch(buildApiUrl(`/raids/${raidId}/join`), { method: 'POST', credentials: 'include' })
 
       if (!res.ok) {
         const err = await res.json()
-        setError((err as { message?: string }).message ?? 'Could not join raid')
+        toast.error((err as { message?: string }).message ?? 'Could not join raid')
         return
       }
 
       await refreshRaids(groupId)
     } catch {
-      setError('Network error')
+      toast.error('Network error')
     }
   }
 
   const handleQuickStart = async (groupId: number) => {
-    setError(null)
     try {
       const res = await fetch(buildApiUrl(`/groups/${groupId}/raids/quick`), {
         method: 'POST',
@@ -176,19 +174,18 @@ export default function BossRaidPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        setError((err as { message?: string }).message ?? 'Could not start raid')
+        toast.error((err as { message?: string }).message ?? 'Could not start raid')
         return
       }
       const raid = (await res.json()) as { id: number }
       await fetch(buildApiUrl(`/raids/${raid.id}/join`), { method: 'POST', credentials: 'include' })
       await refreshRaids(groupId)
     } catch {
-      setError('Network error')
+      toast.error('Network error')
     }
   }
 
   const handleCompleteTask = async (raidId: number, task: RaidTaskData, success: boolean, groupId: number) => {
-    setError(null)
     try {
       const res = await fetch(buildApiUrl(`/raids/${raidId}/tasks/${task.id}/complete?success=${success}`), {
         method: 'POST',
@@ -196,13 +193,13 @@ export default function BossRaidPage() {
       })
       if (!res.ok) {
         const err = await res.json()
-        setError((err as { message?: string }).message ?? 'Could not complete task')
+        toast.error((err as { message?: string }).message ?? 'Could not complete task')
         return
       }
 
       await refreshRaids(groupId)
     } catch {
-      setError('Network error')
+      toast.error('Network error')
     }
   }
 
@@ -245,9 +242,6 @@ export default function BossRaidPage() {
           )}
         </div>
       </div>
-
-      {error && <p className='text-sm text-destructive'>{error}</p>}
-      {/* TODO: Implement shadcn sonner */}
 
       {!selectedGroup || selectedGroup.raids.length === 0 ? (
         <Card>
