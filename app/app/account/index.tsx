@@ -109,7 +109,7 @@ export default function SettingsPage() {
   }
 
   if (!user) {
-    return <div className='rounded-xl border border-input/20 bg-background p-6'>You must be logged in to view settings.</div>
+    return <div className='rounded-xl border border-input/20 bg-background p-6'>You must be logged in to view your account.</div>
   }
 
   return (

@@ -111,7 +111,7 @@ export default function CharacterPage() {
 
   return (
     <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-      <h2>My Character</h2>
+      <h1 className='text-3xl font-bold tracking-tight'>My Character</h1>
 
       <Card>
         <CardContent className='flex flex-col gap-6 md:flex-row md:items-center'>
