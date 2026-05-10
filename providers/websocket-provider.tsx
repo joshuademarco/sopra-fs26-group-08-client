@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuth } from '@/hooks/useAuth'
 import type { LiveUser } from '@/types/liveUser'
 import type { CharacterUpdateMessage, RaidUpdateMessage } from '@/types/websocket'
 import { getWebSocketDomain } from '@/utils/domain'
@@ -49,6 +50,8 @@ function isCharacterUpdate(msg: unknown): msg is CharacterUpdateMessage {
 export const WebSocketContext = React.createContext<WebSocketContextType | undefined>(undefined)
 
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth()
+
   // Presence
   const [onlineUsers, setOnlineUsers] = useState<LiveUser[]>([])
   const [presenceConnected, setPresenceConnected] = useState(false)
@@ -64,8 +67,23 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [characterConnected, setCharacterConnected] = useState(false)
   const characterCallbacksRef = useRef<Set<CharacterUpdateCallback>>(new Set())
 
+  const resetConnectionState = useCallback(() => {
+    setOnlineUsers([])
+    setPresenceConnected(false)
+    setPresenceError(null)
+    setLastPresenceUpdate(null)
+    setRaidConnected(false)
+    setRaidError(null)
+    setCharacterConnected(false)
+  }, [])
+
   // Presence WebSocket
   useEffect(() => {
+    if (isLoading || !isAuthenticated) {
+      resetConnectionState()
+      return
+    }
+
     let ignore = false
     let socket: WebSocket | null = null
     let reconnectTimer: ReturnType<typeof setTimeout> | undefined
@@ -73,7 +91,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const connect = () => {
       if (ignore) return
 
-      const socketUrl = new URL('/api/ws/presence', getWebSocketDomain()).toString()
+      const socketUrl = new URL('/ws/presence', getWebSocketDomain()).toString()
       socket = new WebSocket(socketUrl)
 
       socket.onopen = () => {
@@ -107,10 +125,16 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       if (reconnectTimer) clearTimeout(reconnectTimer)
       socket?.close(1000, 'provider unmounted')
     }
-  }, [])
+  }, [isAuthenticated, isLoading, resetConnectionState])
 
   // Raid WebSocket
   useEffect(() => {
+    if (isLoading || !isAuthenticated) {
+      setRaidConnected(false)
+      setRaidError(null)
+      return
+    }
+
     let ignore = false
     let socket: WebSocket | null = null
     let reconnectTimer: ReturnType<typeof setTimeout> | undefined
@@ -118,7 +142,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const connect = () => {
       if (ignore) return
 
-      const socketUrl = new URL('/api/ws/raid', getWebSocketDomain()).toString()
+      const socketUrl = new URL('/ws/raid', getWebSocketDomain()).toString()
       socket = new WebSocket(socketUrl)
 
       socket.onopen = () => {
@@ -154,10 +178,15 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       if (reconnectTimer) clearTimeout(reconnectTimer)
       socket?.close(1000, 'provider unmounted')
     }
-  }, [])
+  }, [isAuthenticated, isLoading])
 
   // Character WebSocket connection
   useEffect(() => {
+    if (isLoading || !isAuthenticated) {
+      setCharacterConnected(false)
+      return
+    }
+
     let ignore = false
     let socket: WebSocket | null = null
     let reconnectTimer: ReturnType<typeof setTimeout> | undefined
@@ -165,7 +194,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const connect = () => {
       if (ignore) return
 
-      const socketUrl = new URL('/api/ws/character', getWebSocketDomain()).toString()
+      const socketUrl = new URL('/ws/character', getWebSocketDomain()).toString()
       socket = new WebSocket(socketUrl)
 
       socket.onopen = () => {
@@ -200,7 +229,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       if (reconnectTimer) clearTimeout(reconnectTimer)
       socket?.close(1000, 'provider unmounted')
     }
-  }, [])
+  }, [isAuthenticated, isLoading])
 
   const subscribeToRaidUpdates = useCallback((callback: RaidUpdateCallback) => {
     raidCallbacksRef.current.add(callback)

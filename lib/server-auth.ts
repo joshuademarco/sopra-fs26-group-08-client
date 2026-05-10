@@ -1,14 +1,14 @@
 import 'server-only'
 
 import type { AuthUser } from '@/types/auth'
-import { getApiDomain } from '@/utils/domain'
+import { buildApiUrl } from '@/utils/domain'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 const AUTH_TOKEN_COOKIE = 'token'
 
 function getAuthMeUrl(): string {
-  return new URL('/api/auth/me', getApiDomain()).toString()
+  return buildApiUrl('/auth/me')
 }
 
 async function verifySessionServerSide(token: string): Promise<AuthUser | null> {

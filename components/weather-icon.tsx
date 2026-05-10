@@ -8,6 +8,12 @@ type WeatherIconProps = {
   size?: number
 }
 
+function getBoostedCategories(code: number): string {
+  if (code <= 3) return 'Cognitive habits boosted'
+  if (code <= 77) return 'Physical, Cognitive & Emotional habits boosted'
+  return 'Physical habits boosted'
+}
+
 export function WeatherIcon({ weatherCode, size = 36 }: WeatherIconProps) {
   if (weatherCode === null) return null
 
@@ -24,7 +30,10 @@ export function WeatherIcon({ weatherCode, size = 36 }: WeatherIconProps) {
     <Card className='w-fit h-fit'>
       <CardContent className='flex items-center gap-2 p-2 px-4'>
         {icon}
-        <CardTitle className='text-lg'>It&apos;s {label} today.</CardTitle>
+        <div>
+          <CardTitle className='text-lg'>It&apos;s {label} today.</CardTitle>
+          <p className='text-xs text-muted-foreground'>{getBoostedCategories(weatherCode)}</p>
+        </div>
       </CardContent>
     </Card>
   )

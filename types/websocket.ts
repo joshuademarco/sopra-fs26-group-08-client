@@ -4,7 +4,7 @@ export interface RaidUpdateMessage {
   groupId: number
   health: number
   maxHealth: number
-  status: string
+  status: 'SCHEDULED' | 'ACTIVE' | 'DEFEATED' | 'FAILED' | 'DELETED'
   members?: Array<{ userId: number; health: number | null; maxHealth: number | null; knockedOut?: boolean }>
 }
 

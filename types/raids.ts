@@ -1,11 +1,19 @@
+
+export type RaidState = 'lobby' | 'active' | 'defeat' | 'victory'
+export type MemberStatus = 'Ready' | 'Offline' | 'Pending' | 'Declined'
+
+
 export interface RaidMemberData {
   userId: number
   username: string
   online: boolean
   joined: boolean
+  accepted: boolean | null
   tasksCompleted: number
   tasksFailed: number
   damageDealt: number
+  xpEarned: number
+  mvp: boolean
   health: number | null
   maxHealth: number | null
   characterType?: string | null
@@ -45,4 +53,50 @@ export interface GroupWithRaids {
   groupId: number
   groupName: string
   raids: RaidData[]
+}
+
+
+export interface RaidMember {
+  name: string
+  status: MemberStatus
+  isCurrentUser?: boolean
+  characterType?: string | null
+  level?: number
+  taskDescription?: string
+  taskDamage?: number
+  tasksCompleted?: number
+  totalTasks?: number
+  xpChange?: number
+  died?: boolean
+  mvp?: boolean
+  damageDealt?: number
+  health?: number | null
+  maxHealth?: number | null
+}
+
+export interface Monster {
+  name: string
+  level: number
+  description: string
+  hpPercent: number
+  imageUrl: string
+  hp?: number
+  maxHp?: number
+}
+
+export interface BossRaid {
+  id: number
+  groupName: string
+  playersOnline: number
+  members: RaidMember[]
+  raidStartsIn?: string
+  timeLeftSeconds?: number
+  totalSeconds?: number
+  durationSeconds?: number
+  tasksCount?: number
+  estimatedReward?: number
+  damageMultiplier?: number
+  state: RaidState
+  monster: Monster
+  reward?: string
 }

@@ -1,14 +1,17 @@
 import { ApplicationError } from "@/types/error";
+import { buildApiUrl } from "@/utils/domain";
 
 export class ApiService {
-  private baseURL: string;
   private defaultHeaders: HeadersInit;
 
   constructor() {
-    this.baseURL = "/api";
     this.defaultHeaders = {
       "Content-Type": "application/json",
     };
+  }
+
+  private buildUrl(endpoint: string): string {
+    return buildApiUrl(endpoint);
   }
 
   /**
@@ -25,6 +28,9 @@ export class ApiService {
     errorMessage: string,
   ): Promise<T> {
     if (!res.ok) {
+      if (res.status === 401 && typeof window !== "undefined") {
+        window.location.assign("/login");
+      }
       let errorDetail = res.statusText;
       try {
         const errorInfo = await res.json();
@@ -59,7 +65,7 @@ export class ApiService {
    * @returns JSON data of type T.
    */
   public async get<T>(endpoint: string): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     const res = await fetch(url, {
       method: "GET",
       headers: this.defaultHeaders,
@@ -78,7 +84,7 @@ export class ApiService {
    * @returns JSON data of type T.
    */
   public async post<T>(endpoint: string, data: unknown): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     const res = await fetch(url, {
       method: "POST",
       headers: this.defaultHeaders,
@@ -98,7 +104,7 @@ export class ApiService {
    * @returns JSON data of type T.
    */
   public async put<T>(endpoint: string, data: unknown): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     const res = await fetch(url, {
       method: "PUT",
       headers: this.defaultHeaders,
@@ -117,7 +123,7 @@ export class ApiService {
    * @returns JSON data of type T.
    */
   public async delete<T>(endpoint: string): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     const res = await fetch(url, {
       method: "DELETE",
       headers: this.defaultHeaders,

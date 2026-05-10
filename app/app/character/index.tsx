@@ -2,11 +2,45 @@
 
 import { CharacterStats } from '@/components/stats'
 import { Card, CardContent } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
-import { Axe, Book, Flame, HatGlasses, Heart, Shirt, Star, Sword, User } from 'lucide-react'
+import {
+  CheckCircle,
+  Dumbbell,
+  HatGlasses,
+  Heart,
+  Lightbulb,
+  LucideIcon,
+  Shield,
+  Shirt,
+  Star,
+  Sword,
+  TrendingUp,
+  Trophy,
+  User,
+} from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+
+const achievementConfig: Record<string, { icon: LucideIcon; color: string }> = {
+  FIRST_HABIT: { icon: CheckCircle, color: 'text-emerald-500' },
+  STREAK_3: { icon: TrendingUp, color: 'text-orange-400' },
+  STREAK_7: { icon: Trophy, color: 'text-yellow-500' },
+  STRENGTH_25: { icon: Dumbbell, color: 'text-rose-500' },
+  INTELLIGENCE_25: { icon: Lightbulb, color: 'text-sky-400' },
+  RESILIENCE_25: { icon: Shield, color: 'text-violet-500' },
+}
+
+type AchievementData = {
+  id: number
+  key: string
+  name: string
+  description: string
+  icon: string
+  earnedAt: string
+}
 
 type CharacterData = {
   id: number
@@ -24,58 +58,101 @@ type CharacterData = {
   equippedHandheld: { id: number; assetKey: string } | null
 }
 
+type InventoryItem = {
+  id: number
+  name: string
+  assetKey: string
+  itemType: 'HAT' | 'CHESTPIECE' | 'HANDHELD'
+}
+
 export default function CharacterPage() {
   const { user } = useAuth()
   const api = useApi()
 
   const [character, setCharacter] = useState<CharacterData | null>(null)
+  const [achievements, setAchievements] = useState<AchievementData[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [inventory, setInventory] = useState<InventoryItem[]>([])
+  const [pickerSlot, setPickerSlot] = useState<'HAT' | 'CHESTPIECE' | 'HANDHELD' | null>(null)
 
   useEffect(() => {
     if (!user) return
 
-    const fetchCharacter = async () => {
+    const fetchAll = async () => {
       try {
         setIsLoading(true)
-        const data = await api.get<CharacterData>(`/users/${user.id}/character`)
-        setCharacter(data)
+        const [characterData, achievementsData, inventoryData] = await Promise.all([
+          api.get<CharacterData>(`/users/${user.id}/character`),
+          api.get<AchievementData[]>(`/users/${user.id}/achievements`),
+          api.get<InventoryItem[]>(`/users/${user.id}/items`),
+        ])
+        setCharacter(characterData)
+        setAchievements(achievementsData)
+        setInventory(inventoryData)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load character')
+        toast.error(e instanceof Error ? e.message : 'Failed to load character')
       } finally {
         setIsLoading(false)
       }
     }
 
-    void fetchCharacter()
-  }, [user])
+    void fetchAll()
+  }, [user, api])
+
+  async function equipItem(itemId: number) {
+    if (!character) return
+
+    const dto = {
+      hatId: character.equippedHat?.id ?? null,
+      chestPieceId: character.equippedChestPiece?.id ?? null,
+      handHeldId: character.equippedHandheld?.id ?? null,
+    }
+
+    if (pickerSlot === 'HAT') dto.hatId = itemId
+    else if (pickerSlot === 'CHESTPIECE') dto.chestPieceId = itemId
+    else if (pickerSlot === 'HANDHELD') dto.handHeldId = itemId
+
+    setPickerSlot(null)
+    
+    const updated = await api.put<CharacterData>(`/characters/${character.id}/equipment`, dto)
+    
+    setCharacter(updated)
+  }
 
   if (!user) return null
 
   if (isLoading) {
     return (
-      <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-        <h1 className='text-3xl font-bold tracking-tight'>My Character</h1>
+      <main className='flex flex-1 flex-col gap-4'>
         <p className='text-muted-foreground'>Loading character...</p>
       </main>
     )
   }
 
-  if (error || !character) {
+  if (!character) {
     return (
-      <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-        <h1 className='text-3xl font-bold tracking-tight'>My Character</h1>
-        <p className='text-sm text-destructive'>{error ?? 'Character not found'}</p>
+      <main className='flex flex-1 flex-col gap-4'>
+        <p className='text-sm text-destructive'>Character not found</p>
       </main>
     )
   }
 
   const xpThreshold = character.level * 100
 
-  return (
-    <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-      <h2>My Character</h2>
+  const slotLabels: Record<string, string> = {
+    HAT: 'hats',
+    CHESTPIECE: 'chest pieces',
+    HANDHELD: 'handheld items',
+  }
 
+  const slotTitleLabels: Record<string, string> = {
+    HAT: 'hat',
+    CHESTPIECE: 'chest piece',
+    HANDHELD: 'handheld item',
+  }
+
+  return (
+    <main className='flex flex-1 flex-col gap-4'>
       <Card>
         <CardContent className='flex flex-col gap-6 md:flex-row md:items-center'>
           <div className='flex aspect-square w-full items-center justify-center rounded-lg bg-muted/20 md:w-48'>
@@ -151,11 +228,11 @@ export default function CharacterPage() {
       <h3>Inventory</h3>
       <div className='grid gap-4 md:grid-cols-3'>
         {[
-          { item: character.equippedHat, Icon: HatGlasses },
-          { item: character.equippedChestPiece, Icon: Shirt },
-          { item: character.equippedHandheld, Icon: Sword },
-        ].map(({ item, Icon }, i) => (
-          <Card key={i}>
+          { item: character.equippedHat, Icon: HatGlasses, slotType: 'HAT' as const },
+          { item: character.equippedChestPiece, Icon: Shirt, slotType: 'CHESTPIECE' as const },
+          { item: character.equippedHandheld, Icon: Sword, slotType: 'HANDHELD' as const },
+        ].map(({ item, Icon, slotType }, i) => (
+          <Card key={i} onClick={() => setPickerSlot(slotType)} className='cursor-pointer hover:ring-2 hover:ring-primary'>
             <CardContent className='flex aspect-square items-center justify-center'>
               {item ? (
                 <Image
@@ -173,16 +250,65 @@ export default function CharacterPage() {
         ))}
       </div>
 
+      <Dialog
+        open={pickerSlot !== null}
+        onOpenChange={(open) => {
+          if (!open) setPickerSlot(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Choose a {slotTitleLabels[pickerSlot ?? '']}.</DialogTitle>
+          </DialogHeader>
+          {(() => {
+            const slotItems = inventory.filter((item) => item.itemType === pickerSlot)
+            return slotItems.length === 0 ? (
+              <p className='text-muted-foreground'>You don&apos;t have any {slotLabels[pickerSlot ?? '']} yet.</p>
+            ) : (
+              <div className='grid grid-cols-3 gap-2'>
+                {slotItems.map((item) => (
+                  <Card
+                    key={item.id}
+                    onClick={() => equipItem(item.id)}
+                    className='cursor-pointer hover:ring-2 hover:ring-primary'
+                  >
+                    <CardContent className='flex aspect-square items-center justify-center p-2'>
+                      <Image
+                        src={`/items/${item.assetKey}.png`}
+                        alt={item.name}
+                        width={80}
+                        height={80}
+                        style={{ imageRendering: 'pixelated' }}
+                      />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )
+          })()}
+        </DialogContent>
+      </Dialog>
+
       <h3>Achievements</h3>
-      <div className='grid gap-4 md:grid-cols-3'>
-        {[Axe, Flame, Book].map((Icon, i) => (
-          <Card key={i}>
-            <CardContent className='flex aspect-square items-center justify-center'>
-              <Icon className='size-20 text-muted-foreground/40' />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {achievements.length === 0 ? (
+        <p className='text-muted-foreground'>No achievements earned yet.</p>
+      ) : (
+        <div className='grid gap-4 md:grid-cols-3'>
+          {achievements.map((a) => {
+            const { icon: Icon, color } = achievementConfig[a.key] ?? { icon: Trophy, color: 'text-muted-foreground' }
+            return (
+              <Card key={a.id}>
+                <CardContent className='flex flex-col items-center justify-center gap-2 p-6 text-center'>
+                  <Icon className={`size-12 ${color}`} />
+                  <p className='font-bold'>{a.name}</p>
+                  <p className='text-sm text-muted-foreground'>{a.description}</p>
+                  <p className='text-xs text-muted-foreground/60'>Earned {new Date(a.earnedAt).toLocaleDateString()}</p>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      )}
     </main>
   )
 }
