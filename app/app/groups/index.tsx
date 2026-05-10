@@ -12,6 +12,7 @@ import { User } from '@/types/user'
 import { buildApiUrl } from '@/utils/domain'
 import { CheckCircle, Dumbbell, Lightbulb, LucideIcon, Shield, TrendingUp, Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 
 const achievementConfig: Record<string, { icon: LucideIcon; color: string }> = {
   FIRST_HABIT: { icon: CheckCircle, color: 'text-emerald-500' },
@@ -49,7 +50,6 @@ export default function GroupsPage() {
 
   const [groups, setGroups] = useState<Group[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
 
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [isJoinOpen, setIsJoinOpen] = useState(false)
@@ -96,8 +96,8 @@ export default function GroupsPage() {
       }
 
       setLoading(false)
-    } catch (err) {
-      console.log('Error:', err)
+    } catch {
+      toast.error('Failed to load groups')
       setLoading(false)
     }
   }
@@ -107,7 +107,6 @@ export default function GroupsPage() {
   }, [])
 
   async function handleCreateGroup() {
-    setError('')
     try {
       const response = await fetch(buildApiUrl('/groups'), {
         method: 'POST',
@@ -126,15 +125,14 @@ export default function GroupsPage() {
         setPassword('')
         fetchGroups()
       } else {
-        setError('Could not create the group.')
+        toast.error('Could not create the group.')
       }
     } catch {
-      setError('Server error. Please try again.')
+      toast.error('Server error. Please try again.')
     }
   }
 
   async function handleJoinGroup() {
-    setError('')
     try {
       const response = await fetch(buildApiUrl('/groups/join'), {
         method: 'POST',
@@ -153,10 +151,10 @@ export default function GroupsPage() {
         setPassword('')
         fetchGroups()
       } else {
-        setError('Could not join the group.')
+        toast.error('Could not join the group.')
       }
     } catch {
-      setError('Server error. Please try again.')
+      toast.error('Server error. Please try again.')
     }
   }
 
@@ -182,10 +180,7 @@ export default function GroupsPage() {
           {/* Join */}
           <Dialog
             open={isJoinOpen}
-            onOpenChange={(open) => {
-              setIsJoinOpen(open)
-              setError('')
-            }}
+            onOpenChange={setIsJoinOpen}
           >
             <DialogTrigger asChild>
               <Button variant='outline'>Join Group</Button>
@@ -197,7 +192,7 @@ export default function GroupsPage() {
               <div className='flex flex-col gap-4'>
                 <Input placeholder='Group Name' value={groupName} onChange={(e) => setGroupName(e.target.value)} />
                 <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
-                {error && <p className='text-sm text-destructive'>{error}</p>}
+
                 <Button onClick={handleJoinGroup}>Confirm</Button>
               </div>
             </DialogContent>
@@ -206,10 +201,7 @@ export default function GroupsPage() {
           {/* Create */}
           <Dialog
             open={isCreateOpen}
-            onOpenChange={(open) => {
-              setIsCreateOpen(open)
-              setError('')
-            }}
+            onOpenChange={setIsCreateOpen}
           >
             <DialogTrigger asChild>
               <Button>Create Group</Button>
@@ -221,7 +213,7 @@ export default function GroupsPage() {
               <div className='flex flex-col gap-4'>
                 <Input placeholder='Group Name' value={groupName} onChange={(e) => setGroupName(e.target.value)} />
                 <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
-                {error && <p className='text-sm text-destructive'>{error}</p>}
+
                 <Button onClick={handleCreateGroup}>Confirm</Button>
               </div>
             </DialogContent>

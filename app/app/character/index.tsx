@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 const achievementConfig: Record<string, { icon: LucideIcon; color: string }> = {
   FIRST_HABIT: { icon: CheckCircle, color: 'text-emerald-500' },
@@ -63,7 +64,6 @@ export default function CharacterPage() {
   const [character, setCharacter] = useState<CharacterData | null>(null)
   const [achievements, setAchievements] = useState<AchievementData[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -78,7 +78,7 @@ export default function CharacterPage() {
         setCharacter(characterData)
         setAchievements(achievementsData)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load character')
+        toast.error(e instanceof Error ? e.message : 'Failed to load character')
       } finally {
         setIsLoading(false)
       }
@@ -98,7 +98,7 @@ export default function CharacterPage() {
     )
   }
 
-  if (error || !character) {
+  if (!character) {
     return (
       <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
         <h2>My Character</h2>

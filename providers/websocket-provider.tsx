@@ -91,7 +91,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const connect = () => {
       if (ignore) return
 
-      const socketUrl = new URL('/api/ws/presence', getWebSocketDomain()).toString()
+      const socketUrl = new URL('/ws/presence', getWebSocketDomain()).toString()
       socket = new WebSocket(socketUrl)
 
       socket.onopen = () => {
@@ -142,7 +142,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const connect = () => {
       if (ignore) return
 
-      const socketUrl = new URL('/api/ws/raid', getWebSocketDomain()).toString()
+      const socketUrl = new URL('/ws/raid', getWebSocketDomain()).toString()
       socket = new WebSocket(socketUrl)
 
       socket.onopen = () => {
@@ -194,7 +194,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const connect = () => {
       if (ignore) return
 
-      const socketUrl = new URL('/api/ws/character', getWebSocketDomain()).toString()
+      const socketUrl = new URL('/ws/character', getWebSocketDomain()).toString()
       socket = new WebSocket(socketUrl)
 
       socket.onopen = () => {
