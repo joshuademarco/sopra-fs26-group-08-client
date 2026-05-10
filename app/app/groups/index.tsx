@@ -12,6 +12,7 @@ import { User } from '@/types/user'
 import { buildApiUrl } from '@/utils/domain'
 import { CheckCircle, Dumbbell, Lightbulb, LucideIcon, Shield, TrendingUp, Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 
 const achievementConfig: Record<string, { icon: LucideIcon; color: string }> = {
   FIRST_HABIT: { icon: CheckCircle, color: 'text-emerald-500' },
@@ -96,8 +97,8 @@ export default function GroupsPage() {
       }
 
       setLoading(false)
-    } catch (err) {
-      console.log('Error:', err)
+    } catch {
+      toast.error('Failed to load groups')
       setLoading(false)
     }
   }
