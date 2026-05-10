@@ -211,7 +211,7 @@ export default function BossRaidPage() {
     <main className='flex flex-col gap-4 p-4'>
       <div className='flex items-center justify-between gap-4'>
         <div>
-          <h1 className='text-3xl font-bold tracking-tight'>Boss Raid</h1>
+          <h2>Boss Raid</h2>
           <p className='text-sm text-muted-foreground'>Fight together, defeat the boss</p>
         </div>
 
