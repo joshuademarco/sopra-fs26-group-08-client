@@ -72,7 +72,6 @@ export default function CharacterPage() {
   const [character, setCharacter] = useState<CharacterData | null>(null)
   const [achievements, setAchievements] = useState<AchievementData[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [inventory, setInventory] = useState<InventoryItem[]>([])
   const [pickerSlot, setPickerSlot] = useState<'HAT' | 'CHESTPIECE' | 'HANDHELD' | null>(null)
 
@@ -124,8 +123,7 @@ export default function CharacterPage() {
 
   if (isLoading) {
     return (
-      <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-        <h1 className='text-3xl font-bold tracking-tight'>My Character</h1>
+      <main className='flex flex-1 flex-col gap-4'>
         <p className='text-muted-foreground'>Loading character...</p>
       </main>
     )
@@ -133,8 +131,7 @@ export default function CharacterPage() {
 
   if (!character) {
     return (
-      <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-        <h1 className='text-3xl font-bold tracking-tight'>My Character</h1>
+      <main className='flex flex-1 flex-col gap-4'>
         <p className='text-sm text-destructive'>Character not found</p>
       </main>
     )
@@ -155,9 +152,7 @@ export default function CharacterPage() {
   }
 
   return (
-    <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-      <h2>My Character</h2>
-
+    <main className='flex flex-1 flex-col gap-4'>
       <Card>
         <CardContent className='flex flex-col gap-6 md:flex-row md:items-center'>
           <div className='flex aspect-square w-full items-center justify-center rounded-lg bg-muted/20 md:w-48'>

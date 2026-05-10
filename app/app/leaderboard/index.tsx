@@ -1,30 +1,24 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
+import { useApi } from '@/hooks/useApi'
 import { toast } from 'sonner'
 import { Trophy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../hooks/useAuth'
 import { LeaderboardEntry } from '../../../types/leaderboard'
-import { buildApiUrl } from '../../../utils/domain'
 
 export default function LeaderboardPage() {
   const [fullLeaderboard, setFullLeaderboard] = useState<LeaderboardEntry[]>([])
   const [displayLeaderboard, setDisplayLeaderboard] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
   const { user: currentUser } = useAuth()
+  const api = useApi()
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch(buildApiUrl('/leaderboard'), {
-          method: 'GET',
-          credentials: 'include',
-        })
-        if (!response.ok) {
-          throw new Error('Failed to fetch leaderboard')
-        }
-        const data: LeaderboardEntry[] = await response.json()
+        const data = await api.get<LeaderboardEntry[]>('/leaderboard')
         const sortedLeaderboard = [...data].sort((a, b) => {
           if (b.level !== a.level) return b.level - a.level
           if (b.experience !== a.experience) return b.experience - a.experience
@@ -43,9 +37,7 @@ export default function LeaderboardPage() {
   }, [currentUser?.username])
 
   return (
-    <main className='flex flex-col gap-4 p-4'>
-      <h2>Leaderboard</h2>
-
+    <main className='flex flex-col gap-4'>
       {loading && <p className='text-muted-foreground'>Loading...</p>}
 
       {!loading && (

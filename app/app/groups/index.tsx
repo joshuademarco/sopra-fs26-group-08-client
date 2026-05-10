@@ -9,7 +9,6 @@ import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { useLiveOnlineUsers } from '@/hooks/useLiveOnlineUsers'
 import { User } from '@/types/user'
-import { buildApiUrl } from '@/utils/domain'
 import { CheckCircle, Dumbbell, Lightbulb, LucideIcon, Shield, TrendingUp, Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -83,23 +82,19 @@ export default function GroupsPage() {
   async function fetchGroups() {
     setLoading(true)
     try {
-      const response = await fetch(buildApiUrl('/groups'), { method: 'GET', credentials: 'include' })
-      if (response.ok) {
-        const data = await response.json()
-        if (Array.isArray(data)) {
-          setGroups(data)
-        } else if (Array.isArray(data?.groups)) {
-          setGroups(data.groups)
-        } else {
-          setGroups([])
-        }
+      const data = await api.get<Group[] | { groups: Group[] }>('/groups')
+      if (Array.isArray(data)) {
+        setGroups(data)
+      } else if (Array.isArray(data?.groups)) {
+        setGroups(data.groups)
+      } else {
+        setGroups([])
       }
-
-      setLoading(false)
     } catch {
       toast.error('Failed to load groups')
-      setLoading(false)
+      setGroups([])
     }
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -108,67 +103,38 @@ export default function GroupsPage() {
 
   async function handleCreateGroup() {
     try {
-      const response = await fetch(buildApiUrl('/groups'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: groupName,
-          password: password,
-        }),
-      })
-      if (response.ok) {
-        setIsCreateOpen(false)
-        setGroupName('')
-        setPassword('')
-        fetchGroups()
-      } else {
-        toast.error('Could not create the group.')
-      }
-    } catch {
-      toast.error('Server error. Please try again.')
+      await api.post('/groups', { name: groupName, password })
+      setIsCreateOpen(false)
+      setGroupName('')
+      setPassword('')
+      fetchGroups()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not create the group.')
     }
   }
 
   async function handleJoinGroup() {
     try {
-      const response = await fetch(buildApiUrl('/groups/join'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: groupName,
-          password: password,
-        }),
-      })
-      if (response.ok) {
-        setIsJoinOpen(false)
-        setGroupName('')
-        setPassword('')
-        fetchGroups()
-      } else {
-        toast.error('Could not join the group.')
-      }
-    } catch {
-      toast.error('Server error. Please try again.')
+      await api.post('/groups/join', { name: groupName, password })
+      setIsJoinOpen(false)
+      setGroupName('')
+      setPassword('')
+      fetchGroups()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not join the group.')
     }
   }
 
   if (loading) {
     return (
-      <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-        <h1 className='text-3xl font-bold tracking-tight'>Groups</h1>
+      <main className='flex flex-1 flex-col gap-4'>
         <p className='text-muted-foreground'>Loading...</p>
       </main>
     )
   }
 
   return (
-    <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
+    <main className='flex flex-1 flex-col gap-4'>
       {/* Header */}
       <div className='flex items-center justify-between gap-4'>
         <div>
@@ -178,10 +144,7 @@ export default function GroupsPage() {
         {/* Buttons Join + Create */}
         <div className='flex gap-2'>
           {/* Join */}
-          <Dialog
-            open={isJoinOpen}
-            onOpenChange={setIsJoinOpen}
-          >
+          <Dialog open={isJoinOpen} onOpenChange={setIsJoinOpen}>
             <DialogTrigger asChild>
               <Button variant='outline'>Join Group</Button>
             </DialogTrigger>
@@ -192,17 +155,13 @@ export default function GroupsPage() {
               <div className='flex flex-col gap-4'>
                 <Input placeholder='Group Name' value={groupName} onChange={(e) => setGroupName(e.target.value)} />
                 <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
-
                 <Button onClick={handleJoinGroup}>Confirm</Button>
               </div>
             </DialogContent>
           </Dialog>
 
           {/* Create */}
-          <Dialog
-            open={isCreateOpen}
-            onOpenChange={setIsCreateOpen}
-          >
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button>Create Group</Button>
             </DialogTrigger>
@@ -213,7 +172,6 @@ export default function GroupsPage() {
               <div className='flex flex-col gap-4'>
                 <Input placeholder='Group Name' value={groupName} onChange={(e) => setGroupName(e.target.value)} />
                 <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
-
                 <Button onClick={handleCreateGroup}>Confirm</Button>
               </div>
             </DialogContent>

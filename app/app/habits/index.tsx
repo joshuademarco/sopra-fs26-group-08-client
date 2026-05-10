@@ -29,7 +29,7 @@ export default function HabitsPage() {
   if (!user) return null
 
   return (
-    <main className='flex flex-1 flex-col gap-4 p-4 pt-0'>
+    <main className='flex flex-1 flex-col gap-4'>
       <div className='flex items-center gap-2'>
         <h2>Tasks</h2>
         <Tooltip>
