@@ -1,4 +1,7 @@
+'use client'
+
 import { Card, CardContent } from '@/components/ui/card'
+import { toast } from 'sonner'
 import { Trophy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../hooks/useAuth'
@@ -9,7 +12,6 @@ export default function LeaderboardPage() {
   const [fullLeaderboard, setFullLeaderboard] = useState<LeaderboardEntry[]>([])
   const [displayLeaderboard, setDisplayLeaderboard] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const { user: currentUser } = useAuth()
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function LeaderboardPage() {
         setFullLeaderboard(sortedLeaderboard)
         setDisplayLeaderboard(sortedLeaderboard.slice(0, 10))
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        toast.error(err instanceof Error ? err.message : 'An error occurred')
       } finally {
         setLoading(false)
       }
@@ -45,9 +47,8 @@ export default function LeaderboardPage() {
       <h1 className='text-3xl font-bold tracking-tight'>Groups</h1>
 
       {loading && <p className='text-muted-foreground'>Loading...</p>}
-      {error && <p className='text-sm text-destructive'>{error}</p>}
 
-      {!loading && !error && (
+      {!loading && (
         <div className='space-y-2'>
           {displayLeaderboard.map((entry) => {
             const rank = fullLeaderboard.findIndex((e) => e.username === entry.username) + 1
