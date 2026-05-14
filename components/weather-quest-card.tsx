@@ -11,7 +11,7 @@ interface WeatherQuestCardProps {
 }
 
 export function WeatherQuestCard({ quest }: WeatherQuestCardProps) {
-  if (quest === null) return <Card><p className='text-muted-foreground'>No quest available</p> </Card>
+  if (quest === null) return <Card className="max-w-6xl"><p className='text-muted-foreground'>No quest available</p> </Card>
 
   let icon
   let label
@@ -23,7 +23,7 @@ export function WeatherQuestCard({ quest }: WeatherQuestCardProps) {
   else { icon = <CloudLightning />; label = "stormy" }
 
   return (
-    <Card>
+    <Card className="max-w-6xl">
       <CardHeader>
         <div className='flex items-center gap-2'>
           {icon}
