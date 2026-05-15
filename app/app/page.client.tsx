@@ -13,17 +13,16 @@ import GroupsPage from './groups'
 import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
 import AccountPage from './account'
-import { Onboarding } from '@/components/ui/onboarding'
 
 interface PageTitle {
   title: string
   subtitle?: string
 }
 
-const getPageTitle = (page: string): PageTitle => {
+const getPageTitle = (page: string, tab: 'habits' | 'todos' = 'habits'): PageTitle => {
   const titles: Record<string, PageTitle> = {
     dashboard: { title: 'Dashboard' },
-    habits: { title: 'Habits', subtitle: 'Tasks' },
+    habits: { title: tab === 'todos' ? 'To-Dos' : 'Habits'},
     character: { title: 'Character' },
     groups: { title: 'Groups' },
     'boss-raids': { title: 'Boss Raids' },
@@ -38,10 +37,11 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [currentPage, setCurrentPage] = useState(searchParams.get('page') ?? 'dashboard')
+  const [activeTab, setActiveTab] = useState<'habits' | 'todos'>('habits')
 
   const pageTitles: Record<string, string> = {
     dashboard: 'Dashboard',
-    habits: 'Habits/To-Dos',
+    habits: activeTab === 'todos' ? 'To-Dos' : 'Habits',
     character: 'Character',
     groups: 'Groups',
     'boss-raids': 'Boss Raids',
@@ -73,9 +73,9 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
         <div className='flex w-full flex-col p-12 pt-0'>
           <div className='flex items-center justify-between gap-4 mb-6'>
             <div className='flex flex-col'>
-              <h2>{getPageTitle(currentPage).title}</h2>
-              {getPageTitle(currentPage).subtitle && (
-                <p className='text-sm text-muted-foreground'>{getPageTitle(currentPage).subtitle}</p>
+              <h2>{getPageTitle(currentPage, activeTab).title}</h2>
+              {getPageTitle(currentPage, activeTab).subtitle && (
+                <p className='text-sm text-muted-foreground'>{getPageTitle(currentPage, activeTab).subtitle}</p>
               )}
             </div>
             <div className='shrink-0'>{weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}</div>
@@ -83,7 +83,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           <div className='flex-1'>
             {currentPage === 'dashboard' && <Dashboard />}
 
-            {currentPage === 'habits' && <HabitsPage />}
+            {currentPage === 'habits' && <HabitsPage activeTab={activeTab} setActiveTab={setActiveTab} />}
 
             {currentPage === 'character' && <CharacterPage />}
 
@@ -97,7 +97,6 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           </div>
         </div>
       </SidebarInset>
-      <Onboarding />
     </SidebarProvider>
   )
 }

@@ -25,7 +25,13 @@ export default function LeaderboardPage() {
           return a.username.localeCompare(b.username)
         })
         setFullLeaderboard(sortedLeaderboard)
-        setDisplayLeaderboard(sortedLeaderboard.slice(0, 10))
+        
+        const top10 = sortedLeaderboard.slice(0, 10)
+        const userIndex = currentUser ? sortedLeaderboard.findIndex((e) => e.username === currentUser.username) : -1
+        if (userIndex >= 10) {
+          top10.push(sortedLeaderboard[userIndex])
+        }
+        setDisplayLeaderboard(top10)
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'An error occurred')
       } finally {
@@ -42,10 +48,12 @@ export default function LeaderboardPage() {
 
       {!loading && (
         <div className='space-y-2'>
-          {displayLeaderboard.map((entry) => {
+          {displayLeaderboard.map((entry, index) => {
             const rank = fullLeaderboard.findIndex((e) => e.username === entry.username) + 1
+            const isCurrentUser = currentUser?.username === entry.username
+            
             return (
-              <Card key={entry.username}>
+              <Card key={entry.username} className={isCurrentUser ? 'border-emerald-500/50 bg-emerald-500/10' : ''}>
                 <CardContent className='flex items-center justify-between'>
                   <div className='flex items-center gap-4'>
                     <div className='flex w-8 justify-center'>
@@ -59,7 +67,9 @@ export default function LeaderboardPage() {
                         <span className='font-bold text-muted-foreground'>#{rank}</span>
                       )}
                     </div>
-                    <span className='font-medium'>{entry.username}</span>
+                    <span className={`font-medium ${isCurrentUser ? 'text-emerald-700 dark:text-emerald-500' : ''}`}>
+                      {entry.username} {isCurrentUser && '(You)'}
+                    </span>
                   </div>
                   <div className='grid grid-cols-2 gap-4 text-sm text-muted-foreground w-48'>
                     <span className='text-left'>Level {entry.level}</span>
