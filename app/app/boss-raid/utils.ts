@@ -143,6 +143,7 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
       damageDealt: member.damageDealt ?? 0,
       mvp: member.mvp ?? false,
       died: (member.knockedOut ?? false) || (member.health != null && member.health <= 0),
+      droppedItem: member.droppedItem ?? null,
     }
   })
 

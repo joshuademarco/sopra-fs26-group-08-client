@@ -48,6 +48,12 @@ function PlayerResults({ members, kind }: { members: RaidMember[]; kind: 'victor
                   +{m.xpChange ?? 0} XP
                 </span>
               </div>
+              {m.droppedItem && (
+                <Badge className='bg-amber-500 text-amber-50'>
+                  <img src={`/items/${m.droppedItem.assetKey}.png`} className='size-3 object-contain' alt='' />
+                  {m.droppedItem.name}
+                </Badge>
+              )}
             </CardContent>
           </Card>
         )
