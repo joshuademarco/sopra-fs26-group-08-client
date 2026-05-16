@@ -23,6 +23,14 @@ const CHARACTER_TYPES = [
   { value: 'ale', label: 'Ale' },
   { value: 'michi', label: 'Michi' },
   { value: 'leo', label: 'Leo' },
+  { value: 'ana', label: 'Ana' },
+  { value: 'annie', label: 'Annie' },
+  { value: 'ben', label: 'Ben' },
+  { value: 'jana', label: 'Jana' },
+  { value: 'lea', label: 'Lea' },
+  { value: 'louis', label: 'Louis' },
+  { value: 'nora', label: 'Nora' },
+  { value: 'sila', label: 'Sila' },
 ] as const
 
 //zod form schema
@@ -35,7 +43,7 @@ const formSchema = z
       .min(8, 'Password must be at least 8 characters.')
       .regex(/[0-9]/, 'Password must contain at least 1 number.'),
     confirmPassword: z.string(),
-    characterType: z.enum(['josh', 'ale', 'michi', 'leo'] as const, { message: 'Please choose a character.' }),
+    characterType: z.enum(['josh', 'ale', 'michi', 'leo', 'ana', 'annie', 'ben', 'jana', 'lea', 'louis', 'nora', 'sila'] as const, { message: 'Please choose a character.' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match.',
