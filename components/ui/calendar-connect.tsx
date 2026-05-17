@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/providers/auth-provider'
 import { buildApiUrl } from '@/utils/domain'
+import { CircleCheckBig } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -43,7 +44,9 @@ export function CalendarConnect() {
   if (connected || alreadyConnected) {
     return (
       <div className='flex flex-col items-center gap-4 py-4'>
-        <p className='text-green-600 font-medium'>✓ Calendar connected!</p>
+        <p className='text-green-600 font-medium flex items-center gap-2'>
+          <CircleCheckBig className='w-5 h-5' /> Calendar connected!
+        </p>
       </div>
     )
   }
