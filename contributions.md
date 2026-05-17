@@ -140,7 +140,7 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@joshuademarco]** | [17.05.2026]   | [joker] | [joker] | [joker] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@yappayappay]** | [17.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/0d71dfb5575e9c6124d7831582570bb062fffe05] | [backend logic for group habit progress, added group edit options and tests. closes #148] | [adding group habit progress makes groups more interactive and further pushes gamification/accountability for groups and their members. editing and leaving a group is important for a user. testing new endpoints and edge cases for groups and achievements ensuring backend works as intended.] |
 |                    | [17.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/245f684f71ca5cf13d65bc1a668209a790a7731f] | [display habit progression for each group and each member, frontend group edit functionality and tooltip. closes #120] | [now each user gets a visual representation on their groups progress towards completing their habits -> ensuring accountability and peer pressure to comlete habits. further new buttons for editing/leaving groups and added tooltip info for group page -> more intuitive as mentioned in beta testing] |
