@@ -133,3 +133,21 @@ reason).
 |                    | [09.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/1d841efbcfe96f38b2d492faaf7dbe0be1463418] | [closes #94 Implemented item selection UI] | [A user is now able to equip items which they gained as a bossraid reward.] |
 | **[@alemicap]** | [10.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/f6c2ffcc10feadcb23ba5403c7a6ebfb0356532a] | [leaderboard got aligned in two columns (lvl and xp), first three places in leaderboard get an icon shown at the leaderboard, fixed some inconsistencies, replaced settings for account and removed old account, side bar button is now alwyays visible and doesn't not disappear when scrolling, title of page next to side bar was always dashbaord and now it shows the page the user is on #97] | [UI refinements enhance the users experience and the usability] |
 |                    | [10.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/d7bb9c427f093b9b490cae66a069d431b8c478bb https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/d2fed8d1cf489ec6711a1d6b6265a4106d29e05c] | [tests for account, login and registration # 128] | [important to make sure that everything works] |
+
+---
+
+## Contributions Week 7 - [11.05.2026] to [17.05.2026]
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@yappayappay]** | [17.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-server/commit/0d71dfb5575e9c6124d7831582570bb062fffe05] | [backend logic for group habit progress, added group edit options and tests. closes #148] | [adding group habit progress makes groups more interactive and further pushes gamification/accountability for groups and their members. editing and leaving a group is important for a user. testing new endpoints and edge cases for groups and achievements ensuring backend works as intended.] |
+|                    | [17.05.2026]   | [https://github.com/joshuademarco/sopra-fs26-group-08-client/commit/245f684f71ca5cf13d65bc1a668209a790a7731f] | [display habit progression for each group and each member, frontend group edit functionality and tooltip. closes #120] | [now each user gets a visual representation on their groups progress towards completing their habits -> ensuring accountability and peer pressure to comlete habits. further new buttons for editing/leaving groups and added tooltip info for group page -> more intuitive as mentioned in beta testing] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+
+---
