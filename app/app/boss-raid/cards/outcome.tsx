@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { BossRaid, Monster, RaidMember } from '@/types/raids'
 import { Crown } from 'lucide-react'
 import { BossStage } from '../boss-stage'
+import Image from 'next/image';
 
 function PlayerResults({ members, kind }: { members: RaidMember[]; kind: 'victory' | 'defeat' }) {
   return (
@@ -48,6 +49,11 @@ function PlayerResults({ members, kind }: { members: RaidMember[]; kind: 'victor
                   +{m.xpChange ?? 0} XP
                 </span>
               </div>
+              {m.droppedItem && (
+                <Badge className='bg-amber-500 text-amber-50'>
+                  <Image src={`/items/${m.droppedItem.assetKey}.png`} width={12} height={12} className='object-contain' alt='' />
+                </Badge>
+              )}
             </CardContent>
           </Card>
         )

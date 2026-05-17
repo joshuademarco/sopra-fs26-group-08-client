@@ -18,6 +18,7 @@ export interface RaidMemberData {
   maxHealth: number | null
   characterType?: string | null
   knockedOut?: boolean
+  droppedItem?: DroppedItem | null
 }
 
 export interface RaidTaskData {
@@ -55,6 +56,12 @@ export interface GroupWithRaids {
   raids: RaidData[]
 }
 
+export interface DroppedItem {
+  id: number
+  name: string
+  assetKey: string
+  itemType: 'HAT' | 'CHESTPIECE' | 'HANDHELD'
+}
 
 export interface RaidMember {
   name: string
@@ -72,6 +79,7 @@ export interface RaidMember {
   damageDealt?: number
   health?: number | null
   maxHealth?: number | null
+  droppedItem?: DroppedItem | null
 }
 
 export interface Monster {
@@ -98,5 +106,4 @@ export interface BossRaid {
   damageMultiplier?: number
   state: RaidState
   monster: Monster
-  reward?: string
 }
