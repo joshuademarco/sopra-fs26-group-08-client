@@ -137,10 +137,6 @@ export default function GroupsPage() {
     <main className='flex flex-1 flex-col gap-4'>
       {/* Header */}
       <div className='flex items-center justify-between gap-4'>
-        <div>
-          <h1 className='text-3xl font-bold tracking-tight'>Groups</h1>
-          <p className='text-sm text-muted-foreground'>Manage and view your groups</p>
-        </div>
         {/* Buttons Join + Create */}
         <div className='flex gap-2'>
           {/* Join */}

@@ -23,16 +23,20 @@ function weightLabel(w: number) {
 
 // ============================== main page ==============================
 
-export default function HabitsPage() {
+export default function HabitsPage({
+  activeTab,
+  setActiveTab,
+}: {
+  activeTab: 'habits' | 'todos'
+  setActiveTab: (tab: 'habits' | 'todos') => void
+}) {
   const { user } = useAuth()
-  const [activeTab, setActiveTab] = useState<'habits' | 'todos'>('habits')
 
   if (!user) return null
 
   return (
     <main className='flex flex-1 flex-col gap-4'>
       <div className='flex items-center gap-2'>
-        <h2>Tasks</h2>
         <Tooltip>
           <TooltipTrigger asChild>
             <Info className='h-5 w-5 text-muted-foreground' />

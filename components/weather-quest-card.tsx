@@ -4,15 +4,26 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { WeatherQuest } from '@/types/task'
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { useApi } from '@/hooks/useApi'
 import { Cloud, CloudLightning, CloudRain, CloudSnow, Sun } from 'lucide-react'
 
-interface WeatherQuestCardProps {
-  quest: WeatherQuest | null
-}
+export function WeatherQuestCard() {
+  const { user } = useAuth()
+  const api = useApi()
+  const [quest, setQuest] = useState<WeatherQuest | null>(null)
 
-export function WeatherQuestCard({ quest }: WeatherQuestCardProps) {
+  useEffect(() => {
+  console.log('user:', user)
+  if (!user) return
+  api.get<WeatherQuest>(`/users/${user.id}/weather-quest`)
+    .then(setQuest)
+    .catch(() => setQuest(null))
+  }, [user])
+
   if (quest === null) return <Card className="max-w-6xl"><p className='text-muted-foreground'>No quest available</p> </Card>
-
+  
   let icon
   let label
 
