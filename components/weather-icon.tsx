@@ -31,7 +31,7 @@ export function WeatherIcon({ weatherCode, size = 36 }: WeatherIconProps) {
       <CardContent className='flex items-center gap-2 p-2 px-4'>
         {icon}
         <div>
-          <CardTitle className='text-lg'>It&apos;s {label} today.</CardTitle>
+          <CardTitle className='text-lg'>It&apos;s {label} right now.</CardTitle>
           <p className='text-xs text-muted-foreground'>{getBoostedCategories(weatherCode)}</p>
         </div>
       </CardContent>

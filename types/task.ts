@@ -47,6 +47,18 @@ export type NewTodo = {
   dueAt: string
 }
 
+export type WeatherQuest = {
+  weatherCondition: string
+  weatherLabel: string
+  questTitle: string
+  targetCategory: string
+  targetCount: number
+  bonusStat: string
+  bonusMultiplier: number
+  completedCount: number
+  completed: boolean
+}
+
 //helper functions for habti and todo cards
 
 export function categoryLabel(category: HabitCategory): string {
