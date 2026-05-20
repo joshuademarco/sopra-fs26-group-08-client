@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { CalendarConnect } from '@/components/ui/calendar-connect'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/hooks/useAuth'
@@ -197,6 +198,17 @@ export default function SettingsPage() {
           <Button type='submit' disabled={isSaving}>
             {isSaving ? 'Saving…' : 'Change password'}
           </Button>
+        </div>
+      </form>
+
+      <form noValidate onSubmit={handleProfileSubmit} className='rounded-xl border border-input/20 bg-background p-6 shadow-sm'>
+        <h2 className='text-lg font-semibold'>Calendar Connection</h2>
+        <p className='mt-2 text-sm text-muted-foreground'>Connect you Google Calendar</p>
+
+        <div className='mt-6 grid gap-4 text-sm'>
+          <div className='flex gap-2'>
+            <CalendarConnect align="start" />
+          </div>
         </div>
       </form>
     </div>

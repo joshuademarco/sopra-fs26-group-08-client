@@ -28,7 +28,7 @@ const getPageTitle = (page: string, tab: 'habits' | 'todos' = 'habits'): PageTit
     groups: { title: 'Groups' },
     'boss-raids': { title: 'Boss Raids' },
     leaderboard: { title: 'Leaderboard' },
-    settings: { title: 'Settings' },
+    account: { title: 'Account' },
   }
   return titles[page] || { title: 'Dashboard' }
 }
