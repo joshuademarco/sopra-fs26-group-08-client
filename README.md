@@ -1,6 +1,8 @@
-# BetterTogether: A Gamified Habit Tracker
+# BetterTogether: A Gamified Habit Tracker (Client)
 
-BetterTogether is a gamified habit tracking app that turns self-improvement into an RPG-style adventure. It solves the tedious nature of traditional habit trackers by blending personal growth with RPG mechanics and social accountability. Users complete habits to earn XP, level up their character, and team up with friends for "Boss Raids". This mix of individual progress and team-based goals makes achieving personal goals a fun, collaborative experience.
+BetterTogether is a gamified habit tracking app that turns self-improvement into an RPG-style adventure. It solves the tedious nature of traditional habit trackers by blending personal growth with RPG mechanics and social accountability. Users complete habits to earn XP, level up their character, and team up with friends for "Boss Raids". This mix of individual progress and team-based goals makes achieving personal goals a fun, collaborative experience.  
+
+This repository contains the frontend client application, providing the interactive user interface that connects to the backend RESTful API and real-time WebSocket services.
 
 ## Technologies Used
 
@@ -35,7 +37,7 @@ Follow these steps to get the client running locally for development.
 - npm or a compatible package manager
 - A running instance of the backend server.
 
-### Local Development
+### Running Locally
 
 1. **Clone the repository:**
     ```bash
@@ -87,8 +89,6 @@ The core user journey is designed to be simple and rewarding.
 
 ## Roadmap
 
-Want to contribute? Here are a few ideas for features we'd love to see:
-
 - **Expanded Item & Shop System**: Introduce a wider variety of cosmetic and functional items that can be earned from raids or purchased with in-game currency.
 - **Advanced Social Features**: Implement a friend system, direct messaging between users, and the ability to view other users' detailed profiles and achievements.
 - **Narrative Questlines**: Create multi-step quests with branching paths and unique rewards that go beyond the current daily quest system, adding more depth to the world.
@@ -104,4 +104,4 @@ This project was brought to life by the dedicated efforts of:
 
 ## License
 
- License: Say how your project is licensed (see License guide3)
+Distributed under the MIT License. See `LICENSE` for more information.
