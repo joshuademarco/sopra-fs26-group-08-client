@@ -1,88 +1,107 @@
-# Project Title
+# BetterTogether: A Gamified Habit Tracker
 
-One Paragraph of project description goes here
+BetterTogether is a gamified habit tracking app that turns self-improvement into an RPG-style adventure. It solves the tedious nature of traditional habit trackers by blending personal growth with RPG mechanics and social accountability. Users complete habits to earn XP, level up their character, and team up with friends for "Boss Raids". This mix of individual progress and team-based goals makes achieving personal goals a fun, collaborative experience.
 
-## Getting Started
+## Technologies Used
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+- **Framework**: [Next.js](https://nextjs.org/) (React)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with [Shadcn/ui](https://ui.shadcn.com/)
+- **State Management**: React Context API
+- **Form Handling**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/) for validation
+- **API Communication**: RESTful API with `fetch`
+
+## High-Level Components
+
+Our frontend is built around a few core concepts that work together to create the user experience.
+
+1. **Authentication & Onboarding**: New users are guided through a multi-step onboarding process that introduces core features and helps them create their first habit. The `useAuth` hook and `AuthProvider` manage user sessions and protect routes, ensuring a secure and seamless experience from login to logout.
+
+2. **Habit & Task Management**: This is the heart of the application. Users can create recurring `Habits` and one-off `To-Dos`. The `HabitForm` component allows users to define a task's category (which maps to a character stat), difficulty, and frequency. Completing habits grants XP, while missing them can result in a health penalty for the user's character.
+
+3. **Character Progression**: Every user has a character whose stats (Strength, Intelligence, Resilience) grow as they complete habits in corresponding categories. This visual representation of progress is a key motivator, with stats and level-ups visible on the character page.
+
+4. **Groups & Boss Raids**: Users can form or join groups to participate in cooperative boss raids. The raid page is a live, interactive view where group members work together to complete a series of timed micro-tasks. Success depends on the combined effort and stats of the group, and victory yields XP and potential item drops.
+
+5. **Live Data Sync with WebSockets**: To support real-time features like the online user map and live raid progress, the client maintains a WebSocket connection to the server. A shared `WebSocketProvider` manages the connection state and dispatches incoming data to relevant components, ensuring the UI is always up-to-date.
+
+## Launch & Deployment
+
+Follow these steps to get the client running locally for development.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+- Node.js (v18 or later)
+- npm or a compatible package manager
+- A running instance of the backend server.
 
-```
-Give examples
-```
+### Local Development
 
-### Installing
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/joshuademarco/sopra-fs26-group-08-client.git
+    cd sopra-fs26-group-08-client
+    ```
 
-A step by step series of examples that tell you how to get a development env running
+2. **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-Say what the step will be
+3. **Set up environment variables:**
+    Create a file named `.env.local` in the root of the project and add the URL of your running backend server. This ensures the client knows where to send API requests.
+    ```
+    NEXT_PUBLIC_API_URL=http://localhost:8080
+    ```
 
-```
-Give the example
-```
+4. **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+    
+The application will be available at `http://localhost:3000`.
 
-And repeat
+### Running Tests
 
-```
-until finished
-```
+To run the automated tests for the project, use the following command:
 
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
+```bash
+npm run test
 ```
 
-## Deployment
+## Illustrations: User Flow
 
-Add additional notes about how to deploy this on a live system
+The core user journey is designed to be simple and rewarding.
 
-## Built With
+1. **Onboarding & Habit Creation**: New users are welcomed and guided to create their first habit.
+    !Habit Creation during Onboarding
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+2. **Character Growth**: As users complete habits, their character gains XP and levels up, improving their stats.
+    !Character Page
 
-## Contributing
+3. **Team Up for Raids**: Users can join groups and participate in challenging boss raids, a core social feature.
+    !Boss Raid UI
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+4. **Climb the Leaderboard**: A global leaderboard encourages friendly competition by ranking users based on their XP and level.
+    !Leaderboard
 
-## Versioning
+## Roadmap
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+Want to contribute? Here are a few ideas for features we'd love to see:
 
-## Authors
+- **Expanded Item & Shop System**: Introduce a wider variety of cosmetic and functional items that can be earned from raids or purchased with in-game currency.
+- **Advanced Social Features**: Implement a friend system, direct messaging between users, and the ability to view other users' detailed profiles and achievements.
+- **Narrative Questlines**: Create multi-step quests with branching paths and unique rewards that go beyond the current daily quest system, adding more depth to the world.
+- **Community Challenges and Events**: Introduce server-wide events or group-based competitions. For example, a week-long challenge where all players contribute to a global progress bar by completing physical habits, unlocking a unique reward for everyone if the goal is met.
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+## Authors & Acknowledgment
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+This project was brought to life by the dedicated efforts of:
+- **@alemicap**
+- **@joshuademarco**
+- **@michaelCHer**
+- **@yappayappay**
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
-
+ License: Say how your project is licensed (see License guide3)
