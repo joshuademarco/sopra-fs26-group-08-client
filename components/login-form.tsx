@@ -38,7 +38,7 @@ export function LoginForm({
   const { login } = useAuth()
   const [formError, setFormError] = React.useState<string | null>(null)
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const form = useForm<z.infer<typeof loginSchema>>({ //replace form error with sonner
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: process.env.NEXT_PUBLIC_DEFAULT_EMAIL || "",
