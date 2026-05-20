@@ -40,7 +40,6 @@ export function HabitHeatmap({ data }: { data: Record<string, number> }) {
       </CardHeader>
       <CardContent>
         <div className='overflow-x-auto'>
-          {/* Month labels */}
           <div className='flex gap-1 mb-1'>
             {weeks.map((_, wi) => (
               <div key={wi} className='w-4 overflow-visible whitespace-nowrap text-[10px] text-muted-foreground'>
@@ -49,7 +48,6 @@ export function HabitHeatmap({ data }: { data: Record<string, number> }) {
             ))}
           </div>
 
-          {/* Cell grid */}
           <div className='flex gap-1'>
             {weeks.map((week, wi) => (
               <div key={wi} className='flex flex-col gap-1'>
@@ -67,7 +65,6 @@ export function HabitHeatmap({ data }: { data: Record<string, number> }) {
             ))}
           </div>
 
-          {/* Legend */}
           <div className='flex items-center justify-end gap-1.5 mt-3'>
             <span className='text-[11px] text-muted-foreground'>Less</span>
             {(['bg-muted', 'bg-green-200', 'bg-green-400', 'bg-green-600', 'bg-green-800'] as const).map((c) => (
