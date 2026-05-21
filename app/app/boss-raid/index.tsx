@@ -2,8 +2,10 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
+import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { useWebsocketContext } from '@/hooks/useWebsocketContext'
@@ -120,7 +122,7 @@ export default function BossRaidPage() {
   const [groupsData, setGroupsData] = useState<GroupWithRaids[]>([])
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const [, setTick] = useState(0)
-  const [adminVisible, setAdminVisible] = useState(false)
+  const [adminForceAllMembers, setAdminForceAllMembers] = useState(false)
   const [openRaid, setOpenRaid] = useState<RaidData | null>(null)
   const [dismissedOutcomeIds, setDismissedOutcomeIds] = useState<Set<number>>(() => {
     if (typeof window === 'undefined') return new Set()
@@ -131,7 +133,6 @@ export default function BossRaidPage() {
       return new Set()
     }
   })
-  const titleClickCount = useRef(0)
 
   // Derive onlineUserIds from context
   const onlineUserIds = useMemo(
@@ -268,14 +269,6 @@ export default function BossRaidPage() {
     }
   }
 
-  const handleTitleClick = () => {
-    titleClickCount.current += 1
-    if (titleClickCount.current >= 5) {
-      titleClickCount.current = 0
-      setAdminVisible((v) => !v)
-    }
-  }
-
   const adminAutoSchedule = async () => {
     if (!selectedGroupId) return
     try {
@@ -285,10 +278,21 @@ export default function BossRaidPage() {
     await fetchAllRaids()
   }
 
+  const adminCalendarSchedule = async () => {
+    if (!selectedGroupId) return
+    try {
+      await api.post(`/admin/groups/${selectedGroupId}/schedule`, {})
+    } catch {}
+    await fetchAllRaids()
+  }
+
   const adminStartRaid = async () => {
     if (!selectedGroupId) return
     try {
-      await api.post(`/admin/groups/${selectedGroupId}/start-raid`, {})
+      await api.post(
+        `/admin/groups/${selectedGroupId}/start-raid?forceAllMembers=${adminForceAllMembers}`,
+        {},
+      )
     } catch {}
     await fetchAllRaids()
   }
@@ -301,10 +305,10 @@ export default function BossRaidPage() {
     await refreshRaids(currentRaid.groupId)
   }
 
-  const adminForceComplete = async () => {
+  const adminForceComplete = async (outcome: 'DEFEATED' | 'FAILED') => {
     if (!currentRaid) return
     try {
-      await api.post(`/admin/raids/${currentRaid.id}/force-complete`, {})
+      await api.post(`/admin/raids/${currentRaid.id}/force-complete?outcome=${outcome}`, {})
     } catch {}
     await refreshRaids(currentRaid.groupId)
   }
@@ -333,34 +337,69 @@ export default function BossRaidPage() {
   return (
     <main className='flex flex-col gap-4'>
       <div className='flex items-center justify-between gap-4'>
-        <Popover open={adminVisible} onOpenChange={setAdminVisible}>
-          <PopoverAnchor asChild>
-            <Button onClick={handleTitleClick} variant='ghost' className='size-4 absolute' />
-          </PopoverAnchor>
-          <PopoverContent align='start' className='w-auto'>
-            <p className='mb-3 text-xs font-semibold uppercase tracking-wide text-destructive'>Admin Panel</p>
-            <div className='flex flex-col gap-2'>
-              <Button size='sm' variant='outline' onClick={adminAutoSchedule} disabled={!selectedGroupId}>
-                Schedule (5 min delay)
-              </Button>
-              <Button size='sm' variant='outline' onClick={adminStartRaid} disabled={!selectedGroupId}>
-                Start raid immediately
-              </Button>
-              <Button size='sm' variant='outline' disabled={currentRaid?.status !== 'SCHEDULED'} onClick={adminFastForward}>
-                Fast-forward 10s
-              </Button>
-              <Button
-                size='sm'
-                variant='outline'
-                disabled={!currentRaid || currentRaid.status === 'DEFEATED' || currentRaid.status === 'FAILED'}
-                onClick={adminForceComplete}
-              >
-                Force complete
-              </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button size='sm' variant='outline'>
+              Admin Panel
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align='start' className='w-64'>
+            <p className='text-xs font-semibold uppercase tracking-wide text-destructive'>Admin Panel</p>
+            <p className='mt-1 mb-3 text-xs text-muted-foreground'>
+              For testing only and for the sole benefit of the TAs. We would normally remove this in production.
+              Note that boss raids auto-schedule based on the group&apos;s calendar availability.
+            </p>
+
+            {!liveRaid && (
+              <section className='flex flex-col gap-2'>
+                <p className='text-xs font-medium text-muted-foreground'>Spawn raid</p>
+                <Button size='sm' variant='outline' onClick={adminAutoSchedule} disabled={!selectedGroupId}>
+                  Schedule (5 min delay)
+                </Button>
+                <Button size='sm' variant='outline' onClick={adminCalendarSchedule} disabled={!selectedGroupId}>
+                  Schedule via calendar
+                </Button>
+                <Button size='sm' variant='outline' onClick={adminStartRaid} disabled={!selectedGroupId}>
+                  Start raid immediately
+                </Button>
+                <Label className='pl-1 text-muted-foreground'>
+                  <input
+                    type='checkbox'
+                    checked={adminForceAllMembers}
+                    onChange={(e) => setAdminForceAllMembers(e.target.checked)}
+                  />
+                  Force all group members
+                </Label>
+              </section>
+            )}
+
+            {liveRaid && (
+              <section className='flex flex-col gap-2'>
+                <p className='text-xs font-medium text-muted-foreground'>
+                  Active raid <span className='text-muted-foreground/60'>({liveRaid.status.toLowerCase()})</span>
+                </p>
+                {liveRaid.status === 'SCHEDULED' && (
+                  <Button size='sm' variant='outline' onClick={adminFastForward}>
+                    Fast-forward 10s
+                  </Button>
+                )}
+                <Button size='sm' variant='outline' onClick={() => adminForceComplete('DEFEATED')}>
+                  Force win
+                </Button>
+                <Button size='sm' variant='outline' onClick={() => adminForceComplete('FAILED')}>
+                  Force fail
+                </Button>
+              </section>
+            )}
+
+            <Separator className='my-3' />
+
+            <section className='flex flex-col gap-2'>
+              <p className='text-xs font-medium text-muted-foreground'>Danger zone</p>
               <Button size='sm' variant='destructive' disabled={!selectedGroupId} onClick={adminClearRaids}>
                 Clear all raids
               </Button>
-            </div>
+            </section>
           </PopoverContent>
         </Popover>
 
