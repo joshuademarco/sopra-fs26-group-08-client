@@ -66,10 +66,11 @@ async function parseError(res: Response, fallback: string): Promise<never> {
   try {
     const payload = await res.json()
     const reason = readReason(payload)
-    throw new Error(reason ?? fallback)
-  } catch {
-    throw new Error(fallback)
+    if (reason) throw new Error(reason)
+  } catch (err) {
+    if (err instanceof Error) throw err
   }
+  throw new Error(fallback)
 }
 
 function buildAuthUrl(path: string): string {
