@@ -98,6 +98,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           </div>
         </div>
       </SidebarInset>
+      <Onboarding />
     </SidebarProvider>
   )
 }

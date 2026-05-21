@@ -4,6 +4,7 @@ import { HabitForm } from '@/components/habit-creation'
 import { Button } from '@/components/ui/button'
 import { CalendarConnect } from '@/components/ui/calendar-connect'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { NotificationOnboarding } from '@/components/ui/pushoverinstruction'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthContext } from '@/providers/auth-provider'
@@ -11,10 +12,11 @@ import { Habit, NewHabit } from '@/types/task'
 import Image from 'next/image'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { NotificationSettings } from './notificationssetting'
 
 const STEPS = [
   {
-    title: 'Welcome to BetterTogether!',
+    title: 'Welcome to BetterTogeter!',
     description: "Build better habits, grow your character and conquer boss raids with friends. Each habit you complete earns XP, levels your character's stats and contributes to your team's strength in raids. Let's get you set up.",
   },
   {
@@ -42,6 +44,16 @@ const STEPS = [
     title: 'Leaderboard',
     description: "Compete with others based on your character's level and XP. Stay consistent to climb the ranks.",
     image: '/onboarding/leaderboard.png',
+  },
+  {
+    title: 'Notification Preferences',
+    description: "Stay on top of raids and group activity. Set up Pushover for real-time push notifications on any device or stick with email.",
+    content: <NotificationOnboarding />,
+  },
+  {
+    title: 'Notification Preferences',
+    description: "Stay on top of raids and group activity. Set up Pushover for real-time push notifications on any device or stick with email.",
+    content: <NotificationSettings />,
   },
   {
     title: 'Connect Google Calendar',
@@ -95,14 +107,14 @@ export function Onboarding() {
 
   return (
     <Dialog open={isOpen}>
-      <DialogContent showCloseButton={false}>
+      <DialogContent showCloseButton={false} className='sm:max-w-xl'>
         <DialogHeader>
-          <DialogTitle>{STEPS[step].title}</DialogTitle>
-          <DialogDescription>{STEPS[step].description}</DialogDescription>
+          <DialogTitle className='text-xl'>{STEPS[step].title}</DialogTitle>
+          <DialogDescription className='text-base'>{STEPS[step].description}</DialogDescription>
         </DialogHeader>
         <div className='h-100 w-full overflow-hidden rounded-lg'>
           {STEPS[step].content ?? (STEPS[step].image && (
-              <Image src={STEPS[step].image} alt='' className='rounded-lg object-cover' width={400} height={400} />
+              <Image src={STEPS[step].image} alt='' className='rounded-lg object-cover' width={600} height={600} />
             ))}
         </div>
         <div className='flex justify-center gap-1 py-2'>

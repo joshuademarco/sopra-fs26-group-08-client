@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { NotificationSettings } from '@/components/ui/notificationssetting'
 import { useAuth } from '@/hooks/useAuth'
 import { buildApiUrl } from '@/utils/domain'
 import { FormEvent, useEffect, useState } from 'react'
@@ -151,6 +152,14 @@ export default function SettingsPage() {
           </div>
         </div>
       </form>
+
+      <section className='rounded-xl border border-input/20 bg-background p-6 shadow-sm'>
+        <h2 className='text-lg font-semibold'>Notification Preferences</h2>
+        <p className='mt-2 text-sm text-muted-foreground'>Choose how you want to be notified about raids and group activity</p>
+        <div className='mt-6'>
+          <NotificationSettings />
+        </div>
+      </section>
 
       <form noValidate onSubmit={handleSubmit} className='rounded-xl border border-input/20 bg-background p-6 shadow-sm'>
         <div className='mb-4 space-y-3'>
