@@ -5,7 +5,15 @@ export interface RaidUpdateMessage {
   health: number
   maxHealth: number
   status: 'SCHEDULED' | 'ACTIVE' | 'DEFEATED' | 'FAILED'
-  members?: Array<{ userId: number; health: number | null; maxHealth: number | null; knockedOut?: boolean }>
+  scheduledTime?: string | null
+  members?: Array<{
+    userId: number
+    health: number | null
+    maxHealth: number | null
+    knockedOut?: boolean
+    accepted?: boolean | null
+    joined?: boolean
+  }>
 }
 
 export interface RaidDeletedMessage {

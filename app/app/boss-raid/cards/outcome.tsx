@@ -9,7 +9,7 @@ import Image from 'next/image';
 function PlayerResults({ members, kind }: { members: RaidMember[]; kind: 'victory' | 'defeat' }) {
   return (
     <div className='flex flex-col gap-2'>
-      {members.map((m) => {
+      {members.filter((m) => m.joined).map((m) => {
         const xpHighlight = kind === 'victory' || (m.xpChange ?? 0) > 0
         return (
           <Card key={m.name} className={m.mvp ? 'border-amber-500/60 ring-1 ring-amber-500/40' : ''}>

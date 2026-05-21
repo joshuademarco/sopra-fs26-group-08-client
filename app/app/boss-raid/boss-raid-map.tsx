@@ -6,9 +6,15 @@ import { Progress } from '@/components/ui/progress'
 import mapData from '@/public/map/boss-raid/spritefusion.json'
 import { Monster, RaidMember } from '@/types/raids'
 import { motion, useAnimate } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { BossSprite } from './boss-sprite'
 import { getBossDefinition } from './bosses'
+
+const MEMBER_PX = 96
+const DEAD_FRAMES = 14
+const DEAD_SHEET_W = MEMBER_PX * DEAD_FRAMES
+const DEAD_DURATION_MS = 1200
+type MemberEffect = 'joining' | 'dying'
 
 const TILE = mapData.tileSize
 const COLS = mapData.mapWidth
@@ -120,7 +126,17 @@ function pickRandomCell(): [number, number] {
   return LEFT_SPAWN_CELLS[Math.floor(Math.random() * LEFT_SPAWN_CELLS.length)]!
 }
 
-function MemberMarker({ member, pos, dim }: { member: RaidMember; pos: { left: number; top: number }; dim: boolean }) {
+function MemberMarker({
+  member,
+  pos,
+  dim,
+  effect,
+}: {
+  member: RaidMember
+  pos: { left: number; top: number }
+  dim: boolean
+  effect?: MemberEffect
+}) {
   const [scope, animate] = useAnimate()
   const prevHpRef = useRef<number | undefined>(undefined)
   const [damage, setDamage] = useState<number | null>(null)
@@ -143,7 +159,7 @@ function MemberMarker({ member, pos, dim }: { member: RaidMember; pos: { left: n
   const hasHp = hp != null && maxHp != null && maxHp > 0
   const percent = hasHp ? Math.max(0, Math.min(100, (hp / maxHp) * 100)) : 0
   const isDead = hasHp && hp <= 0
-  const dimMe = dim || isDead
+  const dimMe = (dim || isDead) && !effect
   const barColor = isDead
     ? 'bg-muted-foreground/40'
     : percent <= 25
@@ -151,6 +167,8 @@ function MemberMarker({ member, pos, dim }: { member: RaidMember; pos: { left: n
       : percent <= 50
         ? 'bg-yellow-400'
         : 'bg-emerald-500'
+
+  const animClass = effect === 'joining' ? 'boss-raid-dead-reverse' : effect === 'dying' ? 'boss-raid-dead-forward' : null
 
   return (
     <div
@@ -167,7 +185,20 @@ function MemberMarker({ member, pos, dim }: { member: RaidMember; pos: { left: n
     >
       <div ref={scope} className='relative flex flex-col items-center gap-1'>
         <div className='relative drop-shadow-[0_0_1px_black]'>
-          <CharacterImage characterType={member.characterType} alt={member.name} size={96} rotation='east' />
+          {animClass ? (
+            <div
+              className={`[image-rendering:pixelated] ${animClass}`}
+              style={{
+                width: MEMBER_PX,
+                height: MEMBER_PX,
+                backgroundImage: "url('/map/effects/dead.png')",
+                backgroundSize: `${DEAD_SHEET_W}px ${MEMBER_PX}px`,
+                backgroundRepeat: 'no-repeat',
+              }}
+            />
+          ) : (
+            <CharacterImage characterType={member.characterType} alt={member.name} size={MEMBER_PX} rotation='east' />
+          )}
           <div className='member-hit-overlay pointer-events-none absolute inset-0 rounded-lg bg-red-500 opacity-0' />
         </div>
         <span
@@ -220,7 +251,7 @@ export function BossRaidMap({
 }) {
   const [scope, animate] = useAnimate()
   const prevHpRef = useRef<number | undefined>(undefined)
-  const prevMemberHealthRef = useRef<Map<string, number>>(new Map())
+  const prevMemberHealthRef = useRef<Map<number, number>>(new Map())
   const [damage, setDamage] = useState<number | null>(null)
   const [damageKey, setDamageKey] = useState(0)
   const [attackKey, setAttackKey] = useState(0)
@@ -228,6 +259,62 @@ export function BossRaidMap({
   const isDefeated = monster.hp !== undefined && monster.hp <= 0
 
   const { ref: frameRef, scale } = useScaleToWidth<HTMLDivElement>(MAP_W)
+
+  const visibleMembers = useMemo(() => members.filter((m) => m.joined), [members])
+
+  const aliveHistoryRef = useRef<Map<number, boolean>>(new Map())
+  const [memberEffects, setMemberEffects] = useState<Map<number, { effect: MemberEffect; startedAt: number }>>(() => new Map())
+
+  useEffect(() => {
+    const now = Date.now()
+    setMemberEffects((prev) => {
+      let changed = false
+      const next = new Map(prev)
+      const currentIds = new Set<number>()
+
+      for (const member of visibleMembers) {
+        currentIds.add(member.userId)
+        const alive = !(member.health != null && member.health <= 0)
+        const prevAlive = aliveHistoryRef.current.get(member.userId)
+        const isNew = prevAlive === undefined
+
+        if (isNew) {
+          next.set(member.userId, { effect: 'joining', startedAt: now })
+          changed = true
+        } else if (prevAlive && !alive) {
+          next.set(member.userId, { effect: 'dying', startedAt: now })
+          changed = true
+        }
+        aliveHistoryRef.current.set(member.userId, alive)
+      }
+
+      for (const userId of aliveHistoryRef.current.keys()) {
+        if (!currentIds.has(userId)) {
+          aliveHistoryRef.current.delete(userId)
+          if (next.delete(userId)) changed = true
+        }
+      }
+
+      return changed ? next : prev
+    })
+  }, [visibleMembers])
+
+  useEffect(() => {
+    const timers: number[] = []
+    for (const [userId, entry] of memberEffects) {
+      const remaining = Math.max(0, DEAD_DURATION_MS - (Date.now() - entry.startedAt))
+      const t = window.setTimeout(() => {
+        setMemberEffects((prev) => {
+          if (!prev.has(userId)) return prev
+          const next = new Map(prev)
+          next.delete(userId)
+          return next
+        })
+      }, remaining)
+      timers.push(t)
+    }
+    return () => timers.forEach((t) => window.clearTimeout(t))
+  }, [memberEffects])
 
   // "player damaged boss" and "boss attacked member" each tick.
   useEffect(() => {
@@ -237,11 +324,11 @@ export function BossRaidMap({
     if (currentHp !== undefined) prevHpRef.current = currentHp
 
     let bossAttacked = false
-    for (const m of members) {
+    for (const m of visibleMembers) {
       if (m.health == null) continue
-      const prev = prevMemberHealthRef.current.get(m.name)
+      const prev = prevMemberHealthRef.current.get(m.userId)
       if (prev !== undefined && m.health < prev) bossAttacked = true
-      prevMemberHealthRef.current.set(m.name, m.health)
+      prevMemberHealthRef.current.set(m.userId, m.health)
     }
 
     if (bossDamaged) {
@@ -261,10 +348,10 @@ export function BossRaidMap({
     } else if (bossAttacked) {
       setAttackKey((k) => k + 1)
     }
-  }, [animate, monster.hp, members, scope])
+  }, [animate, monster.hp, visibleMembers, scope])
 
   // random pos for raid participants
-  const positionsRef = useRef<Map<string, { left: number; top: number }>>(new Map())
+  const positionsRef = useRef<Map<number, { left: number; top: number }>>(new Map())
   const usedRef = useRef<Set<string>>(new Set())
   const lastRaidIdRef = useRef<number | null>(null)
   if (lastRaidIdRef.current !== raidId) {
@@ -272,8 +359,8 @@ export function BossRaidMap({
     positionsRef.current.clear()
     usedRef.current.clear()
   }
-  for (const m of members) {
-    if (positionsRef.current.has(m.name)) continue
+  for (const m of visibleMembers) {
+    if (positionsRef.current.has(m.userId)) continue
     // random from cells nobody else has claimed
     const free = LEFT_SPAWN_CELLS.filter(([cx, cy]) => !usedRef.current.has(`${cx},${cy}`))
     const pool = free.length > 0 ? free : LEFT_SPAWN_CELLS
@@ -281,7 +368,7 @@ export function BossRaidMap({
     usedRef.current.add(`${cell[0]},${cell[1]}`)
     const jx = (Math.random() - 0.5) * TILE * 0.4
     const jy = (Math.random() - 0.5) * TILE * 0.3
-    positionsRef.current.set(m.name, {
+    positionsRef.current.set(m.userId, {
       left: cell[0] * TILE + TILE / 2 + jx,
       top: cell[1] * TILE + TILE / 2 + jy,
     })
@@ -293,6 +380,10 @@ export function BossRaidMap({
       <style>{`
         @keyframes boss-raid-foam-cycle { from { background-position: 0 0; } to { background-position: -${FOAM_SHEET_W}px 0; } }
         .boss-raid-foam-anim { animation: boss-raid-foam-cycle 1.4s steps(${FOAM_FRAMES}) infinite; }
+        @keyframes boss-raid-dead-forward { from { background-position: 0 0; } to { background-position: -${DEAD_SHEET_W}px 0; } }
+        .boss-raid-dead-forward { animation: boss-raid-dead-forward ${DEAD_DURATION_MS}ms steps(${DEAD_FRAMES}) forwards; }
+        @keyframes boss-raid-dead-reverse { from { background-position: -${DEAD_SHEET_W}px 0; } to { background-position: 0 0; } }
+        .boss-raid-dead-reverse { animation: boss-raid-dead-reverse ${DEAD_DURATION_MS}ms steps(${DEAD_FRAMES}) forwards; }
       `}</style>
       <div
         ref={frameRef}
@@ -389,10 +480,19 @@ export function BossRaidMap({
           </div>
 
           {/* members scattered on left rocks */}
-          {members.map((member) => {
-            const pos = positionsRef.current.get(member.name)
+          {visibleMembers.map((member) => {
+            const pos = positionsRef.current.get(member.userId)
             if (!pos) return null
-            return <MemberMarker key={member.name} member={member} pos={pos} dim={dimDeadMembers && !!member.died} />
+            const effectEntry = memberEffects.get(member.userId)
+            return (
+              <MemberMarker
+                key={member.userId}
+                member={member}
+                pos={pos}
+                dim={dimDeadMembers && !!member.died}
+                effect={effectEntry?.effect}
+              />
+            )
           })}
         </div>
       </div>

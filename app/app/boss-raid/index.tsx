@@ -36,6 +36,8 @@ function modifyRaidState(raid: RaidData, msg: RaidUpdateMessage): RaidData {
               health: memberPatch.health,
               maxHealth: memberPatch.maxHealth,
               knockedOut: memberPatch.knockedOut ?? user.knockedOut,
+              accepted: memberPatch.accepted !== undefined ? memberPatch.accepted : user.accepted,
+              joined: memberPatch.joined !== undefined ? memberPatch.joined : user.joined,
             }
           : user
       })
@@ -46,6 +48,7 @@ function modifyRaidState(raid: RaidData, msg: RaidUpdateMessage): RaidData {
     health: msg.health,
     maxHealth: msg.maxHealth,
     status: msg.status as RaidData['status'],
+    scheduledTime: msg.scheduledTime !== undefined ? msg.scheduledTime : raid.scheduledTime,
     users,
   }
 }
@@ -184,12 +187,32 @@ export default function BossRaidPage() {
       }
 
       let statusChanged = false
+      let transitionedToEnded = false
       setGroupsData((prev) => {
         const group = prev.find((g) => g.groupId === msg.groupId)
         const existing = group?.raids.find((r) => r.id === msg.raidId)
         if (!existing || existing.status !== msg.status) statusChanged = true
+        if (
+          existing &&
+          (existing.status === 'ACTIVE' || existing.status === 'SCHEDULED') &&
+          (msg.status === 'DEFEATED' || msg.status === 'FAILED')
+        ) {
+          transitionedToEnded = true
+        }
         return applyRaidUpdate(prev, msg)
       })
+
+      if (transitionedToEnded) {
+        setDismissedOutcomeIds((prev) => {
+          if (!prev.has(msg.raidId)) return prev
+          const next = new Set(prev)
+          next.delete(msg.raidId)
+          try {
+            window.localStorage.setItem('dismissedRaidOutcomes', JSON.stringify([...next]))
+          } catch {}
+          return next
+        })
+      }
 
       const last = lastRefetchByGroupRef.current.get(msg.groupId) ?? 0
       const now = Date.now()

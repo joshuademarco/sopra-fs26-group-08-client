@@ -64,8 +64,10 @@ export interface DroppedItem {
 }
 
 export interface RaidMember {
+  userId: number
   name: string
   status: MemberStatus
+  joined: boolean
   isCurrentUser?: boolean
   characterType?: string | null
   level?: number

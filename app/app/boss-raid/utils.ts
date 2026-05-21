@@ -94,6 +94,7 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
     const isCurrentUser = currentUserId !== undefined && member.userId === Number(currentUserId)
     const myTasks = assignedTasks(tasks, member.userId)
     const myPending = assignedPendingTasks(tasks, member.userId)
+    const joined = member.accepted === true
 
     if (state === 'lobby') {
       const lobbyStatus =
@@ -105,7 +106,9 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
               ? 'Pending'
               : 'Offline'
       return {
+        userId: member.userId,
         name: member.username,
+        joined,
         isCurrentUser,
         characterType: member.characterType ?? null,
         health: member.health,
@@ -117,7 +120,9 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
     if (state === 'active') {
       const nextTask = myPending[0]
       return {
+        userId: member.userId,
         name: member.username,
+        joined,
         isCurrentUser,
         characterType: member.characterType ?? null,
         health: member.health,
@@ -133,7 +138,9 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
 
     // defeat or victory
     return {
+      userId: member.userId,
       name: member.username,
+      joined,
       isCurrentUser,
       characterType: member.characterType ?? null,
       status: 'Ready',
