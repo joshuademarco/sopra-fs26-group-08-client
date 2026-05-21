@@ -1,6 +1,9 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useApi } from '@/hooks/useApi'
+import { useAuth } from '@/hooks/useAuth'
+import { useEffect, useState } from 'react'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -12,7 +15,17 @@ function cellColor(count: number) {
   return 'bg-green-800'
 }
 
-export function HabitHeatmap({ data }: { data: Record<string, number> }) {
+export function HabitHeatmap() {
+  const { user } = useAuth()
+  const api = useApi()
+  const [data, setData] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    if (!user) return
+    api.get<Record<string, number>>(`/users/${user.id}/habits/heatmap`)
+      .then(setData)
+      .catch(() => {})
+  }, [user?.id])
   const today = new Date()
   const weeks: Date[][] = []
   for (let w = 51; w >= 0; w--) {
