@@ -23,6 +23,7 @@ export function CharacterWidget() {
   const [character, setCharacter] = useState<CharacterSummary | null>(null)
   const [reviving, setReviving] = useState(false)
   const [playReviveAnim, setPlayReviveAnim] = useState(false)
+  const [playLevelUpAnim, setPlayLevelUpAnim] = useState(false)
 
   // Initial fetch
   useEffect(() => {
@@ -45,13 +46,16 @@ export function CharacterWidget() {
   // Live updates via character WebSocket
   useEffect(() => {
     return subscribeToCharacterUpdates((msg) => {
-      setCharacter((prev) => ({
-        type: msg.characterType ?? prev?.type ?? null,
-        level: msg.level,
-        health: msg.health,
-        maxHealth: msg.maxHealth,
-        experience: msg.experience,
-      }))
+      setCharacter((prev) => {
+        if (prev && msg.level > prev.level) setPlayLevelUpAnim(true)
+        return {
+          type: msg.characterType ?? prev?.type ?? null,
+          level: msg.level,
+          health: msg.health,
+          maxHealth: msg.maxHealth,
+          experience: msg.experience,
+        }
+      })
     })
   }, [subscribeToCharacterUpdates])
 
@@ -100,7 +104,20 @@ export function CharacterWidget() {
           <div
             aria-hidden
             onAnimationEnd={() => setPlayReviveAnim(false)}
-            className='pointer-events-none absolute inset-0 [image-rendering:pixelated] animate-revive-sprite'
+            className='pointer-events-none absolute left-1/2 top-1/2 size-32 -translate-x-1/2 -translate-y-1/2 [image-rendering:pixelated] animate-revive-skull'
+            style={{
+              backgroundImage: 'url(/map/effects/dead.png)',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '1792px 128px',
+              backgroundPosition: '-1792px 0',
+            }}
+          />
+        )}
+        {playLevelUpAnim && (
+          <div
+            aria-hidden
+            onAnimationEnd={() => setPlayLevelUpAnim(false)}
+            className='pointer-events-none absolute inset-0 [image-rendering:pixelated] animate-level-up-sprite'
             style={{
               backgroundImage: 'url(/effects/revive.png)',
               backgroundRepeat: 'no-repeat',
