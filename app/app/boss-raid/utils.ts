@@ -1,6 +1,6 @@
 import { BossRaid, RaidData, RaidMember, RaidMemberData, RaidState, RaidTaskData } from '@/types/raids'
+import { getBossDefinition } from './bosses'
 
-export const MONSTER_IMAGE = '/characters/bosses/innereschweinehund.png'
 export const RECONNECT_DELAY_MS = 2000
 
 export function calcTimeLeft(startedAt: string | null, durationSeconds: number): number {
@@ -162,6 +162,7 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
   }
 
   const estimatedReward = raid.maxHealth + tasks.length * 10
+  const bossDef = getBossDefinition(raid.name)
   return {
     id: raid.id,
     groupName: raid.groupName,
@@ -177,9 +178,8 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
     monster: {
       name: raid.name,
       level: Math.max(1, Math.floor(raid.maxHealth / 100)),
-      description: `A fearsome boss with ${raid.maxHealth} HP appeared. Only with teamwork you can defeat the boss!`,
+      description: bossDef.description,
       hpPercent,
-      imageUrl: MONSTER_IMAGE,
       hp: raid.health,
       maxHp: raid.maxHealth,
     },

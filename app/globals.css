@@ -138,6 +138,19 @@
     );
 }
 
+@keyframes revive-sprite {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -1440px 0;
+    }
+}
+
+@utility animate-revive-sprite {
+    animation: revive-sprite 800ms steps(10) 1 forwards;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;

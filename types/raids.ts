@@ -87,7 +87,6 @@ export interface Monster {
   level: number
   description: string
   hpPercent: number
-  imageUrl: string
   hp?: number
   maxHp?: number
 }
@@ -103,7 +102,6 @@ export interface BossRaid {
   durationSeconds?: number
   tasksCount?: number
   estimatedReward?: number
-  damageMultiplier?: number
   state: RaidState
   monster: Monster
 }

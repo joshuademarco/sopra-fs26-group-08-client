@@ -22,6 +22,7 @@ export function CharacterWidget() {
   const { subscribeToCharacterUpdates } = useWebsocketContext()
   const [character, setCharacter] = useState<CharacterSummary | null>(null)
   const [reviving, setReviving] = useState(false)
+  const [playReviveAnim, setPlayReviveAnim] = useState(false)
 
   // Initial fetch
   useEffect(() => {
@@ -59,6 +60,7 @@ export function CharacterWidget() {
   const handleRevive = async () => {
     if (!user) return
     setReviving(true)
+    setPlayReviveAnim(true)
     try {
       const data = await api.post<CharacterSummary>(`/users/${user.id}/character/revive`, {})
       setCharacter({
@@ -82,7 +84,7 @@ export function CharacterWidget() {
 
   return (
     <div className={`flex flex-col items-center gap-3 px-3 py-4`}>
-      <div className={`relative size-36 overflow-hidden rounded-xl  ${isKnockedOut ? 'opacity-50 grayscale' : ''}`}>
+      <div className={`relative size-36 overflow-hidden rounded-xl  ${isKnockedOut && !playReviveAnim ? 'opacity-50 grayscale' : ''}`}>
         {character.type ? (
           <Image
             src={`/characters/${character.type}/rotations/south.png`}
@@ -93,6 +95,19 @@ export function CharacterWidget() {
           />
         ) : (
           <div className='flex size-full items-center justify-center text-sm text-muted-foreground'>?</div>
+        )}
+        {playReviveAnim && (
+          <div
+            aria-hidden
+            onAnimationEnd={() => setPlayReviveAnim(false)}
+            className='pointer-events-none absolute inset-0 [image-rendering:pixelated] animate-revive-sprite'
+            style={{
+              backgroundImage: 'url(/effects/revive.png)',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '1440px 144px',
+              backgroundPosition: '0 0',
+            }}
+          />
         )}
       </div>
 

@@ -3,8 +3,9 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Monster, RaidMember } from '@/types/raids'
 import { motion, useAnimate } from 'framer-motion'
-import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import { BossSprite } from './boss-sprite'
+import { getBossDefinition } from './bosses'
 
 function MemberSprite({ member, dim = false }: { member: RaidMember; dim?: boolean }) {
   const hp = member.health
@@ -53,6 +54,8 @@ export function BossStage({
   const prevHpRef = useRef<number | undefined>(undefined)
   const [damage, setDamage] = useState<number | null>(null)
   const [hitKey, setHitKey] = useState(0)
+  const bossDef = getBossDefinition(monster.name)
+  const isDefeated = monster.hp !== undefined && monster.hp <= 0
 
   useEffect(() => {
     if (monster.hp === undefined) return
@@ -83,7 +86,14 @@ export function BossStage({
           <div
             className={`relative flex size-56 items-center justify-center overflow-hidden rounded-lg bg-muted select-none ${dim ? 'opacity-50' : ''}`}
           >
-            <Image src={monster.imageUrl} alt={monster.name} width={224} height={224} />
+            <BossSprite
+              idle={bossDef.idle}
+              hit={bossDef.hit}
+              defeated={bossDef.defeated}
+              hitKey={hitKey}
+              isDefeated={isDefeated}
+              size={224}
+            />
             <div className='hit-overlay pointer-events-none absolute inset-0 rounded-lg bg-red-500 opacity-0' />
           </div>
         </div>

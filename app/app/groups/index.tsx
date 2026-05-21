@@ -200,8 +200,7 @@ export default function GroupsPage() {
             <TooltipContent className='max-w-sm'>
               Team up with friends to hold each other accountable - see who&apos;s crushing their habits, track your combined
               progress, and click any member to view their level and achievements. Most importantly: once you and your friends
-              created/joined a group, you can enter Boss Raids together to slay procrastination monsters like the &quot;Innere
-              Schweinehund&quot; and earn epic rewards!
+              created/joined a group, you can enter Boss Raids together to slay procrastination monsters and earn epic rewards!
             </TooltipContent>
           </Tooltip>
         </div>

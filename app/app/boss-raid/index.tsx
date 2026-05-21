@@ -8,9 +8,10 @@ import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { useWebsocketContext } from '@/hooks/useWebsocketContext'
 import { GroupWithRaids, RaidData, RaidTaskData } from '@/types/raids'
-import { RaidUpdateMessage } from '@/types/websocket'
+import { RaidSocketMessage, RaidUpdateMessage } from '@/types/websocket'
 import { ArrowLeft, Moon } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { DefeatCard } from './cards/defeat-card'
 import { VictoryCard } from './cards/victory-card'
 import { PastRaidsList } from './past-raids'
@@ -48,23 +49,22 @@ function modifyRaidState(raid: RaidData, msg: RaidUpdateMessage): RaidData {
 }
 
 function applyRaidUpdate(groups: GroupWithRaids[], msg: RaidUpdateMessage): GroupWithRaids[] {
-  if (msg.status === 'DELETED') {
-    return groups.map((group) => {
-      if (group.groupId !== msg.groupId) return group
-
-      return {
-        ...group,
-        raids: group.raids.filter((raid) => raid.id !== msg.raidId),
-      }
-    })
-  }
-
   return groups.map((group) => {
     if (group.groupId !== msg.groupId) return group
 
     return {
       ...group,
       raids: group.raids.map((raid) => modifyRaidState(raid, msg)),
+    }
+  })
+}
+
+function applyRaidDeletion(groups: GroupWithRaids[], groupId: number, raidId: number): GroupWithRaids[] {
+  return groups.map((group) => {
+    if (group.groupId !== groupId) return group
+    return {
+      ...group,
+      raids: group.raids.filter((raid) => raid.id !== raidId),
     }
   })
 }
@@ -120,9 +120,17 @@ export default function BossRaidPage() {
   const [groupsData, setGroupsData] = useState<GroupWithRaids[]>([])
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const [, setTick] = useState(0)
-  const [error, setError] = useState<string | null>(null)
   const [adminVisible, setAdminVisible] = useState(false)
   const [openRaid, setOpenRaid] = useState<RaidData | null>(null)
+  const [dismissedOutcomeIds, setDismissedOutcomeIds] = useState<Set<number>>(() => {
+    if (typeof window === 'undefined') return new Set()
+    try {
+      const stored = window.localStorage.getItem('dismissedRaidOutcomes')
+      return new Set(stored ? (JSON.parse(stored) as number[]) : [])
+    } catch {
+      return new Set()
+    }
+  })
   const titleClickCount = useRef(0)
 
   // Derive onlineUserIds from context
@@ -161,12 +169,31 @@ export default function BossRaidPage() {
     [api],
   )
 
+  const lastRefetchByGroupRef = useRef<Map<number, number>>(new Map())
+  const REFETCH_THROTTLE_MS = 1500
+
   useEffect(() => {
     let ignore = false
 
-    const unsubscribe = subscribeToRaidUpdates((msg: RaidUpdateMessage) => {
-      if (!ignore) {
-        setGroupsData((prev) => applyRaidUpdate(prev, msg))
+    const unsubscribe = subscribeToRaidUpdates((msg: RaidSocketMessage) => {
+      if (ignore) return
+      if (msg.type === 'RAID_DELETED') {
+        setGroupsData((prev) => applyRaidDeletion(prev, msg.groupId, msg.raidId))
+        return
+      }
+
+      let statusChanged = false
+      setGroupsData((prev) => {
+        const group = prev.find((g) => g.groupId === msg.groupId)
+        const existing = group?.raids.find((r) => r.id === msg.raidId)
+        if (!existing || existing.status !== msg.status) statusChanged = true
+        return applyRaidUpdate(prev, msg)
+      })
+
+      const last = lastRefetchByGroupRef.current.get(msg.groupId) ?? 0
+      const now = Date.now()
+      if (statusChanged || now - last > REFETCH_THROTTLE_MS) {
+        lastRefetchByGroupRef.current.set(msg.groupId, now)
         refreshRaids(msg.groupId)
       }
     })
@@ -198,13 +225,37 @@ export default function BossRaidPage() {
 
   const currentRaid = liveRaid ?? selectedGroup?.raids.at(-1) ?? null
 
+  const latestEndedRaid = useMemo(() => {
+    if (!selectedGroup) return null
+    const ended = selectedGroup.raids.filter((r) => r.status === 'DEFEATED' || r.status === 'FAILED')
+    if (ended.length === 0) return null
+    return ended.reduce((latest, raid) => {
+      const latestTime = latest.startedAt ? new Date(latest.startedAt).getTime() : 0
+      const raidTime = raid.startedAt ? new Date(raid.startedAt).getTime() : 0
+      return raidTime > latestTime ? raid : latest
+    })
+  }, [selectedGroup])
+
+  const autoShownOutcomeRaid =
+    !liveRaid && latestEndedRaid && !dismissedOutcomeIds.has(latestEndedRaid.id) ? latestEndedRaid : null
+
+  const dismissOutcome = (raidId: number) => {
+    setDismissedOutcomeIds((prev) => {
+      const next = new Set(prev)
+      next.add(raidId)
+      try {
+        window.localStorage.setItem('dismissedRaidOutcomes', JSON.stringify([...next]))
+      } catch {}
+      return next
+    })
+  }
+
   const handleRsvp = async (raidId: number, groupId: number, accepted: boolean) => {
-    setError(null)
     try {
       await api.post(`/raids/${raidId}/rsvp?accepted=${accepted}`, {})
       await refreshRaids(groupId)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not update RSVP')
+      toast.error(err instanceof Error ? err.message : 'Could not update RSVP')
     }
   }
 
@@ -213,7 +264,7 @@ export default function BossRaidPage() {
       await api.post(`/raids/${raidId}/join`, {})
       await refreshRaids(groupId)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not join raid')
+      toast.error(err instanceof Error ? err.message : 'Could not join raid')
     }
   }
 
@@ -271,7 +322,7 @@ export default function BossRaidPage() {
       await api.post(`/raids/${raidId}/tasks/${task.id}/complete?success=${success}`, {})
       await refreshRaids(groupId)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not complete task')
+      toast.error(err instanceof Error ? err.message : 'Could not complete task')
     }
   }
 
@@ -331,8 +382,6 @@ export default function BossRaidPage() {
         </div>
       </div>
 
-      {error && <p className='text-sm text-destructive'>{error}</p>}
-
       {!selectedGroup ? (
         <Card>
           <CardContent className='flex items-center justify-center py-12'>
@@ -353,13 +402,22 @@ export default function BossRaidPage() {
       ) : (
         (() => {
           const stats = computeStats(groupsData, Number(currentUser.id))
-          if (openRaid) {
-            const cardData = toRaidCard(openRaid, currentUser.id, onlineUserIds)
+          const displayedEndedRaid = openRaid ?? autoShownOutcomeRaid
+          if (displayedEndedRaid) {
+            const cardData = toRaidCard(displayedEndedRaid, currentUser.id, onlineUserIds)
+            const isAutoShown = openRaid === null
+            const handleBack = () => {
+              if (openRaid) {
+                setOpenRaid(null)
+              } else {
+                dismissOutcome(displayedEndedRaid.id)
+              }
+            }
             return (
               <div className='flex flex-col gap-4'>
                 {cardData.state === 'victory' ? <VictoryCard raid={cardData} /> : <DefeatCard raid={cardData} />}
-                <Button className='self-start' onClick={() => setOpenRaid(null)}>
-                  <ArrowLeft className='size-4' /> Back to history
+                <Button className='self-start' onClick={handleBack}>
+                  <ArrowLeft className='size-4' /> {isAutoShown ? 'Continue' : 'Back to history'}
                 </Button>
               </div>
             )

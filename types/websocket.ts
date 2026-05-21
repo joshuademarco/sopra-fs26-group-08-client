@@ -4,9 +4,17 @@ export interface RaidUpdateMessage {
   groupId: number
   health: number
   maxHealth: number
-  status: 'SCHEDULED' | 'ACTIVE' | 'DEFEATED' | 'FAILED' | 'DELETED'
+  status: 'SCHEDULED' | 'ACTIVE' | 'DEFEATED' | 'FAILED'
   members?: Array<{ userId: number; health: number | null; maxHealth: number | null; knockedOut?: boolean }>
 }
+
+export interface RaidDeletedMessage {
+  type: 'RAID_DELETED'
+  raidId: number
+  groupId: number
+}
+
+export type RaidSocketMessage = RaidUpdateMessage | RaidDeletedMessage
 
 export interface CharacterUpdateMessage {
   type: 'CHARACTER_UPDATE'

@@ -93,8 +93,6 @@ export function OutcomeShell({
   title,
   titleClass,
   subtitle,
-  bossCaption,
-  bossCaptionClass,
   summaryTitle,
   summaryCells,
   stageMonster,
@@ -106,8 +104,6 @@ export function OutcomeShell({
   title: string
   titleClass: string
   subtitle: string
-  bossCaption: string
-  bossCaptionClass: string
   summaryTitle: string
   summaryCells: { label: string; value: string; tone?: 'default' | 'success' | 'destructive' | 'gold' }[]
   stageMonster: Monster
@@ -153,7 +149,6 @@ export function OutcomeShell({
               dimDeadMembers={kind === 'defeat'}
               glare
             />
-            <p className={`text-sm font-medium ${bossCaptionClass}`}>{bossCaption}</p>
           </div>
         </CardContent>
       </Card>

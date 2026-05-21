@@ -17,8 +17,6 @@ export function VictoryCard({ raid }: { raid: BossRaid }) {
       title='VICTORY'
       titleClass='text-emerald-600'
       subtitle={`${raid.monster.name} has been defeated. Your guild gains XP and the streak grows.`}
-      bossCaption={`${raid.monster.name} fainted`}
-      bossCaptionClass='text-muted-foreground'
       summaryTitle='Battle summary'
       summaryCells={[
         { label: 'Total damage', value: String(totalDamage) },
