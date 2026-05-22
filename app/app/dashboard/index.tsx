@@ -1,5 +1,4 @@
 import { LiveOnlineMap } from '@/components/live-online-map'
-import { WeatherIcon } from '@/components/weather-icon'
 import { WeatherQuestCard } from '@/components/weather-quest-card'
 
 export default function Dashboard() {

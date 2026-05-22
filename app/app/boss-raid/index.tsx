@@ -353,6 +353,15 @@ export default function BossRaidPage() {
     }
   }
 
+  const handleSkipTask = async (raidId: number, task: RaidTaskData, groupId: number) => {
+    try {
+      await api.post(`/raids/${raidId}/tasks/${task.id}/skip`, {})
+      await refreshRaids(groupId)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not skip task')
+    }
+  }
+
   if (!currentUser) {
     return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading…</div>
   }
@@ -460,6 +469,7 @@ export default function BossRaidPage() {
           onJoin={() => handleJoin(liveRaid.id, liveRaid.groupId)}
           onRsvp={(accepted) => handleRsvp(liveRaid.id, liveRaid.groupId, accepted)}
           onCompleteTask={(task, success) => handleCompleteTask(liveRaid.id, task, success, liveRaid.groupId)}
+          onSkipTask={(task) => handleSkipTask(liveRaid.id, task, liveRaid.groupId)}
         />
       ) : (
         (() => {

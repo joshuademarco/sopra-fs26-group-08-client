@@ -37,7 +37,7 @@ const CHARACTER_TYPES = [
 const formSchema = z
   .object({
     username: z.string().min(2, 'Username must be at least 2 characters.'),
-    email: z.string().email('Please enter a valid email address.'),
+    email: z.email('Please enter a valid email address.'),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters.')
@@ -53,12 +53,10 @@ const formSchema = z
 export function SignupForm({ className, ...props }: React.ComponentProps<'div'>) {
   const router = useRouter()
   const { register: registerUser } = useAuth()
-  const [formError, setFormError] = React.useState<string | null>(null)
-
-
   //set up zod form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
     defaultValues: {
       username: process.env.NEXT_PUBLIC_DEFAULT_USERNAME || '',
       email: process.env.NEXT_PUBLIC_DEFAULT_EMAIL || '',
@@ -74,7 +72,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       //send data to backend -> POST /users
-      const user = await registerUser({
+      await registerUser({
         username: data.username,
         email: data.email,
         password: data.password,
@@ -85,9 +83,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
       router.replace('/app')
 
       //check for backedn errors
-    } catch (error: any) {
-      //extract error message from backend response
-      const errorMessage = error.response?.data?.message || error.message || "";
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "";
 
       //use form.setError to check for duplicates
       if (errorMessage.toLowerCase().includes("username")) {
@@ -106,7 +103,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
 
       //catch all other errors and display error message
       if (!errorMessage.toLowerCase().includes("username") && !errorMessage.toLowerCase().includes("email")) {
-        setFormError(errorMessage || 'Registration failed')
+        toast.error(errorMessage || 'Registration failed')
       }
     }
   }
@@ -217,7 +214,6 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
               />
 
               <Field>
-                {formError && <FieldError>{formError}</FieldError>}
                 <Button type='submit' disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? 'Creating account...' : 'Sign up'}
                 </Button>
