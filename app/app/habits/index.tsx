@@ -47,7 +47,7 @@ export default function HabitsPage() {
         </Tooltip>
       </div>
 
-      <div className='my-6'>
+      <div className='mb-6'>
         <HabitHeatmap />
       </div>
 
