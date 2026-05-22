@@ -34,7 +34,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
 
   const pageTitles: Record<string, string> = {
     home: 'Home',
-    habits: 'Tasks',
+    habits: 'Habits & Todos',
     character: 'Character',
     groups: 'Groups',
     'boss-raids': 'Boss Raids',

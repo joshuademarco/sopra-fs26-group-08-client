@@ -3,10 +3,11 @@
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { type Todo, categoryLabel, weightLabel } from '@/types/task'
-import { AlertTriangle, Brain, CheckCircle2, Flame, Heart, Trash2 } from 'lucide-react'
+import { AlertTriangle, Brain, Check, Flame, Heart, Trash2 } from 'lucide-react'
 
 interface TodoCardProps {
   todo: Todo
+  isKnockedOut?: boolean
   onComplete: () => void
   onDelete: () => void
 }
@@ -19,11 +20,11 @@ function CategoryIcon({ category }: { category: Todo['category'] }) {
     case 'COGNITIVE':
       return <Brain className={`${cls} text-sky-500`} />
     case 'EMOTIONAL':
-      return <Heart className={`${cls} text-emerald-500`} />
+      return <Heart className={`${cls} text-violet-500`} />
   }
 }
 
-export function TodoCard({ todo, onComplete, onDelete }: TodoCardProps) {
+export function TodoCard({ todo, isKnockedOut = false, onComplete, onDelete }: TodoCardProps) {
   const hasDueDate = Boolean(todo.dueAt)
   const isOverdue = hasDueDate && !todo.completed && new Date(todo.dueAt!) < new Date()
   const xp = todo.weight * 10
@@ -37,14 +38,16 @@ export function TodoCard({ todo, onComplete, onDelete }: TodoCardProps) {
         <TooltipTrigger asChild>
           <button
             onClick={onComplete}
-            disabled={todo.completed}
+            disabled={todo.completed || isKnockedOut}
             className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-muted-foreground/40 transition-colors hover:border-primary hover:bg-primary/10 disabled:cursor-default disabled:opacity-60'
             aria-label='Mark as complete'
           >
-            {todo.completed ? <CheckCircle2 className='h-4 w-4 text-emerald-500' /> : null}
+            {todo.completed && <Check className='h-4 w-4 text-primary' />}
           </button>
         </TooltipTrigger>
-        <TooltipContent>{todo.completed ? 'Completed' : 'Mark as complete'}</TooltipContent>
+        <TooltipContent>
+          {todo.completed ? 'Completed' : isKnockedOut ? 'Revive your character first' : 'Mark as complete'}
+        </TooltipContent>
       </Tooltip>
 
       <CategoryIcon category={todo.category} />

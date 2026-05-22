@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
+import { useWebsocketContext } from '@/hooks/useWebsocketContext'
 import type { Habit, HabitCategory, NewHabit, NewTodo, Todo } from '@/types/task'
 import { AlertTriangle, Brain, Flame, Heart, Info, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -26,8 +27,22 @@ function weightLabel(w: number) {
 
 export default function HabitsPage() {
   const { user } = useAuth()
+  const api = useApi()
+  const { subscribeToCharacterUpdates } = useWebsocketContext()
   const [habitDialogOpen, setHabitDialogOpen] = useState(false)
   const [todoDialogOpen, setTodoDialogOpen] = useState(false)
+  const [isKnockedOut, setIsKnockedOut] = useState(false)
+
+  useEffect(() => {
+    if (!user) return
+    api.get<{ health: number }>(`/users/${user.id}/character`)
+      .then((c) => setIsKnockedOut(c.health <= 0))
+      .catch(() => {})
+  }, [user?.id])
+
+  useEffect(() => {
+    return subscribeToCharacterUpdates((msg) => setIsKnockedOut(msg.health <= 0))
+  }, [subscribeToCharacterUpdates])
 
   if (!user) return null
 
@@ -60,7 +75,7 @@ export default function HabitsPage() {
             </Button>
           </div>
           <div className='border rounded-lg p-4 bg-muted/40'>
-            <HabitsSection userId={user.id} dialogOpen={habitDialogOpen} setDialogOpen={setHabitDialogOpen} />
+            <HabitsSection userId={user.id} isKnockedOut={isKnockedOut} dialogOpen={habitDialogOpen} setDialogOpen={setHabitDialogOpen} />
           </div>
         </div>
         <div className='hidden xl:block w-px bg-border self-stretch' />
@@ -72,7 +87,7 @@ export default function HabitsPage() {
             </Button>
           </div>
           <div className='border rounded-lg p-4 bg-muted/40'>
-            <TodosSection userId={user.id} dialogOpen={todoDialogOpen} setDialogOpen={setTodoDialogOpen} />
+            <TodosSection userId={user.id} isKnockedOut={isKnockedOut} dialogOpen={todoDialogOpen} setDialogOpen={setTodoDialogOpen} />
           </div>
         </div>
       </div>
@@ -84,14 +99,17 @@ export default function HabitsPage() {
 
 function HabitsSection({
   userId,
+  isKnockedOut,
   dialogOpen: controlledOpen,
   setDialogOpen: setControlledOpen,
 }: {
   userId: string | number
+  isKnockedOut: boolean
   dialogOpen?: boolean
   setDialogOpen?: (v: boolean) => void
 }) {
   const api = useApi()
+  const { subscribeToWeatherQuestUpdates } = useWebsocketContext()
   const [habits, setHabits] = useState<Habit[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [internalOpen, setInternalOpen] = useState(false)
@@ -111,6 +129,12 @@ function HabitsSection({
     void fetchHabits()
   }, [userId])
 
+  useEffect(() => {
+    return subscribeToWeatherQuestUpdates(() => {
+      api.get<Habit[]>(`/users/${userId}/habits`).then(setHabits).catch(() => {})
+    })
+  }, [subscribeToWeatherQuestUpdates, api, userId])
+
   async function fetchHabits() {
     try {
       setIsLoading(true)
@@ -126,8 +150,8 @@ function HabitsSection({
   async function createHabit() {
     if (!newHabit.title.trim()) return
     try {
-      const created = await api.post<Habit>(`/users/${userId}/habits`, newHabit)
-      setHabits((prev) => [...prev, created])
+      await api.post<Habit>(`/users/${userId}/habits`, newHabit)
+      await fetchHabits()
       setNewHabit({ title: '', description: '', category: 'PHYSICAL', frequency: 'DAILY', positive: true, weight: 1 })
       setDialogOpen(false)
     } catch (e) {
@@ -190,6 +214,7 @@ function HabitsSection({
             <HabitCard
               key={habit.id}
               habit={habit}
+              isKnockedOut={isKnockedOut}
               onComplete={() => void completeHabit(habit.id)}
               onDelete={() => void deleteHabit(habit.id)}
             />
@@ -204,10 +229,12 @@ function HabitsSection({
 
 function TodosSection({
   userId,
+  isKnockedOut,
   dialogOpen: controlledOpen,
   setDialogOpen: setControlledOpen,
 }: {
   userId: string | number
+  isKnockedOut: boolean
   dialogOpen?: boolean
   setDialogOpen?: (v: boolean) => void
 }) {
@@ -306,6 +333,7 @@ function TodosSection({
             <TodoCard
               key={todo.id}
               todo={todo}
+              isKnockedOut={isKnockedOut}
               onComplete={() => void completeTodo(todo.id)}
               onDelete={() => void deleteTodo(todo.id)}
             />
@@ -375,7 +403,7 @@ function TodoForm({ value, onChange, onSubmit }: { value: NewTodo; onChange: (v:
             </SelectItem>
             <SelectItem value='EMOTIONAL'>
               <div className='flex items-center gap-2'>
-                <Heart className='h-4 w-4 text-emerald-500' /> Emotional (levelling Resilience)
+                <Heart className='h-4 w-4 text-violet-500' /> Emotional (levelling Resilience)
               </div>
             </SelectItem>
           </SelectContent>

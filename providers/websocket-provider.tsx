@@ -81,6 +81,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   // Weather Quest
   const [weatherQuestConnected, setWeatherQuestConnected] = useState(false)
   const weatherQuestCallbacksRef = useRef<Set<WeatherQuestUpdateCallback>>(new Set())
+  const lastWeatherQuestRef = useRef<WeatherQuestUpdateMessage | null>(null)
 
   const resetConnectionState = useCallback(() => {
     setOnlineUsers([])
@@ -272,6 +273,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         try {
           const payload: unknown = JSON.parse(event.data as string)
           if (isWeatherQuestUpdate(payload)) {
+            lastWeatherQuestRef.current = payload
             weatherQuestCallbacksRef.current.forEach((cb) => cb(payload))
           }
         } catch {}
@@ -312,6 +314,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
   const subscribeToWeatherQuestUpdates = useCallback((callback: WeatherQuestUpdateCallback) => {
     weatherQuestCallbacksRef.current.add(callback)
+    if (lastWeatherQuestRef.current) callback(lastWeatherQuestRef.current)
     return () => {
       weatherQuestCallbacksRef.current.delete(callback)
     }
