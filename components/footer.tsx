@@ -9,6 +9,13 @@ const sitemap = [
       { title: 'User Guide', href: '/guide' },
     ],
   },
+  {
+    title: 'Legal',
+    links: [
+      { title: 'Privacy Policy', href: '/privacy' },
+      { title: 'Terms of Service', href: '/tos' },
+    ],
+  },
 ]
 
 interface FooterProps {
