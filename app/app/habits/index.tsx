@@ -47,7 +47,9 @@ export default function HabitsPage() {
         </Tooltip>
       </div>
 
-      <HabitHeatmap />
+      <div className='my-6'>
+        <HabitHeatmap />
+      </div>
 
       <div className='flex flex-col xl:flex-row gap-6'>
         <div className='flex-1 min-w-0 flex flex-col gap-3 xl:pr-6'>
