@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react'
 import AccountPage from './account'
 import BossRaidPage from './boss-raid'
 import CharacterPage from './character'
-import Dashboard from './dashboard'
+import Home from './home'
 import GroupsPage from './groups'
 import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
@@ -22,7 +22,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const { isAuthenticated, isLoading } = useAuth()
-  const [currentPage, setCurrentPage] = useState(searchParams.get('page') ?? 'dashboard')
+  const [currentPage, setCurrentPage] = useState(searchParams.get('page') ?? 'home')
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -33,7 +33,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
   if (isLoading || !isAuthenticated) return null
 
   const pageTitles: Record<string, string> = {
-    dashboard: 'Dashboard',
+    home: 'Home',
     habits: 'Tasks',
     character: 'Character',
     groups: 'Groups',
@@ -41,7 +41,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
     leaderboard: 'Leaderboard',
     account: 'Account',
   }
-  const pageTitle = pageTitles[currentPage] || 'Dashboard'
+  const pageTitle = pageTitles[currentPage] || 'Home'
 
   const setCurrentPageWithQuery = (page: string) => {
     setCurrentPage(page)
@@ -53,9 +53,9 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
   return (
     <SidebarProvider>
       <AppSidebar setCurrentPage={setCurrentPageWithQuery} />
-      <SidebarInset className={currentPage === 'dashboard' ? 'bg-[#47aba9]' : ''}>
+      <SidebarInset className={currentPage === 'home' ? 'bg-[#47aba9]' : ''}>
         <header
-          className={`sticky top-0 z-50 flex min-h-18 items-center gap-3 px-4 py-3 ${currentPage === 'dashboard' ? 'bg-[#47aba9]' : 'bg-background'}`}
+          className={`sticky top-0 z-50 flex min-h-18 items-center gap-3 px-4 py-3 ${currentPage === 'home' ? 'bg-[#47aba9]' : 'bg-background'}`}
         >
           <div className='flex items-center gap-2'>
             <SidebarTrigger className='-ml-1' />
@@ -76,7 +76,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
             </div>
           </div>
           <div className='flex-1'>
-            {currentPage === 'dashboard' && <Dashboard />}
+            {currentPage === 'home' && <Home />}
 
             {currentPage === 'habits' && <HabitsPage />}
 

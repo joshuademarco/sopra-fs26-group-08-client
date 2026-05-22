@@ -20,7 +20,7 @@ export default function GuidePage() {
           <li>Click <strong>Sign Up</strong> on the homepage</li>
           <li>Enter a username, email address and password</li>
           <li>Choose a character type (this is your in-game avatar)</li>
-          <li>You&apos;ll be taken to the dashboard automatically</li>
+          <li>You&apos;ll be taken to the home page automatically</li>
         </ul>
 
         <h3 className='text-xl font-medium mt-6'>Logging In</h3>
@@ -28,8 +28,8 @@ export default function GuidePage() {
           Use your email and password on the Login page.
         </p>
 
-        <h2 className='text-2xl font-semibold mt-10'>Dashboard</h2>
-        <p className='mt-2 text-base text-muted-foreground'>The dashboard is your home base. It shows:</p>
+        <h2 className='text-2xl font-semibold mt-10'>Home</h2>
+        <p className='mt-2 text-base text-muted-foreground'>The home page is your home base. It shows:</p>
         <ul className='list-disc list-inside mt-2 space-y-1 text-base text-muted-foreground'>
           <li><strong>Live map</strong> (on the map you see active players and their characters)</li>
           <li><strong>Current weather</strong> (this directly affects your XP bonuses)</li>

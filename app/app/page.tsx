@@ -13,7 +13,7 @@ function AppLoadingFallback() {
   )
 }
 
-export default async function DashboardPage() {
+export default async function HomePage() {
   const weatherCode = await getWeather().catch(() => null)
 
   return (
