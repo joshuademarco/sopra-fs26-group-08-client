@@ -74,7 +74,7 @@ export function LoginForm({
                   {...form.register("email")}
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="test@icuzh.ch"
                   aria-invalid={!!form.formState.errors.email}
                 />
                 {form.formState.errors.email && (

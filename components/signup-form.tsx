@@ -137,7 +137,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor='email'>Email</FieldLabel>
-                    <Input {...field} id='email' type='email' placeholder='m@example.com' aria-invalid={fieldState.invalid} />
+                    <Input {...field} id='email' type='email' placeholder='test@icuzh.ch' aria-invalid={fieldState.invalid} />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}

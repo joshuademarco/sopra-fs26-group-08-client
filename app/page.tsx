@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 const facts = [
-  { label: 'Founded', value: '18.09.2026' },
+  { label: 'Founded', value: '16.02.2026' },
   { label: 'Founders', value: 'Four' },
   { label: 'Climate', value: 'Mostly clear' },
   { label: 'Threats', value: 'Ten known' },
