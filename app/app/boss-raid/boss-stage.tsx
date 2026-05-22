@@ -41,6 +41,7 @@ function MemberSprite({ member, dim = false, effect }: { member: RaidMember; dim
             backgroundImage: "url('/map/effects/dead.png')",
             backgroundSize: `${DEAD_SHEET_W}px ${SPRITE_PX}px`,
             backgroundRepeat: 'no-repeat',
+              ['--sheet-w' as string]: `${DEAD_SHEET_W}px`,
           }}
         />
       ) : (
@@ -151,13 +152,6 @@ export function BossStage({
 
   return (
     <div className='flex w-full flex-col gap-3 px-4 pb-6'>
-      {/* The following keframes were created with AI */}
-      <style>{`
-        @keyframes dead-forward { from { background-position: 0 0; } to { background-position: -${DEAD_SHEET_W}px 0; } }
-        .dead-forward { animation: dead-forward ${DEAD_DURATION_MS}ms steps(${DEAD_FRAMES}) forwards; }
-        @keyframes dead-reverse { from { background-position: -${DEAD_SHEET_W}px 0; } to { background-position: 0 0; } }
-        .dead-reverse { animation: dead-reverse ${DEAD_DURATION_MS}ms steps(${DEAD_FRAMES}) forwards; }
-      `}</style>
       <div ref={scope} className='relative mx-auto flex flex-col items-center gap-2'>
         <div className='flex items-center gap-3'>
           <span className='text-3xl font-extrabold text-foreground'>{monster.name}</span>

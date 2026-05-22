@@ -1,5 +1,9 @@
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import Link from 'next/link'
+
+const heroParty = ['josh', 'leo', 'ale', 'michi']
 
 interface HeroProps {
   className?: string
@@ -7,25 +11,55 @@ interface HeroProps {
 
 const Hero = ({ className }: HeroProps) => {
   return (
-    <section className={cn('relative  py-32', className)}>
-      <div className='absolute inset-0 -z-10 bg-linear-to-br from-background to-background/80' />
-      <div className='absolute top-1/2 right-0 h-96 w-96 translate-x-1/3 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl' />
-
-      <div className='relative container'>
-        <div className='mx-auto flex max-w-6xl flex-col items-start justify-between gap-10 md:gap-20 lg:flex-row lg:items-end'>
-          <h1 className='relative text-6xl font-bold tracking-tighter md:text-[8vw] lg:w-3/5 2xl:text-9xl'>
-            <span className='relative inline-block transition-transform duration-300 hover:translate-x-1'>Better</span>
+    <section className={cn('w-full', className)}>
+      <div className='mx-auto grid w-full max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:py-24'>
+        <div>
+          <h1 className='text-5xl leading-[0.98] md:text-7xl lg:text-[5.5rem]'>
+            Tiny habits
             <br />
-            <span className='relative inline-block transition-transform duration-300 hover:translate-x-1'>Together</span>
+            Small steps but
+            <br />
+            <span className='text-primary'>BetterTogether.</span>
           </h1>
-          <div className='lg:max-w-auto max-w-lg space-y-5 lg:w-2/5'>
-            <Image
-              src={'/GroupOfPeople.png'}
-              alt='Group of People'
-              width={500}
-              height={300}
-              className='rounded-lg object-cover'
-            />
+          <p className='mt-8 max-w-prose text-lg text-muted-foreground'>
+            BetterTogether is a habit tracker disguised as a village. Show up, check in, and fight back the
+            monsters living rent-free in your week.
+          </p>
+          <div className='mt-8 flex flex-wrap gap-3'>
+            <Button asChild className='h-11 px-6 text-sm'>
+              <Link href='/register'>Begin your journey</Link>
+            </Button>
+            <Button asChild variant='secondary' className='h-11 px-6 text-sm'>
+              <Link href='/login'>Return to the island</Link>
+            </Button>
+          </div>
+        </div>
+
+        <div className='relative flex min-h-96 items-end justify-center lg:min-h-[32rem]'>
+          <svg
+            viewBox='0 0 200 200'
+            aria-hidden
+            className='absolute top-6 right-0 size-72 text-foreground opacity-[0.05] lg:size-96'
+          >
+            <circle cx='100' cy='100' r='92' fill='none' stroke='currentColor' strokeWidth='1' />
+            <circle cx='100' cy='100' r='60' fill='none' stroke='currentColor' strokeWidth='1' />
+            <path d='M100 12 L106 100 L100 188 L94 100 Z' fill='currentColor' />
+            <path d='M12 100 L100 106 L188 100 L100 94 Z' fill='currentColor' />
+          </svg>
+          <div className='relative flex w-full flex-col items-center pb-12'>
+            <div className='flex w-full items-end justify-center -space-x-14 sm:-space-x-16 md:-space-x-18 lg:-space-x-20'>
+              {heroParty.map((id) => (
+                <Image
+                  key={id}
+                  src={`/characters/${id}/rotations/south.png`}
+                  alt={id}
+                  width={120}
+                  height={120}
+                  className='size-32 object-contain object-bottom [image-rendering:pixelated] sm:size-40 md:size-48 lg:size-56'
+                />
+              ))}
+            </div>
+            <div className='mt-4 w-[88%] border-t border-border' />
           </div>
         </div>
       </div>
