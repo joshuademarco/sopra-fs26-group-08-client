@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth'
 import type { LiveUser } from '@/types/liveUser'
-import type { CharacterUpdateMessage, RaidSocketMessage } from '@/types/websocket'
+import type { CharacterUpdateMessage, RaidSocketMessage, WeatherQuestUpdateMessage } from '@/types/websocket'
 import { getWebSocketDomain } from '@/utils/domain'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -10,6 +10,7 @@ const RECONNECT_DELAY_MS = 2000
 
 export type RaidUpdateCallback = (msg: RaidSocketMessage) => void
 export type CharacterUpdateCallback = (msg: CharacterUpdateMessage) => void
+export type WeatherQuestUpdateCallback = (msg: WeatherQuestUpdateMessage) => void
 
 type WebSocketContextType = {
   // Presence WebSocket
@@ -26,6 +27,10 @@ type WebSocketContextType = {
   // Character WebSocket
   characterConnected: boolean
   subscribeToCharacterUpdates: (callback: CharacterUpdateCallback) => () => void
+
+  // Weather Quest WebSocket
+  weatherQuestConnected: boolean
+  subscribeToWeatherQuestUpdates: (callback: WeatherQuestUpdateCallback) => () => void
 }
 
 type PresenceSnapshot = LiveUser[] | { users?: LiveUser[] }
@@ -49,6 +54,10 @@ function isCharacterUpdate(msg: unknown): msg is CharacterUpdateMessage {
   return typeof msg === 'object' && msg !== null && (msg as CharacterUpdateMessage).type === 'CHARACTER_UPDATE'
 }
 
+function isWeatherQuestUpdate(msg: unknown): msg is WeatherQuestUpdateMessage {
+  return typeof msg === 'object' && msg !== null && (msg as WeatherQuestUpdateMessage).type === 'WEATHER_QUEST_UPDATE'
+}
+
 export const WebSocketContext = React.createContext<WebSocketContextType | undefined>(undefined)
 
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
@@ -69,6 +78,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [characterConnected, setCharacterConnected] = useState(false)
   const characterCallbacksRef = useRef<Set<CharacterUpdateCallback>>(new Set())
 
+  // Weather Quest
+  const [weatherQuestConnected, setWeatherQuestConnected] = useState(false)
+  const weatherQuestCallbacksRef = useRef<Set<WeatherQuestUpdateCallback>>(new Set())
+
   const resetConnectionState = useCallback(() => {
     setOnlineUsers([])
     setPresenceConnected(false)
@@ -77,6 +90,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     setRaidConnected(false)
     setRaidError(null)
     setCharacterConnected(false)
+    setWeatherQuestConnected(false)
   }, [])
 
   // Presence WebSocket
@@ -233,6 +247,55 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, isLoading])
 
+  // Weather Quest WebSocket connection
+  useEffect(() => {
+    if (isLoading || !isAuthenticated) {
+      setWeatherQuestConnected(false)
+      return
+    }
+
+    let ignore = false
+    let socket: WebSocket | null = null
+    let reconnectTimer: ReturnType<typeof setTimeout> | undefined
+
+    const connect = () => {
+      if (ignore) return
+
+      const socketUrl = new URL('/ws/weather-quest', getWebSocketDomain()).toString()
+      socket = new WebSocket(socketUrl)
+
+      socket.onopen = () => {
+        setWeatherQuestConnected(true)
+      }
+
+      socket.onmessage = (event) => {
+        try {
+          const payload: unknown = JSON.parse(event.data as string)
+          if (isWeatherQuestUpdate(payload)) {
+            weatherQuestCallbacksRef.current.forEach((cb) => cb(payload))
+          }
+        } catch {}
+      }
+
+      socket.onerror = () => {
+        setWeatherQuestConnected(false)
+      }
+
+      socket.onclose = () => {
+        setWeatherQuestConnected(false)
+        if (!ignore) reconnectTimer = setTimeout(connect, RECONNECT_DELAY_MS)
+      }
+    }
+
+    connect()
+
+    return () => {
+      ignore = true
+      if (reconnectTimer) clearTimeout(reconnectTimer)
+      socket?.close(1000, 'provider unmounted')
+    }
+  }, [isAuthenticated, isLoading])
+
   const subscribeToRaidUpdates = useCallback((callback: RaidUpdateCallback) => {
     raidCallbacksRef.current.add(callback)
     return () => {
@@ -247,6 +310,13 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  const subscribeToWeatherQuestUpdates = useCallback((callback: WeatherQuestUpdateCallback) => {
+    weatherQuestCallbacksRef.current.add(callback)
+    return () => {
+      weatherQuestCallbacksRef.current.delete(callback)
+    }
+  }, [])
+
   const value: WebSocketContextType = {
     onlineUsers,
     presenceConnected,
@@ -257,6 +327,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     subscribeToRaidUpdates,
     characterConnected,
     subscribeToCharacterUpdates,
+    weatherQuestConnected,
+    subscribeToWeatherQuestUpdates,
   }
 
   return <WebSocketContext.Provider value={value}>{children}</WebSocketContext.Provider>

@@ -35,3 +35,16 @@ export interface CharacterUpdateMessage {
   resilience: number
   characterType: string | null
 }
+
+export interface WeatherQuestUpdateMessage {
+  type: 'WEATHER_QUEST_UPDATE'
+  weatherCondition: string
+  weatherLabel: string
+  questTitle: string
+  targetCategory: string
+  targetCount: number
+  bonusStat: string
+  bonusMultiplier: number
+  completedCount: number
+  completed: boolean
+}
