@@ -133,6 +133,7 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
         tasksCompleted: myTasks.length - myPending.length,
         totalTasks: myTasks.length,
         damageDealt: member.damageDealt ?? 0,
+        died: member.knockedOut ?? false,
       }
     }
 

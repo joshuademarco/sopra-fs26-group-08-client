@@ -7,13 +7,15 @@ import { BossRaidMap } from '../boss-raid-map'
 function ActivePlayersList({ raid }: { raid: BossRaid }) {
   const bossDamage = (raid.monster.maxHp ?? 0) - (raid.monster.hp ?? 0)
   const hpPercent = raid.monster.maxHp ? (bossDamage / raid.monster.maxHp) * 100 : 0
+  const activeMembers = raid.members.filter((m) => m.joined && !m.died)
+  const onlineCount = activeMembers.filter((m) => m.status !== 'Offline').length
   return (
     <Card className='w-full self-start'>
       <CardHeader>
-        <CardTitle className='text-lg'>Players · {raid.playersOnline} online</CardTitle>
+        <CardTitle className='text-lg'>Players · {onlineCount} online</CardTitle>
       </CardHeader>
       <CardContent className='flex flex-col gap-2'>
-        {raid.members.map((m) => (
+        {activeMembers.map((m) => (
           <div key={m.name} className={`flex items-center gap-3 rounded px-2 py-2 ${m.isCurrentUser ? 'bg-primary/10' : ''}`}>
             <Avatar size='sm'>
               <AvatarFallback>{m.name[0]}</AvatarFallback>
