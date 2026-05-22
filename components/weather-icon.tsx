@@ -1,7 +1,6 @@
 'use client'
 
-import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning } from 'lucide-react'
-import { Card, CardContent, CardTitle } from "@/components/ui/card"
+import { Cloud, CloudLightning, CloudRain, CloudSnow, Sun } from 'lucide-react'
 
 type WeatherIconProps = {
   weatherCode: number | null
@@ -20,21 +19,30 @@ export function WeatherIcon({ weatherCode, size = 36 }: WeatherIconProps) {
   let icon
   let label
 
-  if (weatherCode <= 2) { icon = <Sun size={size} />; label = "clear" }
-  else if (weatherCode <= 48) { icon = <Cloud size={size} />; label = "cloudy" }
-  else if (weatherCode <= 67) { icon = <CloudRain size={size} />; label = "rainy" }
-  else if (weatherCode <= 77) { icon = <CloudSnow size={size} />; label = "snowy" }
-  else { icon = <CloudLightning size={size} />; label = "stormy" }
+  if (weatherCode <= 2) {
+    icon = <Sun size={size} />
+    label = 'clear'
+  } else if (weatherCode <= 48) {
+    icon = <Cloud size={size} />
+    label = 'cloudy'
+  } else if (weatherCode <= 67) {
+    icon = <CloudRain size={size} />
+    label = 'rainy'
+  } else if (weatherCode <= 77) {
+    icon = <CloudSnow size={size} />
+    label = 'snowy'
+  } else {
+    icon = <CloudLightning size={size} />
+    label = 'stormy'
+  }
 
   return (
-    <Card className='w-fit h-fit'>
-      <CardContent className='flex items-center gap-2 p-2 px-4'>
-        {icon}
-        <div>
-          <CardTitle className='text-lg'>It&apos;s {label} right now.</CardTitle>
-          <p className='text-xs text-muted-foreground'>{getBoostedCategories(weatherCode)}</p>
-        </div>
-      </CardContent>
-    </Card>
+    <div className='flex items-center gap-2 px-4 py-2'>
+      {icon}
+      <div>
+        <p className='text-sm font-medium'>It&apos;s {label} right now.</p>
+        <p className='text-xs text-foreground/70'>{getBoostedCategories(weatherCode)}</p>
+      </div>
+    </div>
   )
 }

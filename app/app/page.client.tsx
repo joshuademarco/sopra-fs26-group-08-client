@@ -47,7 +47,9 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
     <SidebarProvider>
       <AppSidebar setCurrentPage={setCurrentPageWithQuery} />
       <SidebarInset className={currentPage === 'dashboard' ? 'bg-[#47aba9]' : ''}>
-        <header className={`sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 ${currentPage === 'dashboard' ? 'bg-[#47aba9]' : 'bg-background'}`}>
+        <header
+          className={`sticky top-0 z-50 flex min-h-16 shrink-0 items-center justify-between gap-4 ${currentPage === 'dashboard' ? 'bg-[#47aba9]' : 'bg-background'}`}
+        >
           <div className='flex items-center gap-2 px-4'>
             <SidebarTrigger className='-ml-1' />
             <Separator orientation='vertical' className='mr-2 data-[orientation=vertical]:h-4' />
@@ -55,13 +57,13 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
               <span className='text-sm font-medium'>{pageTitle}</span>
             </div>
           </div>
+          <div className='px-4 py-2'>{weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}</div>
         </header>
         <div className='flex w-full flex-col p-12 pt-0'>
           <div className='flex items-center justify-between gap-4 mb-6'>
             <div className='flex flex-col'>
               <h2>{pageTitle}</h2>
             </div>
-            <div className='shrink-0'>{weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}</div>
           </div>
           <div className='flex-1'>
             {currentPage === 'dashboard' && <Dashboard />}
