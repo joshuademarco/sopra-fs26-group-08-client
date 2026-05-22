@@ -25,16 +25,18 @@ export function WeatherQuestCard() {
 
   return (
     <div className='inline-flex max-w-176 items-center gap-3 px-2 py-1.5'>
-      <div className='min-w-0 shrink-0'>
+      <div className='min-w-0 shrink-0 max-w-56'>
         <p className='truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/60'>DailyQuest</p>
-        <p className='truncate text-sm font-medium leading-tight text-foreground'>{quest.questTitle}</p>
+        <p className='whitespace-normal wrap-break-word text-sm font-medium leading-tight text-foreground'>
+          {quest.questTitle}
+        </p>
       </div>
       <div className='h-8 w-px shrink-0 bg-border/50' />
-      <div className='flex min-w-0 items-center gap-2 text-xs text-foreground/70'>
-        <span className='whitespace-nowrap text-base font-bold'>
+      <div className='flex min-w-0 flex-col gap-1 text-xs text-foreground/70'>
+        <span className='whitespace-nowrap text-base font-bold text-foreground'>
           {quest.completedCount} / {quest.targetCount}
         </span>
-        <Badge className='h-6 whitespace-nowrap rounded-full px-2 py-0 text-[11px]'>
+        <Badge className='h-6 w-fit whitespace-nowrap rounded-full px-2 py-0 text-[11px]'>
           +{quest.bonusMultiplier}x {quest.bonusStat} XP
         </Badge>
         {quest.completed && <span className='whitespace-nowrap font-medium text-foreground'>Done</span>}
