@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import * as React from 'react'
 
 import { NavMain } from '@/components/nav-main'
@@ -14,14 +15,16 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { useAuth } from '@/hooks/useAuth'
-import { Award, Home, PersonStanding, ShieldHalf, StickyNote, Sword, UserCog } from 'lucide-react'
+import { getGravatarUrl } from '@/utils/gravatar'
+import { Award, Home, LogOutIcon, PersonStanding, ShieldHalf, StickyNote, Sword, UserCog } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { CharacterWidget } from './character-widget'
 import { NavUser } from './nav-user'
 
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
+    name: 'user',
+    email: 'test@icuzh.ch',
     avatar: '/avatars/shadcn.jpg',
   },
   navMain: [
@@ -55,28 +58,55 @@ const data = {
       key: 'leaderboard',
       icon: <Award />,
     },
-  ],
-  navSecondary: [
     {
       title: 'Account',
       key: 'account',
       icon: <UserCog />,
     },
   ],
+  navSecondary: [],
 }
 
 export function AppSidebar({
   setCurrentPage,
   ...props
 }: { setCurrentPage: (page: string) => void } & React.ComponentProps<typeof Sidebar>) {
-  const { user: authUser } = useAuth()
+  const router = useRouter()
+  const { user: authUser, logout } = useAuth()
+  const [gravatarUrl, setGravatarUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (authUser?.email) {
+      getGravatarUrl(authUser.email).then(setGravatarUrl)
+    }
+  }, [authUser?.email])
+
   const displayedUser = authUser
     ? {
         name: authUser.username,
         email: authUser.email,
-        avatar: null,
+        avatar: gravatarUrl,
       }
     : data.user
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } finally {
+      router.replace('/login')
+    }
+  }
+
+  const navSecondary = [
+    ...data.navSecondary,
+    {
+      title: 'Log out',
+      key: 'logout',
+      icon: <LogOutIcon />,
+      onClick: handleLogout,
+      className: 'text-destructive hover:bg-destructive/10 hover:text-destructive focus-visible:bg-destructive/10 focus-visible:text-destructive',
+    },
+  ]
 
   return (
     <Sidebar variant='inset' {...props}>
@@ -89,7 +119,7 @@ export function AppSidebar({
                   <PersonStanding className='h-4 w-4' />
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-medium'>BetterTogether</span>
+                  <span className='truncate font-medium'>BetterTogeter</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -99,7 +129,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain callback={setCurrentPage} items={data.navMain} />
-        <NavSecondary callback={setCurrentPage} items={data.navSecondary} className='mt-auto' />
+        <NavSecondary callback={setCurrentPage} items={navSecondary} className='mt-auto' />
         <NavUser user={displayedUser} />
       </SidebarContent>
     </Sidebar>

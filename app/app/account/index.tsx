@@ -210,16 +210,14 @@ export default function SettingsPage() {
         </div>
       </form>
 
-      <form noValidate onSubmit={handleProfileSubmit} className='rounded-xl border border-input/20 bg-background p-6 shadow-sm'>
+      <section className='rounded-xl border border-input/20 bg-background p-6 shadow-sm'>
         <h2 className='text-lg font-semibold'>Calendar Connection</h2>
-        <p className='mt-2 text-sm text-muted-foreground'>Connect you Google Calendar</p>
+        <p className='mt-2 text-sm text-muted-foreground'>Connect your Google Calendar</p>
 
-        <div className='mt-6 grid gap-4 text-sm'>
-          <div className='flex gap-2'>
-            <CalendarConnect align="start" />
-          </div>
+        <div className='mt-6'>
+          <CalendarConnect align="start" />
         </div>
-      </form>
+      </section>
     </div>
   )
 }

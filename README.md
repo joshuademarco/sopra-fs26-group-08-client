@@ -1,6 +1,6 @@
-# BetterTogether: A Gamified Habit Tracker (Client)
+# BetterTogeter: A Gamified Habit Tracker (Client)
 
-BetterTogether is a gamified habit tracking app that turns self-improvement into an RPG-style adventure. It solves the tedious nature of traditional habit trackers by blending personal growth with RPG mechanics and social accountability. Users complete habits to earn XP, level up their character, and team up with friends for "Boss Raids". This mix of individual progress and team-based goals makes achieving personal goals a fun, collaborative experience.  
+BetterTogeter is a gamified habit tracking app that turns self-improvement into an RPG-style adventure. It solves the tedious nature of traditional habit trackers by blending personal growth with RPG mechanics and social accountability. Users complete habits to earn XP, level up their character, and team up with friends for "Boss Raids". This mix of individual progress and team-based goals makes achieving personal goals a fun, collaborative experience.  
 
 This repository contains the frontend client application, providing the interactive user interface that connects to the backend RESTful API and real-time WebSocket services.
 

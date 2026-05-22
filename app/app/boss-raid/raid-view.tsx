@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { RaidData, RaidTaskData } from '@/types/raids'
-import { Check } from 'lucide-react'
+import { Check, SkipForward } from 'lucide-react'
 import { ActiveCard } from './cards/active-card'
 import { DefeatCard } from './cards/defeat-card'
 import { LobbyCard } from './cards/lobby-card'
@@ -15,6 +15,7 @@ function TasksPanel({
   activeTask,
   upcomingTasks,
   doneTasks,
+  skippedTasks,
   totalAssigned,
   startedAt,
   onCompleteTask,
@@ -23,6 +24,7 @@ function TasksPanel({
   activeTask: RaidTaskData | null
   upcomingTasks: RaidTaskData[]
   doneTasks: RaidTaskData[]
+  skippedTasks: RaidTaskData[]
   totalAssigned: number
   startedAt: string | null
   onCompleteTask: (task: RaidTaskData, success: boolean) => void
@@ -78,7 +80,19 @@ function TasksPanel({
           </div>
         )}
 
-        {activeTask == null && upcomingTasks.length === 0 && doneTasks.length > 0 && (
+        {skippedTasks.length > 0 && (
+          <div className='flex flex-col gap-1'>
+            <span className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>Skipped</span>
+            {skippedTasks.map((task) => (
+              <div key={task.id} className='flex items-center gap-2 px-1 py-1'>
+                <SkipForward className='size-4 text-amber-600' />
+                <span className='text-sm text-muted-foreground line-through'>{task.title}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTask == null && upcomingTasks.length === 0 && (doneTasks.length > 0 || skippedTasks.length > 0) && (
           <p className='text-center text-sm font-medium text-emerald-600'>All your tasks are done — waiting for teammates…</p>
         )}
       </CardContent>
@@ -115,6 +129,7 @@ export function RaidView({
   const activeTask = state === 'active' && !isKnockedOut ? getActiveTask(tasks, uid, raid.startedAt) : null
   const upcomingTasks = state === 'active' && !isKnockedOut ? getUpcomingTasks(tasks, uid, raid.startedAt, activeTask) : []
   const myDone = assignedTasks(tasks, uid).filter((task) => (task.successfullyCompletedByUsers ?? []).includes(uid))
+  const mySkipped = assignedTasks(tasks, uid).filter((task) => (task.skippedByUserIds ?? []).includes(uid))
   const allMyTasks = assignedTasks(tasks, uid)
 
   let lobbyActions: React.ReactNode = null
@@ -168,6 +183,7 @@ export function RaidView({
           activeTask={activeTask}
           upcomingTasks={upcomingTasks}
           doneTasks={myDone}
+          skippedTasks={mySkipped}
           totalAssigned={allMyTasks.length}
           startedAt={raid.startedAt}
           onCompleteTask={onCompleteTask}

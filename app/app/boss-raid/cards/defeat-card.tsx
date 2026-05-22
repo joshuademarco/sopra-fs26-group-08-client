@@ -16,8 +16,6 @@ export function DefeatCard({ raid }: { raid: BossRaid }) {
       title='DEFEATED'
       titleClass='text-destructive'
       subtitle='The boss survived the timer. Your streak resets — but the next raid is always around the corner.'
-      bossCaption={`${raid.monster.name} — still standing`}
-      bossCaptionClass='text-destructive'
       summaryTitle='What went wrong'
       summaryCells={[
         { label: 'Damage dealt', value: String(totalDamage) },

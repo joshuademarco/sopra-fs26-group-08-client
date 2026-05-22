@@ -1,16 +1,10 @@
-'use client'
-
 import { LiveOnlineMap } from '@/components/live-online-map'
-import { WeatherQuestCard } from '@/components/weather-quest-card'
 
 export default function Dashboard() {
   return (
-    <div className='flex flex-col xl:flex-row gap-6'>
-      <div className='flex-1 min-w-0'>
+    <div className='flex flex-1 flex-col gap-4'>
+      <div className='relative -mx-12 -mb-12 flex-1 w-[calc(100%+6rem)]'>
         <LiveOnlineMap />
-      </div>
-      <div className='flex-1 min-w-0'>
-        <WeatherQuestCard />
       </div>
     </div>
   )

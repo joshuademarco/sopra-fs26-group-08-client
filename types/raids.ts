@@ -32,6 +32,7 @@ export interface RaidTaskData {
   windowStartSeconds: number | null
   completedByUserIds: number[]
   successfullyCompletedByUsers: number[]
+  skippedByUserIds: number[]
   assignedUserId: number | null
 }
 
@@ -64,14 +65,17 @@ export interface DroppedItem {
 }
 
 export interface RaidMember {
+  userId: number
   name: string
   status: MemberStatus
+  joined: boolean
   isCurrentUser?: boolean
   characterType?: string | null
   level?: number
   taskDescription?: string
   taskDamage?: number
   tasksCompleted?: number
+  tasksSkipped?: number
   totalTasks?: number
   xpChange?: number
   died?: boolean
@@ -87,7 +91,6 @@ export interface Monster {
   level: number
   description: string
   hpPercent: number
-  imageUrl: string
   hp?: number
   maxHp?: number
 }
@@ -103,7 +106,6 @@ export interface BossRaid {
   durationSeconds?: number
   tasksCount?: number
   estimatedReward?: number
-  damageMultiplier?: number
   state: RaidState
   monster: Monster
 }

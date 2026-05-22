@@ -20,6 +20,8 @@ export function NavSecondary({
     title: string
     key: string
     icon: React.ReactNode
+    onClick?: () => void | Promise<void>
+    className?: string
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
@@ -28,11 +30,13 @@ export function NavSecondary({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton onClick={() => callback(item.key)} asChild size="sm">
-                <div key={item.title}>
-                  {item.icon}
-                  <span>{item.title}</span>
-                </div>
+              <SidebarMenuButton
+                onClick={item.onClick ?? (() => callback(item.key))}
+                size="sm"
+                className={item.className}
+              >
+                {item.icon}
+                <span>{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

@@ -16,7 +16,7 @@ export default function AboutPage() {
       <section className='w-full max-w-3xl md:p-12 py-12'>
         <h2 className='text-4xl font-bold tracking-tight'>About Us</h2>
         <p className='mt-4 text-base text-muted-foreground md:text-lg'>
-          We are BetterTogether, a team of students building a gamified habit tracker to help people grow together.
+          We are BetterTogeter, a team of students building a gamified habit tracker to help people grow together.
         </p>
         <div className='grid grid-cols-2 gap-4 sm:grid-cols-4'>
           {team.map((member) => (

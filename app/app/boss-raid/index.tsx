@@ -2,15 +2,18 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
+import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
 import { useWebsocketContext } from '@/hooks/useWebsocketContext'
 import { GroupWithRaids, RaidData, RaidTaskData } from '@/types/raids'
-import { RaidUpdateMessage } from '@/types/websocket'
+import { RaidSocketMessage, RaidUpdateMessage } from '@/types/websocket'
 import { ArrowLeft, Moon } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { DefeatCard } from './cards/defeat-card'
 import { VictoryCard } from './cards/victory-card'
 import { PastRaidsList } from './past-raids'
@@ -33,6 +36,8 @@ function modifyRaidState(raid: RaidData, msg: RaidUpdateMessage): RaidData {
               health: memberPatch.health,
               maxHealth: memberPatch.maxHealth,
               knockedOut: memberPatch.knockedOut ?? user.knockedOut,
+              accepted: memberPatch.accepted !== undefined ? memberPatch.accepted : user.accepted,
+              joined: memberPatch.joined !== undefined ? memberPatch.joined : user.joined,
             }
           : user
       })
@@ -43,28 +48,28 @@ function modifyRaidState(raid: RaidData, msg: RaidUpdateMessage): RaidData {
     health: msg.health,
     maxHealth: msg.maxHealth,
     status: msg.status as RaidData['status'],
+    scheduledTime: msg.scheduledTime !== undefined ? msg.scheduledTime : raid.scheduledTime,
     users,
   }
 }
 
 function applyRaidUpdate(groups: GroupWithRaids[], msg: RaidUpdateMessage): GroupWithRaids[] {
-  if (msg.status === 'DELETED') {
-    return groups.map((group) => {
-      if (group.groupId !== msg.groupId) return group
-
-      return {
-        ...group,
-        raids: group.raids.filter((raid) => raid.id !== msg.raidId),
-      }
-    })
-  }
-
   return groups.map((group) => {
     if (group.groupId !== msg.groupId) return group
 
     return {
       ...group,
       raids: group.raids.map((raid) => modifyRaidState(raid, msg)),
+    }
+  })
+}
+
+function applyRaidDeletion(groups: GroupWithRaids[], groupId: number, raidId: number): GroupWithRaids[] {
+  return groups.map((group) => {
+    if (group.groupId !== groupId) return group
+    return {
+      ...group,
+      raids: group.raids.filter((raid) => raid.id !== raidId),
     }
   })
 }
@@ -120,10 +125,17 @@ export default function BossRaidPage() {
   const [groupsData, setGroupsData] = useState<GroupWithRaids[]>([])
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const [, setTick] = useState(0)
-  const [error, setError] = useState<string | null>(null)
-  const [adminVisible, setAdminVisible] = useState(false)
+  const [adminForceAllMembers, setAdminForceAllMembers] = useState(false)
   const [openRaid, setOpenRaid] = useState<RaidData | null>(null)
-  const titleClickCount = useRef(0)
+  const [dismissedOutcomeIds, setDismissedOutcomeIds] = useState<Set<number>>(() => {
+    if (typeof window === 'undefined') return new Set()
+    try {
+      const stored = window.localStorage.getItem('dismissedRaidOutcomes')
+      return new Set(stored ? (JSON.parse(stored) as number[]) : [])
+    } catch {
+      return new Set()
+    }
+  })
 
   // Derive onlineUserIds from context
   const onlineUserIds = useMemo(
@@ -161,12 +173,51 @@ export default function BossRaidPage() {
     [api],
   )
 
+  const lastRefetchByGroupRef = useRef<Map<number, number>>(new Map())
+  const REFETCH_THROTTLE_MS = 1500
+
   useEffect(() => {
     let ignore = false
 
-    const unsubscribe = subscribeToRaidUpdates((msg: RaidUpdateMessage) => {
-      if (!ignore) {
-        setGroupsData((prev) => applyRaidUpdate(prev, msg))
+    const unsubscribe = subscribeToRaidUpdates((msg: RaidSocketMessage) => {
+      if (ignore) return
+      if (msg.type === 'RAID_DELETED') {
+        setGroupsData((prev) => applyRaidDeletion(prev, msg.groupId, msg.raidId))
+        return
+      }
+
+      let statusChanged = false
+      let transitionedToEnded = false
+      setGroupsData((prev) => {
+        const group = prev.find((g) => g.groupId === msg.groupId)
+        const existing = group?.raids.find((r) => r.id === msg.raidId)
+        if (!existing || existing.status !== msg.status) statusChanged = true
+        if (
+          existing &&
+          (existing.status === 'ACTIVE' || existing.status === 'SCHEDULED') &&
+          (msg.status === 'DEFEATED' || msg.status === 'FAILED')
+        ) {
+          transitionedToEnded = true
+        }
+        return applyRaidUpdate(prev, msg)
+      })
+
+      if (transitionedToEnded) {
+        setDismissedOutcomeIds((prev) => {
+          if (!prev.has(msg.raidId)) return prev
+          const next = new Set(prev)
+          next.delete(msg.raidId)
+          try {
+            window.localStorage.setItem('dismissedRaidOutcomes', JSON.stringify([...next]))
+          } catch {}
+          return next
+        })
+      }
+
+      const last = lastRefetchByGroupRef.current.get(msg.groupId) ?? 0
+      const now = Date.now()
+      if (statusChanged || now - last > REFETCH_THROTTLE_MS) {
+        lastRefetchByGroupRef.current.set(msg.groupId, now)
         refreshRaids(msg.groupId)
       }
     })
@@ -198,13 +249,37 @@ export default function BossRaidPage() {
 
   const currentRaid = liveRaid ?? selectedGroup?.raids.at(-1) ?? null
 
+  const latestEndedRaid = useMemo(() => {
+    if (!selectedGroup) return null
+    const ended = selectedGroup.raids.filter((r) => r.status === 'DEFEATED' || r.status === 'FAILED')
+    if (ended.length === 0) return null
+    return ended.reduce((latest, raid) => {
+      const latestTime = latest.startedAt ? new Date(latest.startedAt).getTime() : 0
+      const raidTime = raid.startedAt ? new Date(raid.startedAt).getTime() : 0
+      return raidTime > latestTime ? raid : latest
+    })
+  }, [selectedGroup])
+
+  const autoShownOutcomeRaid =
+    !liveRaid && latestEndedRaid && !dismissedOutcomeIds.has(latestEndedRaid.id) ? latestEndedRaid : null
+
+  const dismissOutcome = (raidId: number) => {
+    setDismissedOutcomeIds((prev) => {
+      const next = new Set(prev)
+      next.add(raidId)
+      try {
+        window.localStorage.setItem('dismissedRaidOutcomes', JSON.stringify([...next]))
+      } catch {}
+      return next
+    })
+  }
+
   const handleRsvp = async (raidId: number, groupId: number, accepted: boolean) => {
-    setError(null)
     try {
       await api.post(`/raids/${raidId}/rsvp?accepted=${accepted}`, {})
       await refreshRaids(groupId)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not update RSVP')
+      toast.error(err instanceof Error ? err.message : 'Could not update RSVP')
     }
   }
 
@@ -213,15 +288,7 @@ export default function BossRaidPage() {
       await api.post(`/raids/${raidId}/join`, {})
       await refreshRaids(groupId)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not join raid')
-    }
-  }
-
-  const handleTitleClick = () => {
-    titleClickCount.current += 1
-    if (titleClickCount.current >= 5) {
-      titleClickCount.current = 0
-      setAdminVisible((v) => !v)
+      toast.error(err instanceof Error ? err.message : 'Could not join raid')
     }
   }
 
@@ -234,10 +301,21 @@ export default function BossRaidPage() {
     await fetchAllRaids()
   }
 
+  const adminCalendarSchedule = async () => {
+    if (!selectedGroupId) return
+    try {
+      await api.post(`/admin/groups/${selectedGroupId}/schedule`, {})
+    } catch {}
+    await fetchAllRaids()
+  }
+
   const adminStartRaid = async () => {
     if (!selectedGroupId) return
     try {
-      await api.post(`/admin/groups/${selectedGroupId}/start-raid`, {})
+      await api.post(
+        `/admin/groups/${selectedGroupId}/start-raid?forceAllMembers=${adminForceAllMembers}`,
+        {},
+      )
     } catch {}
     await fetchAllRaids()
   }
@@ -250,10 +328,10 @@ export default function BossRaidPage() {
     await refreshRaids(currentRaid.groupId)
   }
 
-  const adminForceComplete = async () => {
+  const adminForceComplete = async (outcome: 'DEFEATED' | 'FAILED') => {
     if (!currentRaid) return
     try {
-      await api.post(`/admin/raids/${currentRaid.id}/force-complete`, {})
+      await api.post(`/admin/raids/${currentRaid.id}/force-complete?outcome=${outcome}`, {})
     } catch {}
     await refreshRaids(currentRaid.groupId)
   }
@@ -271,7 +349,7 @@ export default function BossRaidPage() {
       await api.post(`/raids/${raidId}/tasks/${task.id}/complete?success=${success}`, {})
       await refreshRaids(groupId)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not complete task')
+      toast.error(err instanceof Error ? err.message : 'Could not complete task')
     }
   }
 
@@ -280,7 +358,7 @@ export default function BossRaidPage() {
       await api.post(`/raids/${raidId}/tasks/${task.id}/skip`, {})
       await refreshRaids(groupId)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not skip task')
+      toast.error(err instanceof Error ? err.message : 'Could not skip task')
     }
   }
 
@@ -291,34 +369,69 @@ export default function BossRaidPage() {
   return (
     <main className='flex flex-col gap-4'>
       <div className='flex items-center justify-between gap-4'>
-        <Popover open={adminVisible} onOpenChange={setAdminVisible}>
-          <PopoverAnchor asChild>
-            <Button onClick={handleTitleClick} variant='ghost' className='size-4 absolute' />
-          </PopoverAnchor>
-          <PopoverContent align='start' className='w-auto'>
-            <p className='mb-3 text-xs font-semibold uppercase tracking-wide text-destructive'>Admin Panel</p>
-            <div className='flex flex-col gap-2'>
-              <Button size='sm' variant='outline' onClick={adminAutoSchedule} disabled={!selectedGroupId}>
-                Schedule (5 min delay)
-              </Button>
-              <Button size='sm' variant='outline' onClick={adminStartRaid} disabled={!selectedGroupId}>
-                Start raid immediately
-              </Button>
-              <Button size='sm' variant='outline' disabled={currentRaid?.status !== 'SCHEDULED'} onClick={adminFastForward}>
-                Fast-forward 10s
-              </Button>
-              <Button
-                size='sm'
-                variant='outline'
-                disabled={!currentRaid || currentRaid.status === 'DEFEATED' || currentRaid.status === 'FAILED'}
-                onClick={adminForceComplete}
-              >
-                Force complete
-              </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button size='sm' variant='outline'>
+              Admin Panel
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align='start' className='w-64'>
+            <p className='text-xs font-semibold uppercase tracking-wide text-destructive'>Admin Panel</p>
+            <p className='mt-1 mb-3 text-xs text-muted-foreground'>
+              For testing only and for the sole benefit of the TAs. We would normally remove this in production.
+              Note that boss raids auto-schedule based on the group&apos;s calendar availability.
+            </p>
+
+            {!liveRaid && (
+              <section className='flex flex-col gap-2'>
+                <p className='text-xs font-medium text-muted-foreground'>Spawn raid</p>
+                <Button size='sm' variant='outline' onClick={adminAutoSchedule} disabled={!selectedGroupId}>
+                  Schedule (5 min delay)
+                </Button>
+                <Button size='sm' variant='outline' onClick={adminCalendarSchedule} disabled={!selectedGroupId}>
+                  Schedule via calendar
+                </Button>
+                <Button size='sm' variant='outline' onClick={adminStartRaid} disabled={!selectedGroupId}>
+                  Start raid immediately
+                </Button>
+                <Label className='pl-1 text-muted-foreground'>
+                  <input
+                    type='checkbox'
+                    checked={adminForceAllMembers}
+                    onChange={(e) => setAdminForceAllMembers(e.target.checked)}
+                  />
+                  Force all group members
+                </Label>
+              </section>
+            )}
+
+            {liveRaid && (
+              <section className='flex flex-col gap-2'>
+                <p className='text-xs font-medium text-muted-foreground'>
+                  Active raid <span className='text-muted-foreground/60'>({liveRaid.status.toLowerCase()})</span>
+                </p>
+                {liveRaid.status === 'SCHEDULED' && (
+                  <Button size='sm' variant='outline' onClick={adminFastForward}>
+                    Fast-forward 10s
+                  </Button>
+                )}
+                <Button size='sm' variant='outline' onClick={() => adminForceComplete('DEFEATED')}>
+                  Force win
+                </Button>
+                <Button size='sm' variant='outline' onClick={() => adminForceComplete('FAILED')}>
+                  Force fail
+                </Button>
+              </section>
+            )}
+
+            <Separator className='my-3' />
+
+            <section className='flex flex-col gap-2'>
+              <p className='text-xs font-medium text-muted-foreground'>Danger zone</p>
               <Button size='sm' variant='destructive' disabled={!selectedGroupId} onClick={adminClearRaids}>
                 Clear all raids
               </Button>
-            </div>
+            </section>
           </PopoverContent>
         </Popover>
 
@@ -339,8 +452,6 @@ export default function BossRaidPage() {
           )}
         </div>
       </div>
-
-      {error && <p className='text-sm text-destructive'>{error}</p>}
 
       {!selectedGroup ? (
         <Card>
@@ -363,13 +474,22 @@ export default function BossRaidPage() {
       ) : (
         (() => {
           const stats = computeStats(groupsData, Number(currentUser.id))
-          if (openRaid) {
-            const cardData = toRaidCard(openRaid, currentUser.id, onlineUserIds)
+          const displayedEndedRaid = openRaid ?? autoShownOutcomeRaid
+          if (displayedEndedRaid) {
+            const cardData = toRaidCard(displayedEndedRaid, currentUser.id, onlineUserIds)
+            const isAutoShown = openRaid === null
+            const handleBack = () => {
+              if (openRaid) {
+                setOpenRaid(null)
+              } else {
+                dismissOutcome(displayedEndedRaid.id)
+              }
+            }
             return (
               <div className='flex flex-col gap-4'>
                 {cardData.state === 'victory' ? <VictoryCard raid={cardData} /> : <DefeatCard raid={cardData} />}
-                <Button className='self-start' onClick={() => setOpenRaid(null)}>
-                  <ArrowLeft className='size-4' /> Back to history
+                <Button className='self-start' onClick={handleBack}>
+                  <ArrowLeft className='size-4' /> {isAutoShown ? 'Continue' : 'Back to history'}
                 </Button>
               </div>
             )

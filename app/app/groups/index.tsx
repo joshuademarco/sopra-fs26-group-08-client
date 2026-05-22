@@ -1,5 +1,6 @@
 'use client'
 
+import { GravatarImage } from '@/components/gravatar-image'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -200,8 +201,7 @@ export default function GroupsPage() {
             <TooltipContent className='max-w-sm'>
               Team up with friends to hold each other accountable - see who&apos;s crushing their habits, track your combined
               progress, and click any member to view their level and achievements. Most importantly: once you and your friends
-              created/joined a group, you can enter Boss Raids together to slay procrastination monsters like the &quot;Innere
-              Schweinehund&quot; and earn epic rewards!
+              created/joined a group, you can enter Boss Raids together to slay procrastination monsters and earn epic rewards!
             </TooltipContent>
           </Tooltip>
         </div>
@@ -325,6 +325,7 @@ export default function GroupsPage() {
                         >
                           <div className='relative shrink-0'>
                             <Avatar className='size-8'>
+                              <GravatarImage identifier={member.username} size={32} />
                               <AvatarFallback className='text-xs'>{member.username[0]?.toUpperCase()}</AvatarFallback>
                             </Avatar>
                             {isOnline && (

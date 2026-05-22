@@ -9,7 +9,7 @@ import Image from 'next/image';
 function PlayerResults({ members, kind }: { members: RaidMember[]; kind: 'victory' | 'defeat' }) {
   return (
     <div className='flex flex-col gap-2'>
-      {members.map((m) => {
+      {members.filter((m) => m.joined).map((m) => {
         const xpHighlight = kind === 'victory' || (m.xpChange ?? 0) > 0
         return (
           <Card key={m.name} className={m.mvp ? 'border-amber-500/60 ring-1 ring-amber-500/40' : ''}>
@@ -40,6 +40,14 @@ function PlayerResults({ members, kind }: { members: RaidMember[]; kind: 'victor
                       {m.tasksCompleted}/{m.totalTasks}
                     </span>
                   </span>
+                  {(m.tasksSkipped ?? 0) > 0 && (
+                    <>
+                      <span className='text-border'>·</span>
+                      <span>
+                        skipped <span className='font-semibold text-amber-600'>{m.tasksSkipped}</span>
+                      </span>
+                    </>
+                  )}
                   <span className='text-border'>·</span>
                   <span>
                     dmg <span className='font-semibold text-foreground'>{m.damageDealt ?? 0}</span>
@@ -93,8 +101,6 @@ export function OutcomeShell({
   title,
   titleClass,
   subtitle,
-  bossCaption,
-  bossCaptionClass,
   summaryTitle,
   summaryCells,
   stageMonster,
@@ -106,8 +112,6 @@ export function OutcomeShell({
   title: string
   titleClass: string
   subtitle: string
-  bossCaption: string
-  bossCaptionClass: string
   summaryTitle: string
   summaryCells: { label: string; value: string; tone?: 'default' | 'success' | 'destructive' | 'gold' }[]
   stageMonster: Monster
@@ -153,7 +157,6 @@ export function OutcomeShell({
               dimDeadMembers={kind === 'defeat'}
               glare
             />
-            <p className={`text-sm font-medium ${bossCaptionClass}`}>{bossCaption}</p>
           </div>
         </CardContent>
       </Card>

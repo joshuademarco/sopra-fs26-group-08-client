@@ -79,12 +79,11 @@ function BossIntelCard({ raid, startsIn }: { raid: BossRaid; startsIn?: string }
         </div>
 
         {startsIn && (
-          <Badge
-            variant='outline'
-            className='w-fit gap-1.5 border-amber-500/40 bg-amber-500/10 px-3 py-4 self-center text-amber-700 text-lg mt-4'
+          <div
+            className='w-fit gap-1.5 px-3 py-4 self-center text-amber-700 text-lg mt-4'
           >
             {startsIn === 'Finding best time...' ? startsIn : `Starts in ${startsIn}`}
-          </Badge>
+          </div>
         )}
       </CardContent>
     </Card>

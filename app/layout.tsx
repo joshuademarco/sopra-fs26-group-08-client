@@ -9,7 +9,7 @@ import { Toaster } from 'sonner'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'BetterTogether',
+  title: 'BetterTogeter',
   description: 'A gamified platform to improve your habits and achieve your goals together with friends.',
 }
 
