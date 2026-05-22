@@ -138,6 +138,32 @@
     );
 }
 
+@keyframes level-up-sprite {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -1440px 0;
+    }
+}
+
+@utility animate-level-up-sprite {
+    animation: level-up-sprite 800ms steps(10) 1 forwards;
+}
+
+@keyframes revive-skull {
+    from {
+        background-position: -1792px 0;
+    }
+    to {
+        background-position: 0 0;
+    }
+}
+
+@utility animate-revive-skull {
+    animation: revive-skull 1200ms steps(14) 1 forwards;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;

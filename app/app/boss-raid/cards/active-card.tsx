@@ -1,20 +1,21 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { BossRaid } from '@/types/raids'
-import { BossStage } from '../boss-stage'
+import { BossRaidMap } from '../boss-raid-map'
 
 function ActivePlayersList({ raid }: { raid: BossRaid }) {
   const bossDamage = (raid.monster.maxHp ?? 0) - (raid.monster.hp ?? 0)
   const hpPercent = raid.monster.maxHp ? (bossDamage / raid.monster.maxHp) * 100 : 0
+  const activeMembers = raid.members.filter((m) => m.joined && !m.died)
+  const onlineCount = activeMembers.filter((m) => m.status !== 'Offline').length
   return (
-    <Card className='self-start'>
+    <Card className='w-full self-start'>
       <CardHeader>
-        <CardTitle className='text-lg'>Players · {raid.playersOnline} online</CardTitle>
+        <CardTitle className='text-lg'>Players · {onlineCount} online</CardTitle>
       </CardHeader>
       <CardContent className='flex flex-col gap-2'>
-        {raid.members.map((m) => (
+        {activeMembers.map((m) => (
           <div key={m.name} className={`flex items-center gap-3 rounded px-2 py-2 ${m.isCurrentUser ? 'bg-primary/10' : ''}`}>
             <Avatar size='sm'>
               <AvatarFallback>{m.name[0]}</AvatarFallback>
@@ -42,54 +43,44 @@ function ActivePlayersList({ raid }: { raid: BossRaid }) {
   )
 }
 
-export function ActiveCard({
-  raid,
-  tasksSlot,
-}: {
-  raid: BossRaid
-  tasksSlot?: React.ReactNode
-}) {
+export function ActiveCard({ raid, tasksSlot }: { raid: BossRaid; tasksSlot?: React.ReactNode }) {
   const secondsLeft = raid.timeLeftSeconds ?? raid.totalSeconds ?? 0
   const hours = Math.floor(secondsLeft / 3600)
   const minutes = Math.floor((secondsLeft % 3600) / 60)
   const seconds = secondsLeft % 60
   const countdown = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`
   const lowTime = secondsLeft <= 60
-  const hpPct = Math.round(raid.monster.hpPercent ?? 0)
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex flex-wrap items-end justify-between gap-3'>
-        <div className='flex items-center gap-2'>
-          {/* TODO: move this countdown to somewhere else */}
-          <Badge
-            variant='outline'
-            className={`gap-1.5 px-3 py-4 font-semibold text-lg ${
-              lowTime ? 'border-destructive/40 bg-destructive/10 text-destructive' : ''
-            }`}
-          >
-            {countdown} left
-          </Badge>
-        </div>
-      </div>
-
-      <div className='grid gap-4 lg:grid-cols-[20rem_1fr_20rem]'>
+      <div className='grid gap-4 lg:grid-cols-[20rem_1fr] min-[1921px]:grid-cols-[20rem_1fr_40rem]'>
+        <div className='flex flex-col justify-between'>
         <ActivePlayersList raid={raid} />
 
-        <Card className='flex flex-col'>
-          <CardHeader>
-            <div className='flex flex-wrap items-start justify-between gap-3'>
-              <div className='space-y-1'>
-                <CardDescription>{hpPct}% HP — keep the pressure on</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
+        <div className='flex justify-center gap-2 row-start-2 items-center'>
+          <span className='text-sm uppercase tracking-wider text-muted-foreground'>Time left</span>
+          <span className={`font-mono text-2xl font-bold tabular-nums ${lowTime ? 'text-destructive' : 'text-foreground'}`}>
+            {countdown}
+          </span>
+        </div>
+        </div>
+
+        <Card
+          className='flex flex-col self-start [image-rendering:pixelated]'
+          style={{
+            backgroundImage: "url('/map/water.png')",
+            backgroundRepeat: 'repeat',
+            backgroundSize: '64px 64px',
+          }}
+        >
           <CardContent className='flex flex-1 flex-col gap-4'>
-            <BossStage monster={raid.monster} members={raid.members} />
+            <BossRaidMap raidId={raid.id} monster={raid.monster} members={raid.members} />
           </CardContent>
         </Card>
 
-        {tasksSlot ?? <div />}
+        <div className='lg:col-start-2 lg:row-start-2 min-[1921px]:col-start-3 min-[1921px]:row-start-1'>
+          {tasksSlot ?? <div />}
+        </div>
       </div>
     </div>
   )

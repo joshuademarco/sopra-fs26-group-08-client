@@ -64,8 +64,10 @@ export interface DroppedItem {
 }
 
 export interface RaidMember {
+  userId: number
   name: string
   status: MemberStatus
+  joined: boolean
   isCurrentUser?: boolean
   characterType?: string | null
   level?: number
@@ -87,7 +89,6 @@ export interface Monster {
   level: number
   description: string
   hpPercent: number
-  imageUrl: string
   hp?: number
   maxHp?: number
 }
@@ -103,7 +104,6 @@ export interface BossRaid {
   durationSeconds?: number
   tasksCount?: number
   estimatedReward?: number
-  damageMultiplier?: number
   state: RaidState
   monster: Monster
 }

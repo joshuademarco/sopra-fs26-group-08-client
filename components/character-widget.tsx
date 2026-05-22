@@ -22,6 +22,8 @@ export function CharacterWidget() {
   const { subscribeToCharacterUpdates } = useWebsocketContext()
   const [character, setCharacter] = useState<CharacterSummary | null>(null)
   const [reviving, setReviving] = useState(false)
+  const [playReviveAnim, setPlayReviveAnim] = useState(false)
+  const [playLevelUpAnim, setPlayLevelUpAnim] = useState(false)
 
   // Initial fetch
   useEffect(() => {
@@ -44,13 +46,16 @@ export function CharacterWidget() {
   // Live updates via character WebSocket
   useEffect(() => {
     return subscribeToCharacterUpdates((msg) => {
-      setCharacter((prev) => ({
-        type: msg.characterType ?? prev?.type ?? null,
-        level: msg.level,
-        health: msg.health,
-        maxHealth: msg.maxHealth,
-        experience: msg.experience,
-      }))
+      setCharacter((prev) => {
+        if (prev && msg.level > prev.level) setPlayLevelUpAnim(true)
+        return {
+          type: msg.characterType ?? prev?.type ?? null,
+          level: msg.level,
+          health: msg.health,
+          maxHealth: msg.maxHealth,
+          experience: msg.experience,
+        }
+      })
     })
   }, [subscribeToCharacterUpdates])
 
@@ -59,6 +64,7 @@ export function CharacterWidget() {
   const handleRevive = async () => {
     if (!user) return
     setReviving(true)
+    setPlayReviveAnim(true)
     try {
       const data = await api.post<CharacterSummary>(`/users/${user.id}/character/revive`, {})
       setCharacter({
@@ -82,7 +88,7 @@ export function CharacterWidget() {
 
   return (
     <div className={`flex flex-col items-center gap-3 px-3 py-4`}>
-      <div className={`relative size-36 overflow-hidden rounded-xl  ${isKnockedOut ? 'opacity-50 grayscale' : ''}`}>
+      <div className={`relative size-36 overflow-hidden rounded-xl  ${isKnockedOut && !playReviveAnim ? 'opacity-50 grayscale' : ''}`}>
         {character.type ? (
           <Image
             src={`/characters/${character.type}/rotations/south.png`}
@@ -93,6 +99,32 @@ export function CharacterWidget() {
           />
         ) : (
           <div className='flex size-full items-center justify-center text-sm text-muted-foreground'>?</div>
+        )}
+        {playReviveAnim && (
+          <div
+            aria-hidden
+            onAnimationEnd={() => setPlayReviveAnim(false)}
+            className='pointer-events-none absolute left-1/2 top-1/2 size-32 -translate-x-1/2 -translate-y-1/2 [image-rendering:pixelated] animate-revive-skull'
+            style={{
+              backgroundImage: 'url(/map/effects/dead.png)',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '1792px 128px',
+              backgroundPosition: '-1792px 0',
+            }}
+          />
+        )}
+        {playLevelUpAnim && (
+          <div
+            aria-hidden
+            onAnimationEnd={() => setPlayLevelUpAnim(false)}
+            className='pointer-events-none absolute inset-0 [image-rendering:pixelated] animate-level-up-sprite'
+            style={{
+              backgroundImage: 'url(/effects/revive.png)',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '1440px 144px',
+              backgroundPosition: '0 0',
+            }}
+          />
         )}
       </div>
 

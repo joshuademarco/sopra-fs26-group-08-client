@@ -2,13 +2,13 @@
 
 import { useAuth } from '@/hooks/useAuth'
 import type { LiveUser } from '@/types/liveUser'
-import type { CharacterUpdateMessage, RaidUpdateMessage } from '@/types/websocket'
+import type { CharacterUpdateMessage, RaidSocketMessage } from '@/types/websocket'
 import { getWebSocketDomain } from '@/utils/domain'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 const RECONNECT_DELAY_MS = 2000
 
-export type RaidUpdateCallback = (msg: RaidUpdateMessage) => void
+export type RaidUpdateCallback = (msg: RaidSocketMessage) => void
 export type CharacterUpdateCallback = (msg: CharacterUpdateMessage) => void
 
 type WebSocketContextType = {
@@ -39,8 +39,10 @@ function parsePresenceSnapshot(raw: string): LiveUser[] {
   return Array.isArray(payload) ? payload : (payload.users ?? [])
 }
 
-function isRaidUpdate(msg: unknown): msg is RaidUpdateMessage {
-  return typeof msg === 'object' && msg !== null && (msg as RaidUpdateMessage).type === 'RAID_UPDATE'
+function isRaidSocketMessage(msg: unknown): msg is RaidSocketMessage {
+  if (typeof msg !== 'object' || msg === null) return false
+  const type = (msg as RaidSocketMessage).type
+  return type === 'RAID_UPDATE' || type === 'RAID_DELETED'
 }
 
 function isCharacterUpdate(msg: unknown): msg is CharacterUpdateMessage {
@@ -153,7 +155,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       socket.onmessage = (event) => {
         try {
           const payload: unknown = JSON.parse(event.data as string)
-          if (isRaidUpdate(payload)) {
+          if (isRaidSocketMessage(payload)) {
             raidCallbacksRef.current.forEach((cb) => cb(payload))
           }
         } catch {
