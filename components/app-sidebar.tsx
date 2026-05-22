@@ -34,7 +34,7 @@ const data = {
       icon: <Home />,
     },
     {
-      title: 'Habits/Todos',
+      title: 'Habits & Todos',
       key: 'habits',
       icon: <StickyNote />,
     },

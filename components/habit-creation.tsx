@@ -68,7 +68,7 @@ export function HabitForm({ value, onChange, onSubmit }: { value: NewHabit; onCh
             </SelectItem>
             <SelectItem value='EMOTIONAL'>
               <div className='flex items-center gap-2'>
-                <Heart className='h-4 w-4 text-emerald-500' /> Emotional (levelling Resilience)
+                <Heart className='h-4 w-4 text-violet-500' /> Emotional (levelling Resilience)
               </div>
             </SelectItem>
           </SelectContent>

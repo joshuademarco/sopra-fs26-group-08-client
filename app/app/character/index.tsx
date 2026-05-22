@@ -249,22 +249,22 @@ export default function CharacterPage() {
         <CharacterStats
           label='Strength'
           value={character.strength}
-          maxValue={Math.max(100, Math.ceil(character.strength / 10) * 10)}
+          maxValue={100}
           color='bg-rose-500'
           height='h-2'
         />
         <CharacterStats
           label='Intelligence'
           value={character.intelligence}
-          maxValue={Math.max(100, Math.ceil(character.intelligence / 10) * 10)}
+          maxValue={100}
           color='bg-sky-500'
           height='h-2'
         />
         <CharacterStats
           label='Resilience'
           value={character.resilience}
-          maxValue={Math.max(100, Math.ceil(character.resilience / 10) * 10)}
-          color='bg-emerald-500'
+          maxValue={100}
+          color='bg-violet-500'
           height='h-2'
         />
       </div>

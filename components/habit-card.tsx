@@ -7,6 +7,7 @@ import { AlertTriangle, Brain, Check, CloudSun, Flame, Heart, Trash2 } from 'luc
 
 interface HabitCardProps {
   habit: Habit
+  isKnockedOut?: boolean
   onComplete: () => void
   onDelete: () => void
 }
@@ -19,11 +20,11 @@ function CategoryIcon({ category }: { category: Habit['category'] }) {
     case 'COGNITIVE':
       return <Brain className={`${cls} text-sky-500`} />
     case 'EMOTIONAL':
-      return <Heart className={`${cls} text-emerald-500`} />
+      return <Heart className={`${cls} text-violet-500`} />
   }
 }
 
-export function HabitCard({ habit, onComplete, onDelete }: HabitCardProps) {
+export function HabitCard({ habit, isKnockedOut = false, onComplete, onDelete }: HabitCardProps) {
   const multiplier = habit.multiplier ?? 1
   const xp = habit.weight * 10
   const freq = habit.frequency.charAt(0) + habit.frequency.slice(1).toLowerCase()
@@ -39,14 +40,16 @@ export function HabitCard({ habit, onComplete, onDelete }: HabitCardProps) {
         <TooltipTrigger asChild>
           <button
             onClick={onComplete}
-            disabled={habit.completed}
+            disabled={habit.completed || isKnockedOut}
             className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-muted-foreground/40 transition-colors hover:border-primary hover:bg-primary/10 disabled:cursor-default disabled:opacity-60'
             aria-label='Mark as complete'
           >
             {habit.completed && <Check className='h-4 w-4 text-primary' />}
           </button>
         </TooltipTrigger>
-        <TooltipContent>{habit.completed ? 'Completed' : 'Mark as complete'}</TooltipContent>
+        <TooltipContent>
+          {habit.completed ? 'Completed' : isKnockedOut ? 'Revive your character first' : 'Mark as complete'}
+        </TooltipContent>
       </Tooltip>
 
       <CategoryIcon category={habit.category} />

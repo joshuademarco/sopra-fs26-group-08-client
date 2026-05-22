@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
+import { useWebsocketContext } from '@/hooks/useWebsocketContext'
 import { useEffect, useState } from 'react'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -18,7 +19,9 @@ function cellColor(count: number) {
 export function HabitHeatmap() {
   const { user } = useAuth()
   const api = useApi()
+  const { subscribeToCharacterUpdates } = useWebsocketContext()
   const [data, setData] = useState<Record<string, number>>({})
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     if (!user) return
@@ -26,7 +29,11 @@ export function HabitHeatmap() {
       .get<Record<string, number>>(`/users/${user.id}/habits/heatmap`)
       .then(setData)
       .catch(() => {})
-  }, [user?.id])
+  }, [user?.id, refreshKey])
+
+  useEffect(() => {
+    return subscribeToCharacterUpdates(() => setRefreshKey((k) => k + 1))
+  }, [subscribeToCharacterUpdates])
   const today = new Date()
   const weeks: Date[][] = []
   for (let w = 51; w >= 0; w--) {
