@@ -1,5 +1,6 @@
 'use client'
 
+import { HabitHeatmap } from '@/components/heatmap'
 import { LiveOnlineMap } from '@/components/live-online-map'
 import { WeatherQuestCard } from '@/components/weather-quest-card'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -13,7 +14,7 @@ export default function Dashboard() {
         <div className='flex-1 min-w-0'><LiveOnlineMap /></div>
         <div className='flex-1 min-w-0 flex flex-col gap-4'>
           <WeatherQuestCard />
-          {/* heatmap card goes here */}
+          <HabitHeatmap />
         </div>
       </div>
     )
@@ -22,6 +23,7 @@ export default function Dashboard() {
   return (
     <div className='flex flex-1 flex-col gap-4'>
       <WeatherQuestCard />
+      <HabitHeatmap />
       <LiveOnlineMap />
     </div>
   )

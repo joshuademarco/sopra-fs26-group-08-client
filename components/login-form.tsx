@@ -38,7 +38,7 @@ export function LoginForm({
   const router = useRouter()
   const { login } = useAuth()
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const form = useForm<z.infer<typeof loginSchema>>({ //replace form error with sonner
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
     defaultValues: {
