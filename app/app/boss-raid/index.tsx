@@ -358,7 +358,7 @@ export default function BossRaidPage() {
       await api.post(`/raids/${raidId}/tasks/${task.id}/skip`, {})
       await refreshRaids(groupId)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not skip task')
+      toast.error(err instanceof Error ? err.message : 'Could not skip task')
     }
   }
 
