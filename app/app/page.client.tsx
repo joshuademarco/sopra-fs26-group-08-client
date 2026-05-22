@@ -1,23 +1,21 @@
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
+import { Onboarding } from '@/components/ui/onboarding'
 import { WeatherQuestCard } from '@/components/weather-quest-card'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { WeatherIcon } from '@/components/weather-icon'
 import { useAuth } from '@/hooks/useAuth'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import AccountPage from './account'
 import BossRaidPage from './boss-raid'
 import CharacterPage from './character'
 import Dashboard from './dashboard'
 import GroupsPage from './groups'
 import HabitsPage from './habits'
 import LeaderboardPage from './leaderboard'
-import AccountPage from './account'
-import { Onboarding } from '@/components/ui/onboarding'
-
 
 export default function ClientApplicationPage({ weatherCode }: { weatherCode: number | null }) {
   const router = useRouter()
@@ -25,8 +23,6 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
   const searchParams = useSearchParams()
   const { isAuthenticated, isLoading } = useAuth()
   const [currentPage, setCurrentPage] = useState(searchParams.get('page') ?? 'dashboard')
-  const [activeTab, setActiveTab] = useState<'habits' | 'todos'>('habits')
-  const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -34,13 +30,11 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
     }
   }, [isLoading, isAuthenticated, router])
 
-  if (isLoading || !isAuthenticated) {
-    return null
-  }
+  if (isLoading || !isAuthenticated) return null
 
   const pageTitles: Record<string, string> = {
     dashboard: 'Dashboard',
-    habits: isLargeScreen ? 'Tasks' : activeTab === 'todos' ? 'To-Dos' : 'Habits',
+    habits: 'Tasks',
     character: 'Character',
     groups: 'Groups',
     'boss-raids': 'Boss Raids',
@@ -75,7 +69,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           </div>
           <div className='ml-auto flex justify-end'>{<WeatherQuestCard />}</div>
         </header>
-        <div className='flex w-full flex-col p-12 pt-0'>
+        <div className='flex flex-col px-4 pb-4 pt-0 lg:px-12 lg:pb-12'>
           <div className='flex items-center justify-between gap-4 mb-6'>
             <div className='flex flex-col'>
               <h2>{pageTitle}</h2>
@@ -84,7 +78,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
           <div className='flex-1'>
             {currentPage === 'dashboard' && <Dashboard />}
 
-            {currentPage === 'habits' && <HabitsPage activeTab={activeTab} setActiveTab={setActiveTab} isLargeScreen={isLargeScreen} />}
+            {currentPage === 'habits' && <HabitsPage />}
 
             {currentPage === 'character' && <CharacterPage />}
 

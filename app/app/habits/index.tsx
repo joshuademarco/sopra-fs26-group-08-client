@@ -1,8 +1,9 @@
 'use client'
 
 import { HabitCard } from '@/components/habit-card'
-import { TodoCard } from '@/components/todo-card'
 import { HabitForm } from '@/components/habit-creation'
+import { HabitHeatmap } from '@/components/heatmap'
+import { TodoCard } from '@/components/todo-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -23,15 +24,7 @@ function weightLabel(w: number) {
 
 // ============================== main page ==============================
 
-export default function HabitsPage({
-  activeTab,
-  setActiveTab,
-  isLargeScreen,
-}: {
-  activeTab: 'habits' | 'todos'
-  setActiveTab: (tab: 'habits' | 'todos') => void
-  isLargeScreen: boolean
-}) {
+export default function HabitsPage() {
   const { user } = useAuth()
   const [habitDialogOpen, setHabitDialogOpen] = useState(false)
   const [todoDialogOpen, setTodoDialogOpen] = useState(false)
@@ -48,57 +41,50 @@ export default function HabitsPage({
           <TooltipContent className='max-w-sm'>
             <strong>Habits:</strong> Recurring actions you do daily, weekly, or monthly. Keep an eye on the sky! Specific habit
             categories get a weather-based XP boost to keep you motivated. <strong>ToDos:</strong> One-time tasks. While these
-            don&apos;t receive weather bonuses, completing them still earns you base XP and levels up your character&apos;s stats in that
-            category.
+            don&apos;t receive weather bonuses, completing them still earns you base XP and levels up your character&apos;s
+            stats in that category.
           </TooltipContent>
         </Tooltip>
       </div>
 
-      {!isLargeScreen && (
-        <div className='flex gap-2'>
-          <Button variant={activeTab === 'habits' ? 'default' : 'outline'} onClick={() => setActiveTab('habits')}>
-            Habits
-          </Button>
-          <Button variant={activeTab === 'todos' ? 'default' : 'outline'} onClick={() => setActiveTab('todos')}>
-            To-Dos
-          </Button>
-        </div>
-      )}
+      <HabitHeatmap />
 
-      {isLargeScreen ? (
-        <div className='flex gap-6'>
-          <div className='flex-1 min-w-0 flex flex-col gap-3'>
-            <div className='flex items-center justify-between'>
-              <h3 className='text-lg font-semibold'>Habits</h3>
-              <Button className='w-fit' onClick={() => setHabitDialogOpen(true)}><Plus /> Add Habit</Button>
-            </div>
-            <div className='border rounded-lg p-4'>
-              <HabitsSection userId={user.id} dialogOpen={habitDialogOpen} setDialogOpen={setHabitDialogOpen} />
-            </div>
+      <div className='flex flex-col xl:flex-row gap-6'>
+        <div className='flex-1 min-w-0 flex flex-col gap-3 xl:pr-6'>
+          <div className='flex items-center justify-between'>
+            <h3 className='text-lg font-semibold'>Habits</h3>
+            <Button className='w-fit' onClick={() => setHabitDialogOpen(true)}>
+              <Plus /> Add Habit
+            </Button>
           </div>
-          <div className='flex-1 min-w-0 flex flex-col gap-3'>
-            <div className='flex items-center justify-between'>
-              <h3 className='text-lg font-semibold'>To-Dos</h3>
-              <Button className='w-fit' onClick={() => setTodoDialogOpen(true)}><Plus /> Add To-Do</Button>
-            </div>
-            <div className='border rounded-lg p-4'>
-              <TodosSection userId={user.id} dialogOpen={todoDialogOpen} setDialogOpen={setTodoDialogOpen} />
-            </div>
+          <div className='border rounded-lg p-4 bg-muted/40'>
+            <HabitsSection userId={user.id} dialogOpen={habitDialogOpen} setDialogOpen={setHabitDialogOpen} />
           </div>
         </div>
-      ) : (
-        <>
-          {activeTab === 'habits' && <HabitsSection userId={user.id} />}
-          {activeTab === 'todos' && <TodosSection userId={user.id} />}
-        </>
-      )}
+        <div className='hidden xl:block w-px bg-border self-stretch' />
+        <div className='flex-1 min-w-0 flex flex-col gap-3 xl:pl-6'>
+          <div className='flex items-center justify-between'>
+            <h3 className='text-lg font-semibold'>To-Dos</h3>
+            <Button className='w-fit' onClick={() => setTodoDialogOpen(true)}>
+              <Plus /> Add To-Do
+            </Button>
+          </div>
+          <div className='border rounded-lg p-4 bg-muted/40'>
+            <TodosSection userId={user.id} dialogOpen={todoDialogOpen} setDialogOpen={setTodoDialogOpen} />
+          </div>
+        </div>
+      </div>
     </main>
   )
 }
 
 // ============================== habits ==============================
 
-function HabitsSection({ userId, dialogOpen: controlledOpen, setDialogOpen: setControlledOpen }: {
+function HabitsSection({
+  userId,
+  dialogOpen: controlledOpen,
+  setDialogOpen: setControlledOpen,
+}: {
   userId: string | number
   dialogOpen?: boolean
   setDialogOpen?: (v: boolean) => void
@@ -191,7 +177,7 @@ function HabitsSection({ userId, dialogOpen: controlledOpen, setDialogOpen: setC
       {habits.length === 0 ? (
         <EmptyState message='No habits yet. Add one to start earning XP and building your streak!' />
       ) : (
-        <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-1.5'>
           {habits.some((h) => h.penaltyApplied) && (
             <div className='flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive'>
               <AlertTriangle className='h-4 w-4 shrink-0' />
@@ -214,7 +200,11 @@ function HabitsSection({ userId, dialogOpen: controlledOpen, setDialogOpen: setC
 
 // ============================== todos ==============================
 
-function TodosSection({ userId, dialogOpen: controlledOpen, setDialogOpen: setControlledOpen }: {
+function TodosSection({
+  userId,
+  dialogOpen: controlledOpen,
+  setDialogOpen: setControlledOpen,
+}: {
   userId: string | number
   dialogOpen?: boolean
   setDialogOpen?: (v: boolean) => void
@@ -309,7 +299,7 @@ function TodosSection({ userId, dialogOpen: controlledOpen, setDialogOpen: setCo
       {todos.length === 0 ? (
         <EmptyState message='No to-dos yet. Add one to start earning XP!' />
       ) : (
-        <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-1.5'>
           {todos.map((todo) => (
             <TodoCard
               key={todo.id}
@@ -326,7 +316,6 @@ function TodosSection({ userId, dialogOpen: controlledOpen, setDialogOpen: setCo
 
 // ============================== form components ==============================
 // extracted so dialog content stays readable
-
 
 function TodoForm({ value, onChange, onSubmit }: { value: NewTodo; onChange: (v: NewTodo) => void; onSubmit: () => void }) {
   return (
@@ -361,8 +350,9 @@ function TodoForm({ value, onChange, onSubmit }: { value: NewTodo; onChange: (v:
               <Info className='h-3.5 w-3.5 text-muted-foreground' />
             </TooltipTrigger>
             <TooltipContent>
-              Choose the category that best fits your To-Do. Completing it levels the matching character stat. (&quot;Mow the lawn&quot;
-              could be an example for a Physical To-Do, hence completing it would level up your character&apos;s Strength)
+              Choose the category that best fits your To-Do. Completing it levels the matching character stat. (&quot;Mow the
+              lawn&quot; could be an example for a Physical To-Do, hence completing it would level up your character&apos;s
+              Strength)
             </TooltipContent>
           </Tooltip>
         </Label>

@@ -1,10 +1,9 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { type Todo, categoryLabel, weightLabel } from '@/types/task'
-import { AlertTriangle, Brain, Check, CheckCircle2, ClipboardList, Flame, Heart, Trash2 } from 'lucide-react'
+import { AlertTriangle, Brain, CheckCircle2, Flame, Heart, Trash2 } from 'lucide-react'
 
 interface TodoCardProps {
   todo: Todo
@@ -13,84 +12,87 @@ interface TodoCardProps {
 }
 
 function CategoryIcon({ category }: { category: Todo['category'] }) {
+  const cls = 'h-6 w-6 shrink-0'
   switch (category) {
     case 'PHYSICAL':
-      return <Flame className='text-rose-500' />
+      return <Flame className={`${cls} text-rose-500`} />
     case 'COGNITIVE':
-      return <Brain className='text-sky-500' />
+      return <Brain className={`${cls} text-sky-500`} />
     case 'EMOTIONAL':
-      return <Heart className='text-emerald-500' />
+      return <Heart className={`${cls} text-emerald-500`} />
   }
 }
 
-function DueDatePanel({ todo }: { todo: Todo }) {
+export function TodoCard({ todo, onComplete, onDelete }: TodoCardProps) {
   const hasDueDate = Boolean(todo.dueAt)
   const isOverdue = hasDueDate && !todo.completed && new Date(todo.dueAt!) < new Date()
+  const xp = todo.weight * 10
+  const dueLabel = hasDueDate ? new Date(todo.dueAt!).toLocaleDateString('en-CH', { day: 'numeric', month: 'short' }) : null
 
   return (
-    <div className='flex flex-col items-center gap-2 rounded-lg bg-muted/40 p-3'>
-      {todo.completed ? (
-        <CheckCircle2 className='size-8 text-emerald-500' />
-      ) : isOverdue ? (
-        <AlertTriangle className='size-8 text-destructive' />
-      ) : (
-        <ClipboardList className='size-8 text-muted-foreground' />
-      )}
-      {hasDueDate ? (
-        <p className={`text-xs ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
-          {new Date(todo.dueAt!).toLocaleDateString('en-CH', { day: 'numeric', month: 'short' })}
+    <div
+      className={`flex min-h-16 items-center gap-3 rounded-md border px-4 py-3 transition-opacity ${todo.completed ? 'opacity-50' : ''}`}
+    >
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={onComplete}
+            disabled={todo.completed}
+            className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-muted-foreground/40 transition-colors hover:border-primary hover:bg-primary/10 disabled:cursor-default disabled:opacity-60'
+            aria-label='Mark as complete'
+          >
+            {todo.completed ? <CheckCircle2 className='h-4 w-4 text-emerald-500' /> : null}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>{todo.completed ? 'Completed' : 'Mark as complete'}</TooltipContent>
+      </Tooltip>
+
+      <CategoryIcon category={todo.category} />
+
+      <div className='min-w-0 flex-1'>
+        <div className='flex flex-wrap items-center gap-1.5'>
+          <span
+            className={`text-base font-semibold leading-snug ${todo.completed ? 'line-through text-muted-foreground' : ''}`}
+          >
+            {todo.title}
+          </span>
+          <span className='shrink-0 rounded px-1.5 py-px text-[10px] font-semibold leading-none bg-muted text-muted-foreground'>
+            One-time
+          </span>
+          {isOverdue && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AlertTriangle className='h-3.5 w-3.5 shrink-0 text-destructive' />
+              </TooltipTrigger>
+              <TooltipContent>This task is overdue!</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+        <p className='text-xs leading-snug text-muted-foreground'>
+          {todo.description ? `${todo.description} · ` : ''}
+          {categoryLabel(todo.category)} · {weightLabel(todo.weight)}
+          {dueLabel && ` · Due ${dueLabel}`}
         </p>
-      ) : (
-        <p className='text-xs text-muted-foreground'>No due date</p>
-      )}
+      </div>
+
+      <span className={`shrink-0 text-sm font-bold ${isOverdue ? 'text-destructive' : 'text-yellow-500'}`}>
+        {isOverdue ? 'Overdue' : `${xp} XP`}
+      </span>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            size='icon'
+            variant='ghost'
+            className='h-7 w-7 shrink-0 text-muted-foreground/50 hover:text-destructive'
+            onClick={onDelete}
+            aria-label='Delete todo'
+          >
+            <Trash2 className='h-4 w-4' />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Delete To-Do</TooltipContent>
+      </Tooltip>
     </div>
-  )
-}
-
-export function TodoCard({ todo, onComplete, onDelete }: TodoCardProps) {
-  return (
-    <Card className={todo.completed ? 'opacity-60' : ''}>
-      <CardHeader>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-2'>
-            <CategoryIcon category={todo.category} />
-            <CardTitle className={todo.completed ? 'line-through' : ''}>{todo.title}</CardTitle>
-          </div>
-          <Badge variant='outline'>One-time</Badge>
-        </div>
-
-        {todo.description && <CardDescription>{todo.description}</CardDescription>}
-      </CardHeader>
-
-      <CardContent>
-        <div className='grid grid-cols-[1fr_auto] items-start gap-4'>
-          <div className='flex flex-col gap-3'>
-            <div className='flex flex-wrap items-center gap-1.5'>
-              <Badge variant='secondary'>{categoryLabel(todo.category)}</Badge>
-              <Badge variant='secondary'>{weightLabel(todo.weight)}</Badge>
-            </div>
-
-            <p className='text-xs text-muted-foreground'>Completes for {todo.weight * 10} XP</p>
-
-            {todo.dueAt && !todo.completed && (
-              <p className='text-xs text-muted-foreground'>Due: {new Date(todo.dueAt).toLocaleDateString('en-GB')}</p>
-            )}
-
-            <div className='flex items-center gap-2'>
-              <Button size='icon-lg' onClick={onComplete} disabled={todo.completed}>
-                <Check />
-              </Button>
-              <Button size='icon-lg' variant='destructive' onClick={onDelete}>
-                <Trash2 />
-              </Button>
-              {todo.completed && <span className='text-xs text-muted-foreground'>Completed</span>}
-            </div>
-          </div>
-
-          {/* right part: due date panel */}
-          <DueDatePanel todo={todo} />
-        </div>
-      </CardContent>
-    </Card>
   )
 }
