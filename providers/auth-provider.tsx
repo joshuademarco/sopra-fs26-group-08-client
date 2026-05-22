@@ -3,6 +3,8 @@
 import { buildApiUrl } from '@/utils/domain'
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
+export type NotificationType = 'NONE' | 'EMAIL' | 'PUSHOVER'
+
 type AuthUser = {
   id: string | number
   email: string
@@ -14,6 +16,9 @@ type AuthUser = {
   intelligence?: number | null
   resilience?: number | null
   onboardingCompleted?: boolean | null
+  notificationType?: NotificationType | null
+  pushoverUserKey?: string | null
+  pushoverAppToken?: string | null
 }
 
 type LoginInput = {
@@ -33,6 +38,12 @@ type UpdateProfileInput = {
   email: string
 }
 
+type UpdateNotificationsInput = {
+  notificationType: NotificationType
+  pushoverUserKey?: string
+  pushoverAppToken?: string
+}
+
 type AuthContextValue = {
   user: AuthUser | null
   isAuthenticated: boolean
@@ -40,6 +51,7 @@ type AuthContextValue = {
   login: (input: LoginInput) => Promise<AuthUser>
   register: (input: RegisterInput) => Promise<AuthUser>
   updateProfile: (input: UpdateProfileInput) => Promise<AuthUser>
+  updateNotifications: (input: UpdateNotificationsInput) => Promise<AuthUser>
   logout: () => Promise<void>
   completeOnboarding: () => Promise<AuthUser>
 }
@@ -171,6 +183,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [persistSession],
   )
 
+  const updateNotifications = useCallback(
+    async (input: UpdateNotificationsInput) => {
+      const res = await fetch(buildAuthUrl('/auth/update-profile'), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(input),
+      })
+
+      if (!res.ok) {
+        await parseError(res, 'Unable to update notification settings')
+      }
+
+      const payload = (await res.json()) as AuthUser
+      persistSession(payload)
+      return payload
+    },
+    [persistSession],
+  )
+
   const register = useCallback(
     async (input: RegisterInput) => {
       const res = await fetch(buildAuthUrl('/auth/register'), {
@@ -227,10 +261,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       login,
       register,
       updateProfile,
+      updateNotifications,
       logout,
       completeOnboarding,
     }
-  }, [isLoading, login, logout, register, updateProfile, completeOnboarding, user])
+  }, [isLoading, login, logout, register, updateProfile, updateNotifications, completeOnboarding, user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
