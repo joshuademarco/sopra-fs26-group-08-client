@@ -119,7 +119,7 @@ export function AppSidebar({
                   <PersonStanding className='h-4 w-4' />
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-medium'>BetterTogether</span>
+                  <span className='truncate font-medium'>BetterTogeter</span>
                 </div>
               </Link>
             </SidebarMenuButton>

@@ -19,10 +19,10 @@ const Hero = ({ className }: HeroProps) => {
             <br />
             Small steps but
             <br />
-            <span className='text-primary'>BetterTogether.</span>
+            <span className='text-primary'>BetterTogeter.</span>
           </h1>
           <p className='mt-8 max-w-prose text-lg text-muted-foreground'>
-            BetterTogether is a habit tracker disguised as a village. Show up, check in, and fight back the
+            BetterTogeter is a habit tracker disguised as a village. Show up, check in, and fight back the
             monsters living rent-free in your week.
           </p>
           <div className='mt-8 flex flex-wrap gap-3'>

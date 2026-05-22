@@ -7,9 +7,9 @@ export default function GuidePage() {
   return (
     <main className='flex flex-col items-center w-full'>
       <section className='w-full max-w-3xl md:p-12 py-12'>
-        <h1 className='text-4xl font-bold tracking-tight'>BetterTogether — User Guide</h1>
+        <h1 className='text-4xl font-bold tracking-tight'>BetterTogeter — User Guide</h1>
         <p className='mt-4 text-base text-muted-foreground md:text-lg'>
-          BetterTogether is a gamified habit tracking app that turns real-world self-improvement into an RPG-style
+          BetterTogeter is a gamified habit tracking app that turns real-world self-improvement into an RPG-style
           adventure. Complete habits, level up your character and fight bosses with your group.
         </p>
 
@@ -113,7 +113,7 @@ export default function GuidePage() {
 
         <h2 className='text-2xl font-semibold mt-10'>Boss Raids</h2>
         <p className='mt-2 text-base text-muted-foreground'>
-          Boss Raids are the multiplayer core of BetterTogether. Groups fight a shared boss together.
+          Boss Raids are the multiplayer core of BetterTogeter. Groups fight a shared boss together.
         </p>
         <p className='mt-4 text-base text-muted-foreground font-medium'>How it works:</p>
         <ul className='list-disc list-inside mt-2 space-y-1 text-base text-muted-foreground'>

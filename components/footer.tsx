@@ -22,7 +22,7 @@ const Footer = ({ className }: FooterProps) => {
         <footer>
           <div className='mb-10 flex flex-col gap-x-24 gap-y-10 md:flex-row md:justify-between'>
             <div className='max-w-72'>
-              <h3 className='text-lg font-semibold tracking-tight'>BetterTogether</h3>
+              <h3 className='text-lg font-semibold tracking-tight'>BetterTogeter</h3>
               <p className='mt-4 text-sm text-muted-foreground'>
                 A gamified habit tracker. One island, four heroes, ten very pesky monsters.
               </p>
@@ -45,7 +45,7 @@ const Footer = ({ className }: FooterProps) => {
             </div>
           </div>
           <div className='flex flex-col items-baseline justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground md:flex-row'>
-            <span>&copy; BetterTogether {new Date().getFullYear()}</span>
+            <span>&copy; BetterTogeter {new Date().getFullYear()}</span>
             <span>Made by Steadhaven villagers, with sleep.</span>
           </div>
         </footer>
