@@ -40,7 +40,7 @@ const bosses: {
     img: '/characters/bosses/gnome/avatar.png',
     lvl: 8,
     hp: 280,
-    blurb: 'Will start tomorrow. Has been starting tomorrow for nine years.',
+    blurb: 'Builds a to-do list for the to-do list. Tiny, patient, and somehow already behind schedule.',
   },
   {
     name: 'Megalo-done Tomorrow',
@@ -54,14 +54,14 @@ const bosses: {
     img: '/characters/bosses/lizard/avatar.png',
     lvl: 9,
     hp: 310,
-    blurb: 'Whispers about the snack drawer at 22:47.',
+    blurb: 'A bright little distraction in a very convincing jacket. Always knows where the snacks are hidden.',
   },
   {
     name: 'Chaos Minotaur',
     img: '/characters/bosses/minotaur/avatar.png',
     lvl: 17,
     hp: 720,
-    blurb: 'Tabs everywhere. No one can find the calendar.',
+    blurb: 'A labyrinth in a blazer. Chaos Minotaur turns every straight path into a personal maze.',
   },
   {
     name: 'Couch Panda',
@@ -75,7 +75,7 @@ const bosses: {
     img: '/characters/bosses/snake/avatar.png',
     lvl: 13,
     hp: 460,
-    blurb: 'Grows a head every Friday at 16:30.',
+    blurb: 'Keeps coiling around unfinished tasks and somehow looks proud of it.',
   },
   {
     name: 'Web Crawler',
@@ -96,7 +96,7 @@ const bosses: {
     img: '/characters/bosses/troll/avatar.png',
     lvl: 20,
     hp: 900,
-    blurb: 'Sits under the streak bridge. Eats day twenty-three.',
+    blurb: 'Lives under the streak bridge and charges a toll in skipped routines.',
   },
 ]
 
