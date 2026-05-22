@@ -40,6 +40,14 @@ function PlayerResults({ members, kind }: { members: RaidMember[]; kind: 'victor
                       {m.tasksCompleted}/{m.totalTasks}
                     </span>
                   </span>
+                  {(m.tasksSkipped ?? 0) > 0 && (
+                    <>
+                      <span className='text-border'>·</span>
+                      <span>
+                        skipped <span className='font-semibold text-amber-600'>{m.tasksSkipped}</span>
+                      </span>
+                    </>
+                  )}
                   <span className='text-border'>·</span>
                   <span>
                     dmg <span className='font-semibold text-foreground'>{m.damageDealt ?? 0}</span>

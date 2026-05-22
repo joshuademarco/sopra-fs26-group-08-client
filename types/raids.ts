@@ -32,6 +32,7 @@ export interface RaidTaskData {
   windowStartSeconds: number | null
   completedByUserIds: number[]
   successfullyCompletedByUsers: number[]
+  skippedByUserIds: number[]
   assignedUserId: number | null
 }
 
@@ -74,6 +75,7 @@ export interface RaidMember {
   taskDescription?: string
   taskDamage?: number
   tasksCompleted?: number
+  tasksSkipped?: number
   totalTasks?: number
   xpChange?: number
   died?: boolean

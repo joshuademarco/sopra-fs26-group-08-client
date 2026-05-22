@@ -146,6 +146,7 @@ export function toRaidCard(raid: RaidData, currentUserId: number | string | unde
       characterType: member.characterType ?? null,
       status: 'Ready',
       tasksCompleted: myTasks.filter((task) => (task.successfullyCompletedByUsers ?? []).includes(member.userId)).length,
+      tasksSkipped: myTasks.filter((task) => (task.skippedByUserIds ?? []).includes(member.userId)).length,
       totalTasks: myTasks.length,
       xpChange: member.xpEarned ?? 0,
       damageDealt: member.damageDealt ?? 0,
