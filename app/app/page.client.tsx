@@ -61,7 +61,7 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
       <AppSidebar setCurrentPage={setCurrentPageWithQuery} />
       <SidebarInset className={currentPage === 'dashboard' ? 'bg-[#47aba9]' : ''}>
         <header
-          className={`sticky top-0 z-50 flex items-center gap-3 px-4 py-3 ${currentPage === 'dashboard' ? 'bg-[#47aba9]' : 'bg-background'} relative`}
+          className={`sticky top-0 z-50 flex min-h-18 items-center gap-3 px-4 py-3 ${currentPage === 'dashboard' ? 'bg-[#47aba9]' : 'bg-background'}`}
         >
           <div className='flex items-center gap-2'>
             <SidebarTrigger className='-ml-1' />
