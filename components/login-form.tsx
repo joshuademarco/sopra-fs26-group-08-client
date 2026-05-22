@@ -24,9 +24,10 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/useAuth"
+import { toast } from "sonner"
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
+  email: z.email("Please enter a valid email address."),
   password: z.string().min(1, "Password is required."),
 })
 
@@ -36,10 +37,10 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const router = useRouter()
   const { login } = useAuth()
-  const [formError, setFormError] = React.useState<string | null>(null)
 
   const form = useForm<z.infer<typeof loginSchema>>({ //replace form error with sonner
     resolver: zodResolver(loginSchema),
+    mode: "onBlur",
     defaultValues: {
       email: process.env.NEXT_PUBLIC_DEFAULT_EMAIL || "",
       password: process.env.NEXT_PUBLIC_DEFAULT_PASSWORD || "",
@@ -47,13 +48,11 @@ export function LoginForm({
   })
 
   async function onSubmit(data: z.infer<typeof loginSchema>) {
-    setFormError(null)
-
     try {
       await login(data)
       router.replace("/app")
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : "Login failed")
+      toast.error(error instanceof Error ? error.message : "Login failed")
     }
   }
 
@@ -69,21 +68,20 @@ export function LoginForm({
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
-              <Field>
+              <Field data-invalid={!!form.formState.errors.email}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   {...form.register("email")}
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  aria-invalid={form.formState.errors.email ? true : false}
-                  required
+                  aria-invalid={!!form.formState.errors.email}
                 />
                 {form.formState.errors.email && (
                   <FieldError errors={[form.formState.errors.email]} />
                 )}
               </Field>
-              <Field>
+              <Field data-invalid={!!form.formState.errors.password}>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <a
@@ -97,15 +95,13 @@ export function LoginForm({
                   {...form.register("password")}
                   id="password"
                   type="password"
-                  aria-invalid={form.formState.errors.password ? true : false}
-                  required
+                  aria-invalid={!!form.formState.errors.password}
                 />
                 {form.formState.errors.password && (
                   <FieldError errors={[form.formState.errors.password]} />
                 )}
               </Field>
               <Field>
-                {formError && <FieldError>{formError}</FieldError>}
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? "Logging in..." : "Login"}
                 </Button>
