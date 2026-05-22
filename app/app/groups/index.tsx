@@ -1,5 +1,6 @@
 'use client'
 
+import { GravatarImage } from '@/components/gravatar-image'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -324,6 +325,7 @@ export default function GroupsPage() {
                         >
                           <div className='relative shrink-0'>
                             <Avatar className='size-8'>
+                              <GravatarImage identifier={member.username} size={32} />
                               <AvatarFallback className='text-xs'>{member.username[0]?.toUpperCase()}</AvatarFallback>
                             </Avatar>
                             {isOnline && (

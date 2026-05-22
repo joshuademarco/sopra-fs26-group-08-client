@@ -1,10 +1,12 @@
 'use client'
 
+import { GravatarImage } from '@/components/gravatar-image'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { useApi } from '@/hooks/useApi'
 import { Trophy } from 'lucide-react'
-import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { useAuth } from '../../../hooks/useAuth'
 import { LeaderboardEntry } from '../../../types/leaderboard'
 
@@ -68,14 +70,21 @@ export default function LeaderboardPage() {
                 return (
                   <div key={rank} className='flex flex-col items-center flex-1 max-w-[120px]'>
                     <div className='flex flex-col items-center mb-2 text-center'>
-                      <Trophy className={`${trophySize} ${trophyColor} mb-1 md:mb-2`} />
+                      <Avatar className={`mb-1 md:mb-2 ${rank === 1 ? 'size-12 md:size-14' : 'size-10 md:size-12'}`}>
+                        <GravatarImage
+                          identifier={isCurrentUser && currentUser?.email ? currentUser.email : entry.username}
+                          size={rank === 1 ? 56 : 48}
+                        />
+                        <AvatarFallback className='text-sm'>{entry.username[0]?.toUpperCase()}</AvatarFallback>
+                      </Avatar>
                       <span className={`font-bold truncate w-20 md:w-28 text-sm md:text-base ${isCurrentUser ? 'text-emerald-600 dark:text-emerald-500' : ''}`}>
                         {entry.username}
                       </span>
                       <span className='text-xs md:text-sm text-muted-foreground'>Level {entry.level}</span>
                       <span className='text-xs md:text-sm font-semibold'>{entry.experience} XP</span>
                     </div>
-                    <div className={`w-full rounded-t-md border-t-4 ${heightClass} ${bgClass} ${borderClass} flex items-start justify-center pt-2 md:pt-4`}>
+                    <div className={`w-full rounded-t-md border-t-4 ${heightClass} ${bgClass} ${borderClass} flex flex-col items-center justify-start pt-2 md:pt-4 gap-1`}>
+                      <Trophy className={`${trophySize} ${trophyColor}`} />
                       <span className={`text-2xl md:text-4xl font-bold opacity-50 ${textClass}`}>
                         {rank}
                       </span>

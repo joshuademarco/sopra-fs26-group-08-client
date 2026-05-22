@@ -14,7 +14,9 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { useAuth } from '@/hooks/useAuth'
+import { getGravatarUrl } from '@/utils/gravatar'
 import { Award, Home, PersonStanding, ShieldHalf, StickyNote, Sword, UserCog } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { CharacterWidget } from './character-widget'
 import { NavUser } from './nav-user'
 
@@ -70,11 +72,19 @@ export function AppSidebar({
   ...props
 }: { setCurrentPage: (page: string) => void } & React.ComponentProps<typeof Sidebar>) {
   const { user: authUser } = useAuth()
+  const [gravatarUrl, setGravatarUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (authUser?.email) {
+      getGravatarUrl(authUser.email).then(setGravatarUrl)
+    }
+  }, [authUser?.email])
+
   const displayedUser = authUser
     ? {
         name: authUser.username,
         email: authUser.email,
-        avatar: null,
+        avatar: gravatarUrl,
       }
     : data.user
 

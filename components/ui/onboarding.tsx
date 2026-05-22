@@ -1,6 +1,8 @@
 'use client'
 
+import { GravatarImage } from '@/components/gravatar-image'
 import { HabitForm } from '@/components/habit-creation'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { CalendarConnect } from '@/components/ui/calendar-connect'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -18,6 +20,7 @@ const STEPS = [
   {
     title: 'Welcome to BetterTogeter!',
     description: "Build better habits, grow your character and conquer boss raids with friends. Each habit you complete earns XP, levels your character's stats and contributes to your team's strength in raids. Let's get you set up.",
+    content: <WelcomeImage />,
   },
   {
     title: 'Habits & To-Dos',
@@ -34,6 +37,11 @@ const STEPS = [
     description:
       'Your character grows as you complete habits. Strength, Intelligence and Resilience each map to a habit category.',
     image: '/onboarding/character.png',
+  },
+  {
+    title: 'Your Avatar',
+    description: 'Add a personal touch with a Gravatar. Your photo will show up on the leaderboard, in groups, and in the sidebar.',
+    content: <GravatarSetup />,
   },
   {
     title: 'Groups & Boss Raids',
@@ -61,6 +69,44 @@ const STEPS = [
     content: <CalendarConnect />,
   },
 ]
+
+function WelcomeImage() {
+  return (
+    <div className='flex justify-center'>
+      <Image src='/GroupOfPeople.png' alt='Group of People' width={300} height={180} className='rounded-lg object-cover' />
+    </div>
+  )
+}
+
+function GravatarSetup() {
+  const { user } = useAuth()
+  const initials = user?.username?.[0]?.toUpperCase() ?? 'U'
+
+  return (
+    <div className='flex flex-col items-center gap-6 py-4'>
+      <Avatar className='size-24'>
+        {user?.email && <GravatarImage identifier={user.email} size={96} />}
+        <AvatarFallback className='text-2xl'>{initials}</AvatarFallback>
+      </Avatar>
+      <div className='flex flex-col items-center gap-2 text-center'>
+        <p className='text-base text-muted-foreground'>
+          Your avatar is pulled from{' '}
+          <a href='https://gravatar.com' target='_blank' rel='noreferrer' className='text-primary underline underline-offset-4'>
+            Gravatar
+          </a>
+          . Create a free account there and link your email address{' '}
+          <span className='font-medium text-foreground'>{user?.email}</span> to set your photo.
+        </p>
+        <p className='text-base text-muted-foreground'>It will appear in the leaderboard, groups, and the sidebar.</p>
+      </div>
+      <Button asChild variant='outline' size='sm'>
+        <a href='https://gravatar.com' target='_blank' rel='noreferrer'>
+          Set up Gravatar
+        </a>
+      </Button>
+    </div>
+  )
+}
 
 function HabitCreation() {
   const api = useApi()
