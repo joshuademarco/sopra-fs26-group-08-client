@@ -18,7 +18,6 @@ type AuthUser = {
   onboardingCompleted?: boolean | null
   notificationType?: NotificationType | null
   pushoverUserKey?: string | null
-  pushoverAppToken?: string | null
 }
 
 type LoginInput = {
@@ -41,7 +40,6 @@ type UpdateProfileInput = {
 type UpdateNotificationsInput = {
   notificationType: NotificationType
   pushoverUserKey?: string
-  pushoverAppToken?: string
 }
 
 type AuthContextValue = {

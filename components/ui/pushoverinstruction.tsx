@@ -23,15 +23,11 @@ export function NotificationOnboarding() {
         </li>
         <li className='flex gap-2'>
           <span className='flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/25 font-semibold text-primary'>2</span>
-          <span> In your Pushover dashboard, register a new Application. Copy the API Token it generates, this is your App Token.</span>
-        </li>
-        <li className='flex gap-2'>
-          <span className='flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/25 font-semibold text-primary'>3</span>
           <span> From your Pushover account overview, copy your personal User Key.</span>
         </li>
         <li className='flex gap-2'>
-          <span className='flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/25 font-semibold text-primary'>4</span>
-          <span> Enter both keys below and select Pushover as your notification style.</span>
+          <span className='flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/25 font-semibold text-primary'>3</span>
+          <span> Enter your User Key below and select Pushover as your notification style.</span>
         </li>
       </ol>
 
