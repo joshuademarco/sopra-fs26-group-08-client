@@ -36,7 +36,7 @@ export function CalendarConnect({ align = 'center' }: { align?: 'center' | 'star
 
   if (isLoading) {
     return (
-      <div className={`flex flex-col items-${align} gap-4 py-4`}>
+      <div className={`flex flex-col items-${align} gap-4`}>
         <Button disabled>Loading...</Button>
       </div>
     )
@@ -44,7 +44,7 @@ export function CalendarConnect({ align = 'center' }: { align?: 'center' | 'star
 
   if (connected || alreadyConnected) {
     return (
-      <div className={`flex flex-col items-${align} gap-4 py-4`}>
+      <div className={`flex flex-col items-${align} gap-4`}>
         <p className='text-green-600 font-medium flex items-center gap-2'>
           <CircleCheckBig className='w-5 h-5' /> Calendar connected!
         </p>
@@ -53,7 +53,7 @@ export function CalendarConnect({ align = 'center' }: { align?: 'center' | 'star
   }
 
   return (
-    <div className={`flex flex-col items-${align} gap-4 py-4`}>
+    <div className={`flex flex-col items-${align} gap-4`}>
       <Button
         onClick={() => {
           if (authUrl) window.location.href = authUrl
