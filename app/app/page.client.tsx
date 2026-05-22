@@ -1,6 +1,7 @@
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
+import { WeatherQuestCard } from '@/components/weather-quest-card'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { WeatherIcon } from '@/components/weather-icon'
@@ -48,16 +49,19 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
       <AppSidebar setCurrentPage={setCurrentPageWithQuery} />
       <SidebarInset className={currentPage === 'dashboard' ? 'bg-[#47aba9]' : ''}>
         <header
-          className={`sticky top-0 z-50 flex min-h-16 shrink-0 items-center justify-between gap-4 ${currentPage === 'dashboard' ? 'bg-[#47aba9]' : 'bg-background'}`}
+          className={`sticky top-0 z-50 flex items-center gap-3 px-4 py-3 ${currentPage === 'dashboard' ? 'bg-[#47aba9]' : 'bg-background'} relative`}
         >
-          <div className='flex items-center gap-2 px-4'>
+          <div className='flex items-center gap-2'>
             <SidebarTrigger className='-ml-1' />
             <Separator orientation='vertical' className='mr-2 data-[orientation=vertical]:h-4' />
             <div className='hidden flex-col gap-0.5 sm:flex'>
               <span className='text-sm font-medium'>{pageTitle}</span>
             </div>
           </div>
-          <div className='px-4 py-2'>{weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}</div>
+          <div className='pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 justify-center'>
+            {weatherCode != null && <WeatherIcon weatherCode={weatherCode} />}
+          </div>
+          <div className='ml-auto flex justify-end'>{<WeatherQuestCard />}</div>
         </header>
         <div className='flex w-full flex-col p-12 pt-0'>
           <div className='flex items-center justify-between gap-4 mb-6'>

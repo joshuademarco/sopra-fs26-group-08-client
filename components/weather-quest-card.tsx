@@ -1,13 +1,10 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
+import { useApi } from '@/hooks/useApi'
+import { useAuth } from '@/hooks/useAuth'
 import { WeatherQuest } from '@/types/task'
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { useApi } from '@/hooks/useApi'
-import { Cloud, CloudLightning, CloudRain, CloudSnow, Sun } from 'lucide-react'
 
 export function WeatherQuestCard() {
   const { user } = useAuth()
@@ -15,44 +12,33 @@ export function WeatherQuestCard() {
   const [quest, setQuest] = useState<WeatherQuest | null>(null)
 
   useEffect(() => {
-  console.log('user:', user)
-  if (!user) return
-  api.get<WeatherQuest>(`/users/${user.id}/weather-quest`)
-    .then(setQuest)
-    .catch(() => setQuest(null))
-  }, [user])
+    if (!user) return
+    api
+      .get<WeatherQuest>(`/users/${user.id}/weather-quest`)
+      .then(setQuest)
+      .catch(() => setQuest(null))
+  }, [api, user])
 
-  if (quest === null) return <Card className="max-w-6xl"><p className='text-muted-foreground'>No quest available</p> </Card>
-  
-  let icon
-  let label
-
-  if (quest.weatherCondition === "CLEAR") { icon = <Sun />; label = "clear" }
-  else if (quest.weatherCondition === "CLOUDY") { icon = <Cloud />; label = "cloudy" }
-  else if (quest.weatherCondition === "RAIN") { icon = <CloudRain />; label = "rainy" }
-  else if (quest.weatherCondition === "SNOW") { icon = <CloudSnow />; label = "snowy" }
-  else { icon = <CloudLightning />; label = "stormy" }
+  if (quest === null) {
+    return <div className='px-4 py-2 text-sm text-muted-foreground'>No daily quest available</div>
+  }
 
   return (
-    <Card className="max-w-6xl">
-      <CardHeader>
-        <div className='flex items-center gap-2'>
-          {icon}
-          <CardTitle>{quest.weatherLabel} — Daily Quest</CardTitle>
-        </div>
-        <p>{quest.questTitle}</p>
-      </CardHeader>
-      <CardContent>
-        <Progress value={(quest.completedCount / quest.targetCount) * 100} />
-        <p>
-          {quest.completedCount} / {quest.targetCount} habits completed
-        </p>
-
-        <Badge>
+    <div className='inline-flex max-w-176 items-center gap-3 px-2 py-1.5'>
+      <div className='min-w-0 shrink-0'>
+        <p className='truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/60'>DailyQuest</p>
+        <p className='truncate text-sm font-medium leading-tight text-foreground'>{quest.questTitle}</p>
+      </div>
+      <div className='h-8 w-px shrink-0 bg-border/50' />
+      <div className='flex min-w-0 items-center gap-2 text-xs text-foreground/70'>
+        <span className='whitespace-nowrap text-base font-bold'>
+          {quest.completedCount} / {quest.targetCount}
+        </span>
+        <Badge className='h-6 whitespace-nowrap rounded-full px-2 py-0 text-[11px]'>
           +{quest.bonusMultiplier}x {quest.bonusStat} XP
         </Badge>
-        {quest.completed && <p>Quest Complete!</p>}
-      </CardContent>
-    </Card>
+        {quest.completed && <span className='whitespace-nowrap font-medium text-foreground'>Done</span>}
+      </div>
+    </div>
   )
 }

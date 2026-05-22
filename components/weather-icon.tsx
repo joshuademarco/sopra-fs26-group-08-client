@@ -37,11 +37,14 @@ export function WeatherIcon({ weatherCode, size = 36 }: WeatherIconProps) {
   }
 
   return (
-    <div className='flex items-center gap-2 px-4 py-2'>
-      {icon}
-      <div>
-        <p className='text-sm font-medium'>It&apos;s {label} right now.</p>
-        <p className='text-xs text-foreground/70'>{getBoostedCategories(weatherCode)}</p>
+    <div className='inline-flex items-center gap-3 rounded-full border border-border/60 bg-background/65 px-4 py-1.5 shadow-none backdrop-blur-sm'>
+      <div className='flex size-9 shrink-0 items-center justify-center rounded-full text-foreground'>
+        {icon}
+      </div>
+      <div className='min-w-0'>
+        <p className='truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/60'>Weather</p>
+        <p className='truncate text-sm font-medium'>It&apos;s {label} right now.</p>
+        <p className='truncate text-xs text-foreground/70'>{getBoostedCategories(weatherCode)}</p>
       </div>
     </div>
   )
