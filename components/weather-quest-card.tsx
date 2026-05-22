@@ -20,7 +20,7 @@ export function WeatherQuestCard() {
   }, [api, user])
 
   if (quest === null) {
-    return <div className='px-4 py-2 text-sm text-muted-foreground'>No daily quest available</div>
+    return null
   }
 
   return (
