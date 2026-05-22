@@ -5,9 +5,10 @@ import { WeatherQuestCard } from '@/components/weather-quest-card'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { WeatherIcon } from '@/components/weather-icon'
+import { useAuth } from '@/hooks/useAuth'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import BossRaidPage from './boss-raid'
 import CharacterPage from './character'
 import Dashboard from './dashboard'
@@ -22,9 +23,20 @@ export default function ClientApplicationPage({ weatherCode }: { weatherCode: nu
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { isAuthenticated, isLoading } = useAuth()
   const [currentPage, setCurrentPage] = useState(searchParams.get('page') ?? 'dashboard')
   const [activeTab, setActiveTab] = useState<'habits' | 'todos'>('habits')
   const isLargeScreen = useMediaQuery('(min-width: 1024px)')
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace('/')
+    }
+  }, [isLoading, isAuthenticated, router])
+
+  if (isLoading || !isAuthenticated) {
+    return null
+  }
 
   const pageTitles: Record<string, string> = {
     dashboard: 'Dashboard',
