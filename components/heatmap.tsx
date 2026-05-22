@@ -22,7 +22,8 @@ export function HabitHeatmap() {
 
   useEffect(() => {
     if (!user) return
-    api.get<Record<string, number>>(`/users/${user.id}/habits/heatmap`)
+    api
+      .get<Record<string, number>>(`/users/${user.id}/habits/heatmap`)
       .then(setData)
       .catch(() => {})
   }, [user?.id])
@@ -44,8 +45,8 @@ export function HabitHeatmap() {
   })
 
   return (
-    <Card className='max-w-6xl'>
-      <CardHeader>
+    <Card className='w-fit max-w-full'>
+      <CardHeader className='pb-2'>
         <CardTitle>Habit Activity</CardTitle>
         <p className='text-sm text-muted-foreground'>
           Each square represents a day. The darker the green, the more habits you completed that day.
@@ -53,24 +54,24 @@ export function HabitHeatmap() {
       </CardHeader>
       <CardContent>
         <div className='overflow-x-auto'>
-          <div className='flex gap-1 mb-1'>
+          <div className='flex gap-0.75 mb-1'>
             {weeks.map((_, wi) => (
-              <div key={wi} className='w-4 overflow-visible whitespace-nowrap text-[10px] text-muted-foreground'>
+              <div key={wi} className='w-3.5 overflow-visible whitespace-nowrap text-[9px] text-muted-foreground'>
                 {monthLabels[wi] ?? ''}
               </div>
             ))}
           </div>
 
-          <div className='flex gap-1'>
+          <div className='flex gap-0.75'>
             {weeks.map((week, wi) => (
-              <div key={wi} className='flex flex-col gap-1'>
+              <div key={wi} className='flex flex-col gap-0.75'>
                 {week.map((day) => {
                   const key = day.toISOString().slice(0, 10)
                   return (
                     <div
                       key={key}
                       title={`${key}: ${data[key] ?? 0} habits`}
-                      className={`h-4 w-4 rounded ${cellColor(data[key] ?? 0)}`}
+                      className={`h-3.5 w-3.5 rounded ${cellColor(data[key] ?? 0)}`}
                     />
                   )
                 })}
@@ -81,7 +82,7 @@ export function HabitHeatmap() {
           <div className='flex items-center justify-end gap-1.5 mt-3'>
             <span className='text-[11px] text-muted-foreground'>Less</span>
             {(['bg-muted', 'bg-green-200', 'bg-green-400', 'bg-green-600', 'bg-green-800'] as const).map((c) => (
-              <div key={c} className={`h-4 w-4 rounded-sm ${c}`} />
+              <div key={c} className={`h-3.5 w-3.5 rounded ${c}`} />
             ))}
             <span className='text-[11px] text-muted-foreground'>More</span>
           </div>
