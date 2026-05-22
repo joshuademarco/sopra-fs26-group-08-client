@@ -70,10 +70,24 @@ const STEPS = [
   },
 ]
 
+const heroParty = ['josh', 'leo', 'ale', 'michi']
+
 function WelcomeImage() {
   return (
-    <div className='flex justify-center'>
-      <Image src='/GroupOfPeople.png' alt='Group of People' width={300} height={180} className='rounded-lg object-cover' />
+    <div className='relative flex w-full flex-col items-center pb-4'>
+      <div className='flex w-full items-end justify-center -space-x-14 sm:-space-x-16'>
+        {heroParty.map((id) => (
+          <Image
+            key={id}
+            src={`/characters/${id}/rotations/south.png`}
+            alt={id}
+            width={120}
+            height={120}
+            className='size-32 object-contain object-bottom [image-rendering:pixelated] sm:size-40'
+          />
+        ))}
+      </div>
+      <div className='mt-4 w-[88%] border-t border-border' />
     </div>
   )
 }
