@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useApi } from '@/hooks/useApi'
 import { useAuth } from '@/hooks/useAuth'
+import { useWebsocketContext } from '@/hooks/useWebsocketContext'
 import {
   CheckCircle,
   Dumbbell,
@@ -20,6 +21,7 @@ import {
   Trophy,
   User,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -68,12 +70,14 @@ type InventoryItem = {
 export default function CharacterPage() {
   const { user } = useAuth()
   const api = useApi()
+  const { subscribeToCharacterUpdates } = useWebsocketContext()
 
   const [character, setCharacter] = useState<CharacterData | null>(null)
   const [achievements, setAchievements] = useState<AchievementData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [inventory, setInventory] = useState<InventoryItem[]>([])
   const [pickerSlot, setPickerSlot] = useState<'HAT' | 'CHESTPIECE' | 'HANDHELD' | null>(null)
+  const [reviving, setReviving] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -98,6 +102,38 @@ export default function CharacterPage() {
 
     void fetchAll()
   }, [user, api])
+
+  useEffect(() => {
+    return subscribeToCharacterUpdates((msg) => {
+      setCharacter((prev) =>
+        prev
+          ? {
+              ...prev,
+              level: msg.level,
+              health: msg.health,
+              maxHealth: msg.maxHealth,
+              experience: msg.experience,
+              strength: msg.strength,
+              intelligence: msg.intelligence,
+              resilience: msg.resilience,
+            }
+          : prev,
+      )
+    })
+  }, [subscribeToCharacterUpdates])
+
+  async function handleRevive() {
+    if (!user) return
+    setReviving(true)
+    try {
+      const data = await api.post<CharacterData>(`/users/${user.id}/character/revive`, {})
+      setCharacter(data)
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to revive character')
+    } finally {
+      setReviving(false)
+    }
+  }
 
   async function equipItem(itemId: number) {
     if (!character) return
@@ -138,6 +174,7 @@ export default function CharacterPage() {
   }
 
   const xpThreshold = character.level * 100
+  const isKnockedOut = character.health <= 0
 
   const slotLabels: Record<string, string> = {
     HAT: 'hats',
@@ -155,17 +192,24 @@ export default function CharacterPage() {
     <main className='flex flex-1 flex-col gap-4'>
       <Card>
         <CardContent className='flex flex-col gap-6 md:flex-row md:items-center'>
-          <div className='flex aspect-square w-full items-center justify-center rounded-lg bg-muted/20 md:w-48'>
-            {character.type ? (
-              <Image
-                src={`/characters/${character.type}/rotations/south.png`}
-                alt={character.type}
-                width={192}
-                height={192}
-                style={{ imageRendering: 'pixelated' }}
-              />
-            ) : (
-              <User className='size-20' />
+          <div className='flex flex-col items-center gap-3'>
+            <div className={`flex aspect-square w-full items-center justify-center rounded-lg bg-muted/20 md:w-48 ${isKnockedOut ? 'opacity-50 grayscale' : ''}`}>
+              {character.type ? (
+                <Image
+                  src={`/characters/${character.type}/rotations/south.png`}
+                  alt={character.type}
+                  width={192}
+                  height={192}
+                  style={{ imageRendering: 'pixelated' }}
+                />
+              ) : (
+                <User className='size-20' />
+              )}
+            </div>
+            {isKnockedOut && (
+              <Button variant='destructive' onClick={handleRevive} disabled={reviving}>
+                {reviving ? 'Reviving...' : 'Revive'}
+              </Button>
             )}
           </div>
 

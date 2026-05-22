@@ -72,6 +72,10 @@ export function TodoCard({ todo, onComplete, onDelete }: TodoCardProps) {
 
             <p className='text-xs text-muted-foreground'>Completes for {todo.weight * 10} XP</p>
 
+            {todo.dueAt && !todo.completed && (
+              <p className='text-xs text-muted-foreground'>Due: {new Date(todo.dueAt).toLocaleDateString('en-GB')}</p>
+            )}
+
             <div className='flex items-center gap-2'>
               <Button size='icon-lg' onClick={onComplete} disabled={todo.completed}>
                 <Check />

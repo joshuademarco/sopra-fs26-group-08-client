@@ -26,11 +26,15 @@ function weightLabel(w: number) {
 export default function HabitsPage({
   activeTab,
   setActiveTab,
+  isLargeScreen,
 }: {
   activeTab: 'habits' | 'todos'
   setActiveTab: (tab: 'habits' | 'todos') => void
+  isLargeScreen: boolean
 }) {
   const { user } = useAuth()
+  const [habitDialogOpen, setHabitDialogOpen] = useState(false)
+  const [todoDialogOpen, setTodoDialogOpen] = useState(false)
 
   if (!user) return null
 
@@ -50,28 +54,61 @@ export default function HabitsPage({
         </Tooltip>
       </div>
 
-      <div className='flex gap-2'>
-        <Button variant={activeTab === 'habits' ? 'default' : 'outline'} onClick={() => setActiveTab('habits')}>
-          Habits
-        </Button>
-        <Button variant={activeTab === 'todos' ? 'default' : 'outline'} onClick={() => setActiveTab('todos')}>
-          To-Dos
-        </Button>
-      </div>
+      {!isLargeScreen && (
+        <div className='flex gap-2'>
+          <Button variant={activeTab === 'habits' ? 'default' : 'outline'} onClick={() => setActiveTab('habits')}>
+            Habits
+          </Button>
+          <Button variant={activeTab === 'todos' ? 'default' : 'outline'} onClick={() => setActiveTab('todos')}>
+            To-Dos
+          </Button>
+        </div>
+      )}
 
-      {activeTab === 'habits' && <HabitsSection userId={user.id} />}
-      {activeTab === 'todos' && <TodosSection userId={user.id} />}
+      {isLargeScreen ? (
+        <div className='flex gap-6'>
+          <div className='flex-1 min-w-0 flex flex-col gap-3'>
+            <div className='flex items-center justify-between'>
+              <h3 className='text-lg font-semibold'>Habits</h3>
+              <Button className='w-fit' onClick={() => setHabitDialogOpen(true)}><Plus /> Add Habit</Button>
+            </div>
+            <div className='border rounded-lg p-4'>
+              <HabitsSection userId={user.id} dialogOpen={habitDialogOpen} setDialogOpen={setHabitDialogOpen} />
+            </div>
+          </div>
+          <div className='flex-1 min-w-0 flex flex-col gap-3'>
+            <div className='flex items-center justify-between'>
+              <h3 className='text-lg font-semibold'>To-Dos</h3>
+              <Button className='w-fit' onClick={() => setTodoDialogOpen(true)}><Plus /> Add To-Do</Button>
+            </div>
+            <div className='border rounded-lg p-4'>
+              <TodosSection userId={user.id} dialogOpen={todoDialogOpen} setDialogOpen={setTodoDialogOpen} />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {activeTab === 'habits' && <HabitsSection userId={user.id} />}
+          {activeTab === 'todos' && <TodosSection userId={user.id} />}
+        </>
+      )}
     </main>
   )
 }
 
 // ============================== habits ==============================
 
-function HabitsSection({ userId }: { userId: string | number }) {
+function HabitsSection({ userId, dialogOpen: controlledOpen, setDialogOpen: setControlledOpen }: {
+  userId: string | number
+  dialogOpen?: boolean
+  setDialogOpen?: (v: boolean) => void
+}) {
   const api = useApi()
   const [habits, setHabits] = useState<Habit[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const dialogOpen = controlledOpen ?? internalOpen
+  const setDialogOpen = setControlledOpen ?? setInternalOpen
 
   const [newHabit, setNewHabit] = useState<NewHabit>({
     title: '',
@@ -135,11 +172,13 @@ function HabitsSection({ userId }: { userId: string | number }) {
   return (
     <div className='flex flex-col gap-4'>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className='w-fit'>
-            <Plus /> Add Habit
-          </Button>
-        </DialogTrigger>
+        {!setControlledOpen && (
+          <DialogTrigger asChild>
+            <Button className='w-fit'>
+              <Plus /> Add Habit
+            </Button>
+          </DialogTrigger>
+        )}
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Habit</DialogTitle>
@@ -150,7 +189,7 @@ function HabitsSection({ userId }: { userId: string | number }) {
 
       {/* list */}
       {habits.length === 0 ? (
-        <EmptyState message='No habits yet. Add one to start earning XP!' />
+        <EmptyState message='No habits yet. Add one to start earning XP and building your streak!' />
       ) : (
         <div className='flex flex-col gap-3'>
           {habits.some((h) => h.penaltyApplied) && (
@@ -175,11 +214,17 @@ function HabitsSection({ userId }: { userId: string | number }) {
 
 // ============================== todos ==============================
 
-function TodosSection({ userId }: { userId: string | number }) {
+function TodosSection({ userId, dialogOpen: controlledOpen, setDialogOpen: setControlledOpen }: {
+  userId: string | number
+  dialogOpen?: boolean
+  setDialogOpen?: (v: boolean) => void
+}) {
   const api = useApi()
   const [todos, setTodos] = useState<Todo[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const dialogOpen = controlledOpen ?? internalOpen
+  const setDialogOpen = setControlledOpen ?? setInternalOpen
 
   const [newTodo, setNewTodo] = useState<NewTodo>({
     title: '',
@@ -246,11 +291,13 @@ function TodosSection({ userId }: { userId: string | number }) {
   return (
     <div className='flex flex-col gap-4'>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className='w-fit'>
-            <Plus /> Add To-Do
-          </Button>
-        </DialogTrigger>
+        {!setControlledOpen && (
+          <DialogTrigger asChild>
+            <Button className='w-fit'>
+              <Plus /> Add To-Do
+            </Button>
+          </DialogTrigger>
+        )}
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New To-Do</DialogTitle>
@@ -260,7 +307,7 @@ function TodosSection({ userId }: { userId: string | number }) {
       </Dialog>
 
       {todos.length === 0 ? (
-        <EmptyState message='No to-dos yet. Add one to start!' />
+        <EmptyState message='No to-dos yet. Add one to start earning XP!' />
       ) : (
         <div className='flex flex-col gap-3'>
           {todos.map((todo) => (

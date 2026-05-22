@@ -18,6 +18,7 @@ function TasksPanel({
   totalAssigned,
   startedAt,
   onCompleteTask,
+  onSkipTask
 }: {
   activeTask: RaidTaskData | null
   upcomingTasks: RaidTaskData[]
@@ -25,6 +26,7 @@ function TasksPanel({
   totalAssigned: number
   startedAt: string | null
   onCompleteTask: (task: RaidTaskData, success: boolean) => void
+  onSkipTask: (task: RaidTaskData) => void
 }) {
   return (
     <Card className='self-start'>
@@ -40,6 +42,7 @@ function TasksPanel({
             task={activeTask}
             startedAt={startedAt}
             onSuccess={() => onCompleteTask(activeTask, true)}
+            onSkip={() => onSkipTask(activeTask)}
           />
         )}
 
@@ -90,6 +93,7 @@ export function RaidView({
   onJoin,
   onRsvp,
   onCompleteTask,
+  onSkipTask
 }: {
   raid: RaidData
   currentUserId: number | string
@@ -97,6 +101,7 @@ export function RaidView({
   onJoin: () => void
   onRsvp: (accepted: boolean) => void
   onCompleteTask: (task: RaidTaskData, success: boolean) => void
+  onSkipTask: (task: RaidTaskData) => void
 }) {
   const uid = Number(currentUserId)
   const cardData = toRaidCard(raid, currentUserId, onlineUserIds)
@@ -166,6 +171,7 @@ export function RaidView({
           totalAssigned={allMyTasks.length}
           startedAt={raid.startedAt}
           onCompleteTask={onCompleteTask}
+          onSkipTask={onSkipTask}
         />
       )
     } else {
