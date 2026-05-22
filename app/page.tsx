@@ -103,13 +103,16 @@ const bosses: {
 const integrations = [
   {
     title: 'Google Calendar',
-    detail: 'Two-way sync · 5 min',
+    body: 'Raids appear as events based on your own availability. Paradoxically the bosses respect your schedule.',
   },
   {
     title: 'Pushover',
-    detail: 'Token · Per device',
     body: 'A nudge on raid spawn and another at the final tick. Per-device, per-priority, never spammy.',
   },
+  {
+    title: 'Gravatar',
+    body: 'Your hero avatar is pulled from your Gravatar profile. So if you update your Gravatar, you update your island look.',
+  }
 ]
 
 export default async function Home() {
@@ -273,7 +276,6 @@ export default async function Home() {
                   <Card key={it.title} className='gap-2 p-5'>
                     <div className='flex items-center justify-between gap-3'>
                       <h4 className='text-sm font-semibold'>{it.title}</h4>
-                      <span className='font-mono text-[10px] tracking-[0.12em] text-muted-foreground'>{it.detail}</span>
                     </div>
                     <p className='text-sm leading-relaxed text-muted-foreground'>{it.body}</p>
                   </Card>
