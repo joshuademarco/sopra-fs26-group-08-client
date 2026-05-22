@@ -164,6 +164,119 @@
     animation: revive-skull 1200ms steps(14) 1 forwards;
 }
 
+/* The following keyframes and utilities were created with the help of AI */
+
+@keyframes sprite-archer-idle {
+    from { background-position: 0 0; }
+    to { background-position: -768px 0; }
+}
+@keyframes sprite-pawn-idle {
+    from { background-position: 0 0; }
+    to { background-position: -1024px 0; }
+}
+@keyframes sprite-warrior-idle {
+    from { background-position: 0 0; }
+    to { background-position: -1024px 0; }
+}
+
+@utility sprite-archer-idle {
+    width: 8rem;
+    height: 8rem;
+    background-image: url('/map/knights/archer-idle.png');
+    background-size: 768px 128px;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    animation: sprite-archer-idle 900ms steps(6) infinite;
+}
+@utility sprite-pawn-idle {
+    width: 8rem;
+    height: 8rem;
+    background-image: url('/map/knights/pawn-idle.png');
+    background-size: 1024px 128px;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    animation: sprite-pawn-idle 1200ms steps(8) infinite;
+}
+@utility sprite-warrior-idle {
+    width: 8rem;
+    height: 8rem;
+    background-image: url('/map/knights/warrior-idle.png');
+    background-size: 1024px 128px;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    animation: sprite-warrior-idle 1100ms steps(8) infinite;
+}
+
+@keyframes sheep-cycle {
+    from { background-position: 0 0; }
+    to { background-position: -1024px 0; }
+}
+@keyframes sheep-bounce {
+    from { background-position: 0 0; }
+    to { background-position: -768px 0; }
+}
+
+@utility sheep-anim {
+    width: 8rem;
+    height: 8rem;
+    background-image: url('/map/sheep.png');
+    background-size: 1024px 128px;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    animation: sheep-cycle 1.1s steps(8) infinite;
+}
+
+.sheep-anim:hover {
+    background-image: url('/map/sheep-bouncing.png') !important;
+    background-size: 768px 128px !important;
+    animation: sheep-bounce 0.6s steps(6) infinite;
+}
+
+@keyframes foam-cycle {
+    from { background-position-x: 0; }
+    to { background-position-x: calc(-1 * var(--sheet-w)); }
+}
+
+@utility foam-anim {
+    animation: foam-cycle 1.4s steps(8) infinite;
+}
+
+@keyframes water-rock-cycle {
+    from { background-position-x: 0; }
+    to { background-position-x: calc(-1 * var(--sheet-w)); }
+}
+
+@utility water-rock-anim {
+    animation: water-rock-cycle 2.4s steps(16) infinite;
+}
+
+@keyframes knight-cycle {
+    from { background-position-x: 0; }
+    to { background-position-x: calc(-1 * var(--sheet-w)); }
+}
+
+@utility knight-anim {
+    animation: knight-cycle var(--dur) steps(var(--frames)) infinite;
+}
+
+@keyframes dead-forward {
+    from { background-position-x: 0; }
+    to { background-position-x: calc(-1 * var(--sheet-w)); }
+}
+
+@utility dead-forward {
+    animation: dead-forward 1200ms steps(14) forwards;
+}
+
+@keyframes dead-reverse {
+    from { background-position-x: calc(-1 * var(--sheet-w)); }
+    to { background-position-x: 0; }
+}
+
+@utility dead-reverse {
+    animation: dead-reverse 1200ms steps(14) forwards;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;

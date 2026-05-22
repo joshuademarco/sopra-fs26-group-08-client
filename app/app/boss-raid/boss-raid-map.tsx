@@ -168,7 +168,7 @@ function MemberMarker({
         ? 'bg-yellow-400'
         : 'bg-emerald-500'
 
-  const animClass = effect === 'joining' ? 'boss-raid-dead-reverse' : effect === 'dying' ? 'boss-raid-dead-forward' : null
+  const animClass = effect === 'joining' ? 'dead-reverse' : effect === 'dying' ? 'dead-forward' : null
 
   return (
     <div
@@ -194,6 +194,7 @@ function MemberMarker({
                 backgroundImage: "url('/map/effects/dead.png')",
                 backgroundSize: `${DEAD_SHEET_W}px ${MEMBER_PX}px`,
                 backgroundRepeat: 'no-repeat',
+                ['--sheet-w' as string]: `${DEAD_SHEET_W}px`,
               }}
             />
           ) : (
@@ -376,15 +377,6 @@ export function BossRaidMap({
 
   return (
     <div className='flex w-full flex-col gap-3'>
-      {/* The following key frames were made with the help of AI */}
-      <style>{`
-        @keyframes boss-raid-foam-cycle { from { background-position: 0 0; } to { background-position: -${FOAM_SHEET_W}px 0; } }
-        .boss-raid-foam-anim { animation: boss-raid-foam-cycle 1.4s steps(${FOAM_FRAMES}) infinite; }
-        @keyframes boss-raid-dead-forward { from { background-position: 0 0; } to { background-position: -${DEAD_SHEET_W}px 0; } }
-        .boss-raid-dead-forward { animation: boss-raid-dead-forward ${DEAD_DURATION_MS}ms steps(${DEAD_FRAMES}) forwards; }
-        @keyframes boss-raid-dead-reverse { from { background-position: -${DEAD_SHEET_W}px 0; } to { background-position: 0 0; } }
-        .boss-raid-dead-reverse { animation: boss-raid-dead-reverse ${DEAD_DURATION_MS}ms steps(${DEAD_FRAMES}) forwards; }
-      `}</style>
       <div
         ref={frameRef}
         className='relative w-full overflow-hidden [IMAGE-RENDERING:PIXELATED]'
@@ -408,7 +400,7 @@ export function BossRaidMap({
             {COAST.map(([cx, cy], i) => (
               <div
                 key={`foam-${cx}-${cy}`}
-                className='absolute [IMAGE-RENDERING:PIXELATED] boss-raid-foam-anim'
+                className='absolute [IMAGE-RENDERING:PIXELATED] foam-anim'
                 style={{
                   left: cx * TILE + TILE / 2 - FOAM_PX / 2,
                   top: cy * TILE + TILE / 2 - FOAM_PX / 2,
@@ -418,6 +410,7 @@ export function BossRaidMap({
                   backgroundSize: `${FOAM_SHEET_W}px ${FOAM_PX}px`,
                   backgroundRepeat: 'no-repeat',
                   animationDelay: `${-(i % FOAM_FRAMES) * 0.16}s`,
+                  ['--sheet-w' as string]: `${FOAM_SHEET_W}px`,
                 }}
               />
             ))}

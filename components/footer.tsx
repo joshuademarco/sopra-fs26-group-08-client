@@ -5,14 +5,8 @@ const sitemap = [
   {
     title: 'Company',
     links: [
-      {
-        title: 'About Us',
-        href: '/about',
-      },
-      {
-        title: 'User Guide',
-        href: '/guide',
-      }
+      { title: 'About Us', href: '/about' },
+      { title: 'User Guide', href: '/guide' },
     ],
   },
 ]
@@ -23,37 +17,36 @@ interface FooterProps {
 
 const Footer = ({ className }: FooterProps) => {
   return (
-    <section className={cn('w-full py-16', className)}>
-      <div className='container mx-auto'>
+    <section className={cn('w-full border-t border-border', className)}>
+      <div className='mx-auto w-full max-w-7xl px-6 pt-14 pb-6'>
         <footer>
-          <div className='relative mb-8 flex w-full flex-col gap-x-28 gap-y-8 md:flex-row md:justify-between md:gap-y-0'>
-            <div className='max-w-96'>
-              <div className='mb-6 flex items-center gap-3'>
-                <h3 className='text-xl font-bold'>BetterTogether.com</h3>
-              </div>
-              <p className='text-base font-medium text-muted-foreground'>Components made easy.</p>
+          <div className='mb-10 flex flex-col gap-x-24 gap-y-10 md:flex-row md:justify-between'>
+            <div className='max-w-72'>
+              <h3 className='text-lg font-semibold tracking-tight'>BetterTogether</h3>
+              <p className='mt-4 text-sm text-muted-foreground'>
+                A gamified habit tracker. One island, four heroes, ten very pesky monsters.
+              </p>
             </div>
-            <div className='flex flex-col items-start gap-x-20 gap-y-14 xl:flex-row'>
-              <div className='inline-grid w-fit grid-cols-1 gap-x-20 gap-y-14 sm:grid-cols-2'>
-                {sitemap.map((section) => (
-                  <div key={section.title} className='h-fit w-min'>
-                    <h4 className='mb-6 text-base font-semibold whitespace-nowrap'>{section.title}</h4>
-                    <ul className='space-y-3 text-base font-medium text-muted-foreground'>
-                      {section.links.map((link) => (
-                        <li key={link.title}>
-                          <a href={link.href} className='text-base whitespace-nowrap hover:text-accent-foreground'>
-                            {link.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
+            <div className='grid grid-cols-1 gap-x-20 gap-y-10 sm:grid-cols-2'>
+              {sitemap.map((section) => (
+                <div key={section.title}>
+                  <h4 className='mb-5 text-sm font-semibold'>{section.title}</h4>
+                  <ul className='space-y-2.5'>
+                    {section.links.map((link) => (
+                      <li key={link.title}>
+                        <Link href={link.href} className='text-sm text-muted-foreground hover:text-foreground'>
+                          {link.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
-          <div className='flex flex-col items-baseline justify-between gap-8 border-t border-border pt-8 md:flex-row md:gap-16'>
-            <div className='text-xs text-muted-foreground sm:text-sm'>&copy; BetterTogether {new Date().getFullYear()}</div>
+          <div className='flex flex-col items-baseline justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground md:flex-row'>
+            <span>&copy; BetterTogether {new Date().getFullYear()}</span>
+            <span>Made by Steadhaven villagers, with sleep.</span>
           </div>
         </footer>
       </div>

@@ -27,8 +27,6 @@ const FOAM_SHEET_W = FOAM_PX * FOAM_FRAMES
 const SHEEP_PX = 128
 const SHEEP_FRAMES = 8
 const SHEEP_SHEET_W = SHEEP_PX * SHEEP_FRAMES
-const SHEEP_BOUNCE_FRAMES = 6
-const SHEEP_BOUNCE_SHEET_W = SHEEP_PX * SHEEP_BOUNCE_FRAMES
 
 const DEAD_PX = 128
 const DEAD_FRAMES = 14
@@ -273,28 +271,6 @@ export function LiveOnlineMap() {
 
   return (
     <div className='relative w-full'>
-      {/* The following keyframes were generated with AI (i could not have had the patience or time for that) - Joshua */}
-      <style>{`
-          @keyframes foam-cycle { from { background-position: 0 0; } to { background-position: -${FOAM_SHEET_W}px 0; } }
-          .foam-anim { animation: foam-cycle 1.4s steps(${FOAM_FRAMES}) infinite; }
-          @keyframes sheep-cycle { from { background-position: 0 0; } to { background-position: -${SHEEP_SHEET_W}px 0; } }
-          @keyframes sheep-bounce { from { background-position: 0 0; } to { background-position: -${SHEEP_BOUNCE_SHEET_W}px 0; } }
-          .sheep-anim { animation: sheep-cycle 1.1s steps(${SHEEP_FRAMES}) infinite; }
-          .sheep-anim:hover {
-            background-image: url('/map/sheep-bouncing.png') !important;
-            background-size: ${SHEEP_BOUNCE_SHEET_W}px ${SHEEP_PX}px !important;
-            animation: sheep-bounce 0.6s steps(${SHEEP_BOUNCE_FRAMES}) infinite;
-          }
-          @keyframes water-rock-cycle { from { background-position-x: 0; } to { background-position-x: calc(-1 * var(--sheet-w)); } }
-          .water-rock-anim { animation: water-rock-cycle 2.4s steps(${WATER_ROCK_FRAMES}) infinite; }
-          @keyframes knight-cycle { from { background-position-x: 0; } to { background-position-x: calc(-1 * var(--sheet-w)); } }
-          .knight-anim { animation: knight-cycle var(--dur) steps(var(--frames)) infinite; }
-          @keyframes dead-forward { from { background-position: 0 0; } to { background-position: -${DEAD_SHEET_W}px 0; } }
-          .dead-forward { animation: dead-forward ${DEAD_DURATION_MS}ms steps(${DEAD_FRAMES}) forwards; }
-          @keyframes dead-reverse { from { background-position: -${DEAD_SHEET_W}px 0; } to { background-position: 0 0; } }
-          .dead-reverse { animation: dead-reverse ${DEAD_DURATION_MS}ms steps(${DEAD_FRAMES}) forwards; }
-        `}</style>
-
       <div
         ref={frameRef}
         className={`relative w-full overflow-hidden [IMAGE-RENDERING:PIXELATED]`}
@@ -353,7 +329,8 @@ export function LiveOnlineMap() {
                   backgroundSize: `${FOAM_SHEET_W}px ${FOAM_PX}px`,
                   backgroundRepeat: 'no-repeat',
                   animationDelay: `${-(i % FOAM_FRAMES) * 0.16}s`,
-                }}
+                  ['--sheet-w' as string]: `${FOAM_SHEET_W}px`,
+                } as React.CSSProperties}
               />
             ))}
           </div>
@@ -427,6 +404,7 @@ export function LiveOnlineMap() {
                       backgroundImage: "url('/map/effects/dead.png')",
                       backgroundSize: `${DEAD_SHEET_W}px ${DEAD_PX}px`,
                       backgroundRepeat: 'no-repeat',
+                      ['--sheet-w' as string]: `${DEAD_SHEET_W}px`,
                     }}
                   />
                 ) : (
