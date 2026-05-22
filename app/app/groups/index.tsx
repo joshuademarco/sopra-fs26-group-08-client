@@ -251,7 +251,7 @@ export default function GroupsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
+        <div className='grid gap-4 md:grid-cols-2'>
           {groups.map((g) => {
             const isOwner = g.createdBy === user?.username
             const createdAt = g.createdAt

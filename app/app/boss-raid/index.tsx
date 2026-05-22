@@ -397,6 +397,8 @@ export default function BossRaidPage() {
                 <Label className='pl-1 text-muted-foreground'>
                   <input
                     type='checkbox'
+                    aria-label='Force all group members'
+                    title='Force all group members'
                     checked={adminForceAllMembers}
                     onChange={(e) => setAdminForceAllMembers(e.target.checked)}
                   />
