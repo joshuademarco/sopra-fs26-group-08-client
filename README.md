@@ -76,21 +76,17 @@ npm run test
 The core user journey is designed to be simple and rewarding.
 
 1. **Onboarding & Habit Creation**: New users are welcomed and guided to create their first habit.
-    !Habit Creation during Onboarding
 
 2. **Character Growth**: As users complete habits, their character gains XP and levels up, improving their stats.
-    !Character Page
 
 3. **Team Up for Raids**: Users can join groups and participate in challenging boss raids, a core social feature.
-    !Boss Raid UI
 
 4. **Climb the Leaderboard**: A global leaderboard encourages friendly competition by ranking users based on their XP and level.
-    !Leaderboard
 
 ## Roadmap
 
 - **Expanded Item & Shop System**: Introduce a wider variety of cosmetic and functional items that can be earned from raids or purchased with in-game currency.
-- **Advanced Social Features**: Implement a friend system, direct messaging between users, and the ability to view other users' detailed profiles and achievements.
+- **Advanced Social Features**: Implement a friend system, direct messaging between users.
 - **Narrative Questlines**: Create multi-step quests with branching paths and unique rewards that go beyond the current daily quest system, adding more depth to the world.
 - **Community Challenges and Events**: Introduce server-wide events or group-based competitions. For example, a week-long challenge where all players contribute to a global progress bar by completing physical habits, unlocking a unique reward for everyone if the goal is met.
 
@@ -104,4 +100,4 @@ This project was brought to life by the dedicated efforts of:
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See `LICENSE` (in server) for more information.
